@@ -17,7 +17,13 @@ class CategoryData
   end
 
   def subcategory_data(category)
-    []
+    category.subcategories.map do |subcategory|
+      {
+        id: subcategory.id,
+        name: subcategory.name,
+        has_transactions: subcategory_has_transactions_associated?(subcategory)
+      }
+    end
   end
 
   def category_has_transactions_associated?(category)
