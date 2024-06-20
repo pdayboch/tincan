@@ -1,0 +1,9 @@
+one:
+  name: Kate
+  email: kate@kate.com
+  password_digest: abcd1234
+
+two:
+  name: Phil
+  email: phil@phil.com
+  password_digest: poiuy12345
