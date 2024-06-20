@@ -1,0 +1,13 @@
+one:
+  bank_name: Chase
+  name: Freedom
+  account_type: Credit Card
+  active: true
+  user: one
+
+two:
+  bank_name: Capital One
+  name: Quicksilver
+  account_type: Credit Card
+  active: true
+  user: two
