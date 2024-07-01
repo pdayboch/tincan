@@ -1,9 +1,10 @@
 Rails.application.routes.draw do
+  resources :transactions
   resources :statements
   resources :accounts
   resources :categories, only: [:index, :create, :update, :destroy]
   resources :subcategories, only: [:create, :update, :destroy]
-  resources :users
+  resources :users, only: [:index]
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

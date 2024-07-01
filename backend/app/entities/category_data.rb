@@ -3,8 +3,11 @@ class CategoryData
     @categories = categories
   end
 
-  def get_data
-    @categories.map { |c| single_category_data(c) }
+  def get_data(query='')
+    { total_items: 10,
+      filtered_items: 5,
+      categories: @categories.map { |c| single_category_data(c) }
+    }
   end
 
   def single_category_data(category)
