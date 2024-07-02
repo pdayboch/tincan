@@ -1,0 +1,24 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  host: localhost
+  username: <%= Rails.application.credentials.dig(:postgres, :user) %>
+  password: <%= Rails.application.credentials.dig(:postgres, :password) %>
+  database: tincan
+
+test:
+  <<: *default
+  host: localhost
+  username: <%= Rails.application.credentials.dig(:postgres, :user) %>
+  password: <%= Rails.application.credentials.dig(:postgres, :password) %>
+  database: tincan_test
+
+production:
+  <<: *default
+  host: <%= ENV['POSTGRES_HOST'] %>
+  username: <%= ENV['POSTGRES_USER'] %>
+  password: <%= ENV['POSTGRES_PASSWORD'] %>

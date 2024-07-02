@@ -1,0 +1,34 @@
+# GLOBAL FILES
+
+# Ignore all environment files (except templates).
+.env*
+!.env*.erb
+
+# RAILS-BACKEND FILES
+
+# Ignore bundler config.
+/backend/.bundle
+
+# Ignore all logfiles and tempfiles.
+/backend/log/*
+/backend/tmp/*
+!/backend/log/.keep
+!/backend/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/backend/tmp/pids/*
+!/backend/tmp/pids/
+!/backend/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/backend/storage/*
+!/backend/storage/.keep
+/backend/tmp/storage/*
+!/backend/tmp/storage/
+!/backend/tmp/storage/.keep
+
+# Ignore keys for decrypting credentials.
+/backend/config/master.key
+/backend/config/credentials/development.key
+/backend/config/credentials/production.key
+/backend/config/credentials/test.key
