@@ -25,3 +25,17 @@ default_categories.each do |category, subcategories|
     c.subcategories.find_or_create_by!(name: subcategory)
   end
 end
+
+if Rails.env.development?
+  # Create Users
+  User.find_or_create_by(email: 'philip245@gmail.com') do |u|
+    u.name = "Phil"
+    u.email = "philip245@gmail.com"
+    u.password = "test1234"
+  end
+  User.find_or_create_by(email: 'krvani89@gmail.com') do |u|
+    u.name = "Kate"
+    u.email = "krvani89@gmail.com"
+    u.password = "test1234"
+  end
+end

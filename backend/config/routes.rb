@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :users
   resources :subcategories, only: [:create, :update, :destroy]
   resources :categories, only: [:index, :create, :update, :destroy]
 
