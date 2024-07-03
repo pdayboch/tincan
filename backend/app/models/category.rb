@@ -8,6 +8,8 @@
 #  updated_at :datetime         not null
 #
 class Category < ApplicationRecord
+  has_many :subcategories, dependent: :destroy
+
   # Validates that the name is unique
   validates :name, uniqueness: { message: 'already exists' }
 end

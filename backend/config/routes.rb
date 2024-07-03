@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :subcategories, only: [:create, :update, :destroy]
   resources :categories, only: [:index, :create, :update, :destroy]
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
