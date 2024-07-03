@@ -1,0 +1,37 @@
+# == Schema Information
+#
+# Table name: accounts
+#
+#  id           :bigint           not null, primary key
+#  bank_name    :string
+#  name         :string           not null
+#  account_type :string
+#  active       :boolean          default(TRUE)
+#  deletable    :boolean          default(TRUE)
+#  user_id      :bigint           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+
+one:
+  bank_name: Chase
+  name: Freedom
+  account_type: Credit Card
+  active: true
+  deletable: true
+  user: one
+
+two:
+  bank_name: Capital One
+  name: Quicksilver
+  account_type: Credit Card
+  active: true
+  deletable: false
+  user: two
+
+non_deletable_account:
+  name: Cash
+  account_type: Cash
+  active: true
+  deletable: false
+  user: one

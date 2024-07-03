@@ -28,14 +28,51 @@ end
 
 if Rails.env.development?
   # Create Users
-  User.find_or_create_by(email: 'philip245@gmail.com') do |u|
+  u1 = User.find_or_create_by(email: 'philip245@gmail.com') do |u|
     u.name = "Phil"
     u.email = "philip245@gmail.com"
     u.password = "test1234"
   end
-  User.find_or_create_by(email: 'krvani89@gmail.com') do |u|
+  u2 = User.find_or_create_by(email: 'krvani89@gmail.com') do |u|
     u.name = "Kate"
     u.email = "krvani89@gmail.com"
     u.password = "test1234"
   end
+
+  # Create Accounts
+  u1.accounts
+    .find_or_create_by(bank_name: 'Chase', name: 'Freedom') do |a|
+      a.bank_name = "Chase"
+      a.name = "Freedom"
+      a.account_type = "credit card"
+      a.active = true
+    end
+  u1.accounts
+    .find_or_create_by(bank_name: 'Chase', name: 'Amazon') do |a|
+      a.bank_name = "Chase"
+      a.name = "Amazon"
+      a.account_type = "credit card"
+      a.active = true
+    end
+  u1.accounts
+    .find_or_create_by(bank_name: 'Chase', name: 'United') do |a|
+      a.bank_name = "Chase"
+      a.name = "United"
+      a.account_type = "credit card"
+      a.active = true
+    end
+  u1.accounts
+    .find_or_create_by(bank_name: 'Capital One', name: 'Quicksilver') do |a|
+      a.bank_name = "Capital One"
+      a.name = "Quicksilver"
+      a.account_type = "credit card"
+      a.active = true
+    end
+  u2.accounts
+    .find_or_create_by(bank_name: 'Chase', name: 'Freedom') do |a|
+      a.bank_name = "Chase"
+      a.name = "Freedom"
+      a.account_type = "credit card"
+      a.active = true
+    end
 end
