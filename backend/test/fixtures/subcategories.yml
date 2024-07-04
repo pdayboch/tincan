@@ -16,3 +16,7 @@ one:
 two:
   name: Restaurants
   category: two
+
+unused_subcategory:
+  name: Unused
+  category: unused_category

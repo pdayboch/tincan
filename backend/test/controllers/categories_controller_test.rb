@@ -24,8 +24,9 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy category" do
+    category = categories(:unused_category)
     assert_difference("Category.count", -1) do
-      delete category_url(@category), as: :json
+      delete category_url(category), as: :json
     end
 
     assert_response :no_content

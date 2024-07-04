@@ -13,3 +13,6 @@ one:
 
 two:
   name: "Food & Dining"
+
+unused_category:
+  name: Unused

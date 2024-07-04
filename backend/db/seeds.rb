@@ -103,4 +103,57 @@ if Rails.env.development?
       s.statement_date = Date.new(2024,6,1)
       s.statement_balance = nil
     end
+
+  # Create Transactions
+  a1.transactions
+    .find_or_create_by(
+      description: "Natalies Deli",
+      transaction_date: Date.new(2024,5,10)
+    ) do |t|
+      t.description = "Natalies Deli"
+      t.transaction_date = Date.new(2024,5,10)
+      t.amount = 59.82
+      t.statement = a1.statements.find_by(statement_date: Date.new(2024,6,1))
+      t.category = Category.find_by(name: "Food")
+      t.subcategory = Subcategory.find_by(name: "Restaurants")
+    end
+
+  a1.transactions
+    .find_or_create_by(
+      description: "The Wharf",
+      transaction_date: Date.new(2024,5,16)
+    ) do |t|
+      t.description = "The Wharf"
+      t.transaction_date = Date.new(2024,5,16)
+      t.amount = 59.82
+      t.statement = a1.statements.find_by(statement_date: Date.new(2024,6,1))
+      t.category = Category.find_by(name: "Food")
+      t.subcategory = Subcategory.find_by(name: "Restaurants")
+    end
+
+  a3.transactions
+    .find_or_create_by(
+      description: "Cisco Paycheck",
+      transaction_date: Date.new(2024,5,2)
+    ) do |t|
+      t.description = "Cisco Paycheck"
+      t.transaction_date = Date.new(2024,5,2)
+      t.amount = 3479.82
+      t.statement = a3.statements.find_by(statement_date: Date.new(2024,6,1))
+      t.category = Category.find_by(name: "Income")
+      t.subcategory = Subcategory.find_by(name: "Paycheck")
+    end
+
+  a3.transactions
+    .find_or_create_by(
+      description: "ATM withdrawal",
+      transaction_date: Date.new(2024,5,16)
+    ) do |t|
+      t.description = "ATM withdrawal"
+      t.transaction_date = Date.new(2024,5,16)
+      t.amount = 200.00
+      t.statement = a3.statements.find_by(statement_date: Date.new(2024,6,1))
+      t.category = Category.find_by(name: "Miscellaneous")
+      t.subcategory = Subcategory.find_by(name: "Cash & ATM")
+    end
 end

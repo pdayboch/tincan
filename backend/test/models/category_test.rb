@@ -17,4 +17,13 @@ class CategoryTest < ActiveSupport::TestCase
     assert_not duplicate_category.valid?, 'Duplicate category should not be valid'
     assert_includes duplicate_category.errors[:name], 'already exists'
   end
+
+  test 'should not delete category with transactions' do
+    category = categories(:one)
+    assert_not category.transactions.empty?, 'Category should have transactions for this test'
+
+    assert_no_difference 'Category.count' do
+      assert_not category.destroy, 'Category was destroyed despite having associated transactions'
+    end
+  end
 end

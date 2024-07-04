@@ -19,8 +19,9 @@ class SubcategoriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy subcategory" do
+    subcategory = subcategories(:unused_subcategory)
     assert_difference("Subcategory.count", -1) do
-      delete subcategory_url(@subcategory), as: :json
+      delete subcategory_url(subcategory), as: :json
     end
 
     assert_response :no_content

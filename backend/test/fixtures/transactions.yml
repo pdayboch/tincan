@@ -1,0 +1,33 @@
+# == Schema Information
+#
+# Table name: transactions
+#
+#  id               :bigint           not null, primary key
+#  transaction_date :date
+#  amount           :decimal(10, 2)
+#  description      :text
+#  account_id       :bigint           not null
+#  statement_id     :bigint
+#  category_id      :bigint           not null
+#  subcategory_id   :bigint           not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#
+
+one:
+  transaction_date: 2024-07-02
+  amount: 9.99
+  description: "Natalies Deli"
+  account: one
+  statement: one
+  category: one
+  subcategory: one
+
+two:
+  transaction_date: 2024-07-03
+  amount: 17.35
+  description: "The Wharf"
+  account: two
+  statement: two
+  category: two
+  subcategory: two

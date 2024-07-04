@@ -27,7 +27,11 @@ class User < ApplicationRecord
   private
 
   def create_cash_account
-    accounts.create!(name: 'Cash', deletable: false)
+    accounts.create!(
+      name: 'Cash',
+      account_type: "cash",
+      deletable: false
+    )
   end
 
   def make_accounts_deletable

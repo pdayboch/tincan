@@ -14,7 +14,8 @@
 #
 class Account < ApplicationRecord
   belongs_to :user
-  has_many :statements
+  has_many :statements, dependent: :destroy
+  has_many :transactions, dependent: :destroy
 
   before_destroy :check_deletable
 

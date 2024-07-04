@@ -11,4 +11,5 @@
 #
 class Statement < ApplicationRecord
   belongs_to :account
+  has_many :transactions, dependent: :nullify
 end

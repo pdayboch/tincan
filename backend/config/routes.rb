@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :transactions, only: [:index, :create, :update, :destroy]
   resources :accounts, only: [:index, :create, :update, :destroy]
   resources :users
   resources :subcategories, only: [:create, :update, :destroy]
