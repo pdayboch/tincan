@@ -40,39 +40,67 @@ if Rails.env.development?
   end
 
   # Create Accounts
-  u1.accounts
+  a1 = u1.accounts
     .find_or_create_by(bank_name: 'Chase', name: 'Freedom') do |a|
       a.bank_name = "Chase"
       a.name = "Freedom"
       a.account_type = "credit card"
-      a.active = true
     end
-  u1.accounts
+  a2 = u1.accounts
     .find_or_create_by(bank_name: 'Chase', name: 'Amazon') do |a|
       a.bank_name = "Chase"
       a.name = "Amazon"
       a.account_type = "credit card"
-      a.active = true
+    end
+  a3 = u1.accounts
+    .find_or_create_by(bank_name: "Schwab", name: "Checking") do |a|
+      a.bank_name = "Schwab"
+      a.name = "Checking"
+      a.account_type = "checking"
     end
   u1.accounts
     .find_or_create_by(bank_name: 'Chase', name: 'United') do |a|
       a.bank_name = "Chase"
       a.name = "United"
       a.account_type = "credit card"
-      a.active = true
     end
   u1.accounts
     .find_or_create_by(bank_name: 'Capital One', name: 'Quicksilver') do |a|
       a.bank_name = "Capital One"
       a.name = "Quicksilver"
       a.account_type = "credit card"
-      a.active = true
     end
   u2.accounts
     .find_or_create_by(bank_name: 'Chase', name: 'Freedom') do |a|
       a.bank_name = "Chase"
       a.name = "Freedom"
       a.account_type = "credit card"
-      a.active = true
+    end
+
+  # Create Statements
+  a1.statements
+    .find_or_create_by(statement_date: Date.new(2024,5,1)) do |s|
+      s.statement_date = Date.new(2024,5,1)
+      s.statement_balance = 14.22
+    end
+  a1.statements
+    .find_or_create_by(statement_date: Date.new(2024,6,1)) do |s|
+      s.statement_date = Date.new(2024,6,1)
+      s.statement_balance = 11.22
+    end
+  a2.statements
+    .find_or_create_by(statement_date: Date.new(2024,5,1)) do |s|
+      s.statement_date = Date.new(2024,5,1)
+      s.statement_balance = 10.22
+    end
+  a2.statements
+    .find_or_create_by(statement_date: Date.new(2024,6,1)) do |s|
+      s.statement_date = Date.new(2024,6,1)
+      s.statement_balance = 16.22
+    end
+  a3.statements
+    .find_or_create_by(statement_date: Date.new(2024,6,1)) do |s|
+      s.statement_date = Date.new(2024,6,1)
+      s.statement_balance = nil
     end
 end

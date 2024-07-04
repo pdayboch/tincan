@@ -14,6 +14,7 @@
 #
 class Account < ApplicationRecord
   belongs_to :user
+  has_many :statements
 
   before_destroy :check_deletable
 

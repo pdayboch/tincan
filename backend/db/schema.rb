@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_03_111218) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_04_031810) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -32,6 +32,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_03_111218) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "statements", force: :cascade do |t|
+    t.date "statement_date"
+    t.bigint "account_id", null: false
+    t.float "statement_balance"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_statements_on_account_id"
+  end
+
   create_table "subcategories", force: :cascade do |t|
     t.string "name"
     t.bigint "category_id", null: false
@@ -49,5 +58,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_03_111218) do
   end
 
   add_foreign_key "accounts", "users"
+  add_foreign_key "statements", "accounts"
   add_foreign_key "subcategories", "categories"
 end
