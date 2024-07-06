@@ -12,35 +12,36 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
 
   class CreateTransactionTest < TransactionsControllerTest
     test "should create transaction" do
+      subcategory = subcategories(:one)
+
       assert_difference("Transaction.count") do
         post transactions_url,
           params: {
-            transaction: {
-              account_id: @transaction.account_id,
-              amount: @transaction.amount,
-              category: categories(:one).name,
-              description: @transaction.description,
-              statement_id: @transaction.statement_id,
-              subcategory: subcategories(:one).name,
-              transaction_date: @transaction.transaction_date,
-            },
+            account_id: @transaction.account_id,
+            amount: @transaction.amount,
+            description: @transaction.description,
+            statement_id: @transaction.statement_id,
+            subcategory_name: subcategory.name,
+            transaction_date: @transaction.transaction_date,
           }, as: :json
       end
 
       assert_response :success
+      category_name = JSON.parse(response.body)["category_name"]
+      subcategory_name = JSON.parse(response.body)["subcategory_name"]
+      assert_equal subcategory.category.name, category_name
+      assert_equal subcategory.name, subcategory_name
     end
 
     test "with no category and no subcategory should create transaction with default" do
       assert_difference("Transaction.count") do
         post transactions_url,
           params: {
-            transaction: {
-              account_id: @transaction.account_id,
-              amount: @transaction.amount,
-              description: @transaction.description,
-              statement_id: @transaction.statement_id,
-              transaction_date: @transaction.transaction_date,
-            },
+            account_id: @transaction.account_id,
+            amount: @transaction.amount,
+            description: @transaction.description,
+            statement_id: @transaction.statement_id,
+            transaction_date: @transaction.transaction_date,
           }, as: :json
       end
 
@@ -51,40 +52,16 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
       assert_equal "Uncategorized", Subcategory.find(subcategory_id).name
     end
 
-    test "should error with invalid category" do
-      assert_no_difference("Transaction.count") do
-        post transactions_url,
-          params: {
-            transaction: {
-              account_id: @transaction.account_id,
-              amount: @transaction.amount,
-              category: "invalid category",
-              description: @transaction.description,
-              statement_id: @transaction.statement_id,
-              subcategory: subcategories(:one).name,
-              transaction_date: @transaction.transaction_date,
-            },
-          }, as: :json
-      end
-
-      assert_response :unprocessable_entity
-      error_response = JSON.parse(response.body)
-      assert_equal "is invalid", error_response["category"].first
-    end
-
     test "should error with invalid subcategory" do
       assert_no_difference("Transaction.count") do
         post transactions_url,
           params: {
-            transaction: {
-              account_id: @transaction.account_id,
-              amount: @transaction.amount,
-              category: categories(:one).name,
-              description: @transaction.description,
-              statement_id: @transaction.statement_id,
-              subcategory: "invalid subcategory",
-              transaction_date: @transaction.transaction_date,
-            },
+            account_id: @transaction.account_id,
+            amount: @transaction.amount,
+            description: @transaction.description,
+            statement_id: @transaction.statement_id,
+            subcategory_name: "invalid subcategory",
+            transaction_date: @transaction.transaction_date,
           }, as: :json
       end
 
@@ -96,20 +73,16 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
 
   class UpdateTransactionTest < TransactionsControllerTest
     test "should update transaction category" do
-      new_category = categories(:unused_category)
       new_subcategory = subcategories(:unused_subcategory)
 
       patch transaction_url(@transaction),
         params: {
-          transaction: {
-            category: new_category.name,
-            subcategory: new_subcategory.name,
-          },
+          subcategory_name: new_subcategory.name,
         }, as: :json
 
       assert_response :success
       @transaction.reload # Reload the transaction from database to get the updated values
-      assert_equal new_category.id, @transaction.category_id, "Category was not updated"
+      assert_equal new_subcategory.category.id, @transaction.category_id, "Category was not updated"
       assert_equal new_subcategory.id, @transaction.subcategory_id, "Subcategory was not updated"
     end
 
@@ -126,10 +99,8 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
 
       patch transaction_url(@transaction),
         params: {
-          transaction: {
-            amount: new_amount,
-            description: new_description,
-          },
+          amount: new_amount,
+          description: new_description,
         }, as: :json
 
       assert_response :success
