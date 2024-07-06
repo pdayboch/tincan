@@ -16,3 +16,6 @@ two:
 
 unused_category:
   name: Unused
+
+uncategorized:
+  name: Uncategorized

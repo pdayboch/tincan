@@ -20,3 +20,7 @@ two:
 unused_subcategory:
   name: Unused
   category: unused_category
+
+uncategorized:
+  name: Uncategorized
+  category: uncategorized
