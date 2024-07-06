@@ -5,23 +5,38 @@ class TransactionsController < ApplicationController
 
   # GET /transactions
   def index
-    @transactions = Transaction.all
+    query = ''
 
-    render json: @transactions
+    page_size = params[:page_size] ? params[:page_size].to_i : 10
+    if page_size < 5 || page_size > 50
+      render json: { page_size: ["must be a number between 5 and 50"]}
+    end
+
+    data = TransactionDataEntity
+      .new(query, page_size)
+      .get_data
+
+    render json: data
   end
 
   # POST /transactions
   def create
-    @transaction = Transaction.new(transaction_params.except(:category, :subcategory))
+    @transaction = Transaction.new(
+      transaction_params.except(:category, :subcategory)
+    )
 
-    @transaction.category = @category || Category.find_by(name: "Uncategorized")
-    @transaction.subcategory = @subcategory || Subcategory.find_by(name: "Uncategorized")
+    @transaction.category = @category ||
+      Category.find_by(name: "Uncategorized")
+    @transaction.subcategory = @subcategory ||
+      Subcategory.find_by(name: "Uncategorized")
 
-    if params[:transaction].key?("category") && @category.nil?
+    if params[:transaction].key?("category") &&
+      @category.nil?
       @transaction.errors.add(:category, "is invalid")
     end
 
-    if params[:transaction].key?("subcategory") && @subcategory.nil?
+    if params[:transaction].key?("subcategory") &&
+      @subcategory.nil?
       @transaction.errors.add(:subcategory, "is invalid")
     end
 
@@ -38,15 +53,18 @@ class TransactionsController < ApplicationController
     @transaction.category = @category if @category
     @transaction.subcategory = @subcategory if @subcategory
 
-    if params[:transaction].key?("category") && @category.nil?
+    if params[:transaction].key?("category") &&
+      @category.nil?
       @transaction.errors.add(:category, "is invalid")
     end
 
-    if params[:transaction].key?("subcategory") && @subcategory.nil?
+    if params[:transaction].key?("subcategory") &&
+      @subcategory.nil?
       @transaction.errors.add(:subcategory, "is invalid")
     end
 
-    if @transaction.errors.empty? && @transaction.update(transaction_params.except(:category, :subcategory))
+    if @transaction.errors.empty? &&
+      @transaction.update(transaction_params.except(:category, :subcategory))
       render json: @transaction
     else
       render json: @transaction.errors, status: :unprocessable_entity
@@ -66,11 +84,15 @@ class TransactionsController < ApplicationController
   end
 
   def set_category
-    @category = Category.find_by(name: params[:transaction][:category])
+    @category = Category.find_by(
+      name: params[:transaction][:category]
+    ) if params[:transaction] && params[:transaction][:category]
   end
 
   def set_subcategory
-    @subcategory = Subcategory.find_by(name: params[:transaction][:subcategory])
+    @subcategory = Subcategory.find_by(
+      name: params[:transaction][:subcategory]
+    ) if params[:transaction] && params[:transaction][:subcategory]
   end
 
   # Only allow a list of trusted parameters through.
