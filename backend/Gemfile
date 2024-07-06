@@ -6,6 +6,7 @@ gem "rails", "~> 7.1.3", ">= 7.1.3.4"
 gem 'pg', '~> 1.5', '>= 1.5.6'
 gem 'puma', '~> 6.4', '>= 6.4.2'
 gem 'bcrypt', '~> 3.1', '>= 3.1.20'
+gem 'active_model_serializers'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false

@@ -46,10 +46,10 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
       end
 
       assert_response :success
-      category_id = JSON.parse(response.body)["category_id"]
-      subcategory_id = JSON.parse(response.body)["subcategory_id"]
-      assert_equal "Uncategorized", Category.find(category_id).name
-      assert_equal "Uncategorized", Subcategory.find(subcategory_id).name
+      category_name = JSON.parse(response.body)["category_name"]
+      subcategory_name = JSON.parse(response.body)["subcategory_name"]
+      assert_equal "Uncategorized", category_name
+      assert_equal "Uncategorized", subcategory_name
     end
 
     test "should error with invalid subcategory" do
