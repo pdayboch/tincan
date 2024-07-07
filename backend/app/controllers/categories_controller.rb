@@ -3,9 +3,10 @@ class CategoriesController < ApplicationController
 
   # GET /categories
   def index
-    @categories = Category.all
+    query = ''
+    data = CategoryDataEntity.new(query).get_data
 
-    render json: @categories
+    render json: data
   end
 
   # POST /categories
