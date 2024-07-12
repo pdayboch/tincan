@@ -3,7 +3,7 @@ default_categories = {
   "Food" => ["Alcohol & Bars", "Coffee Shops", "Fast Food", "Food Delivery", "Groceries", "Restaurants"],
   "Gifts & Donations" => ["Parents", "Gift", "Donation"],
   "Income" => ["Paycheck", "Dividend", "Interest Income", "Rebates"],
-  "Transfer" => ["Credit Card Payment"],
+  "Transfer" => ["Credit Card Payment", "Transfer"],
   "Entertainment" => ["Music", "Newspapers & Magazines", "Music", "Games", "Arts", "Movies & DVDs", "Outdoors"],
   "Home" => ["Rent & Mortgage", "Furnishings", "Home Improvement"],
   "Auto & Transport" => ["Gas & Fuel", "Public Transportation", "Tolls", "Parking", "Ride Share", "Service & Auto Parts", "Auto Payment", "Auto Insurance"],
@@ -71,7 +71,7 @@ if Rails.env.development?
     a.name = "Quicksilver"
     a.account_type = "credit card"
   end
-  u2.accounts
+  a4 = u2.accounts
     .find_or_create_by(bank_name: "Chase", name: "Freedom") do |a|
     a.bank_name = "Chase"
     a.name = "Freedom"
@@ -104,6 +104,11 @@ if Rails.env.development?
     s.statement_date = Date.new(2024, 6, 1)
     s.statement_balance = nil
   end
+  a4.statements
+    .find_or_create_by(statement_date: Date.new(2024,3,1)) do |s|
+      s.statement_date = Date.new(2024,3,1)
+      s.statement_balance = 433.03
+    end
 
   # Create Transactions
   a1.transactions
@@ -156,5 +161,18 @@ if Rails.env.development?
     t.statement = a3.statements.find_by(statement_date: Date.new(2024, 6, 1))
     t.category = Category.find_by(name: "Miscellaneous")
     t.subcategory = Subcategory.find_by(name: "Cash & ATM")
+  end
+
+  a4.transactions
+    .find_or_create_by(
+      description: "Ralphs Italian Ices",
+      transaction_date: Date.new(2024, 2, 6),
+    ) do |t|
+    t.description = "Ralphs Italian Ices"
+    t.transaction_date = Date.new(2024, 2, 6)
+    t.amount = 13.42
+    t.statement = a4.statements.find_by(statement_date: Date.new(2024, 3, 1))
+    t.category = Category.find_by(name: "Food")
+    t.subcategory = Subcategory.find_by(name: "Fast Food")
   end
 end
