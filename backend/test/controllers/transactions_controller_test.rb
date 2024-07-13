@@ -27,8 +27,8 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
       end
 
       assert_response :success
-      category_name = JSON.parse(response.body)["category_name"]
-      subcategory_name = JSON.parse(response.body)["subcategory_name"]
+      category_name = JSON.parse(response.body)["category"]["name"]
+      subcategory_name = JSON.parse(response.body)["subcategory"]["name"]
       assert_equal subcategory.category.name, category_name
       assert_equal subcategory.name, subcategory_name
     end
@@ -46,8 +46,8 @@ class TransactionsControllerTest < ActionDispatch::IntegrationTest
       end
 
       assert_response :success
-      category_name = JSON.parse(response.body)["category_name"]
-      subcategory_name = JSON.parse(response.body)["subcategory_name"]
+      category_name = JSON.parse(response.body)["category"]["name"]
+      subcategory_name = JSON.parse(response.body)["subcategory"]["name"]
       assert_equal "Uncategorized", category_name
       assert_equal "Uncategorized", subcategory_name
     end
