@@ -4,14 +4,14 @@ import React, { useState, useEffect, useRef } from 'react';
 
 interface CategoryDropdownProps {
   categories: Category[];
-  currentCategory: string
-  onUpdateSubcategory: (subcategory_name: string) => Promise<boolean>
+  currentCategory: string;
+  onChange: (subcategoryName: string) => void;
 };
 
 export default function CategoryDropdown({
   categories,
   currentCategory,
-  onUpdateSubcategory
+  onChange
 }: CategoryDropdownProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -59,8 +59,8 @@ export default function CategoryDropdown({
     }
   };
 
-  const handleSelectionChange = async (subcategory_name: string) => {
-    onUpdateSubcategory(subcategory_name);
+  const handleSelection = async (subcategory_name: string) => {
+    onChange(subcategory_name);
     toggleDropdown();
   }
 
@@ -73,10 +73,10 @@ export default function CategoryDropdown({
         min-w-full
         min-h-52
         overflow-y-auto
-        ${isOpen ? 'bg-theme-drk-green border-2 shadow-lg z-50' : 'z-10'}
+        ${isOpen ? 'bg-theme-drk-green border-2 shadow-lg z-50' : ''}
       `}
       style={{
-        top: '25%'
+        top: "43%"
       }}
     >
       {!isOpen && (
@@ -111,7 +111,7 @@ export default function CategoryDropdown({
                     {category.subcategories.map((subcategory) => (
                       <li key={subcategory.id} className="p-2">
                         <button
-                          onClick={() => handleSelectionChange(subcategory.name)}
+                          onClick={() => handleSelection(subcategory.name)}
                         >
                           {subcategory.name}
                         </button>

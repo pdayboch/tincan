@@ -1,28 +1,26 @@
 export default function TransactionsTableHeader() {
   return (
-    <thead className="rounded-lg text-left text-sm font-normal">
+    <thead className="rounded-lg text-left text-md font-normal">
       <tr>
-        <th scope="col" className="px-2 py-5 font-medium">
+        <th scope="col" className="px-2 py-4 font-medium">
           Date
         </th>
-        <th scope="col" className="px-3 py-5 font-medium sm:pl-6">
+        <th scope="col" className="px-3 py-4 font-medium">
           Description
         </th>
-        <th scope="col" className="px-3 py-5 font-medium">
+        <th scope="col" className="px-3 py-4 font-medium">
           Account
         </th>
-        <th scope="col" className="px-3 py-5 font-medium">
+        <th scope="col" className="px-3 py-4 font-medium">
           User
         </th>
-        <th scope="col" className="px-3 py-5 font-medium">
+        <th scope="col" className="px-3 py-4 font-medium">
           Category
         </th>
-        <th scope="col" className="px-3 py-5 font-medium">
-        </th>
-        <th scope="col" className="px-3 py-5 font-medium">
+        <th scope="col" className="px-3 py-4 font-medium">
           Amount
         </th>
-        <th scope="col" className="relative py-3 pl-6 pr-3 w-8">
+        <th scope="col" className="px-3 py-4">
           <span className="sr-only">Edit</span>
         </th>
       </tr>
