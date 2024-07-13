@@ -6,13 +6,24 @@ class TransactionsController < ApplicationController
   def index
     page_size = params[:page_size] ? params[:page_size].to_i : 10
     if page_size < 5 || page_size > 50
-      render json: { page_size: ["must be a number between 5 and 50"]}
+      render json: { page_size: ["must be a number between 5 and 50"] }
     end
 
-    query = params[:query] || ''
     startingAfter = params[:startingAfter]
+    search_string = params[:searchString]
+    accounts = params[:accounts]
+    users = params[:users]
+    sort_by = params[:sortBy] || "transaction_date"
+    sort_direction = params[:sortDirection] || "desc"
+
     data = TransactionDataEntity
-      .new(query, page_size, startingAfter)
+      .new(page_size: page_size,
+           starting_after: startingAfter,
+           search_string: search_string,
+           accounts: accounts,
+           users: users,
+           sort_by: sort_by,
+           sort_direction: sort_direction)
       .get_data
 
     render json: data
@@ -27,11 +38,11 @@ class TransactionsController < ApplicationController
     )
 
     @transaction.subcategory = @subcategory ||
-      Subcategory.find_by(name: "Uncategorized")
+                               Subcategory.find_by(name: "Uncategorized")
     @transaction.category = @transaction.subcategory.category
 
     if transaction_params.key?("subcategory_name") &&
-      @subcategory.nil?
+       @subcategory.nil?
       @transaction.errors.add(:subcategory, "is invalid")
     end
 
@@ -49,16 +60,16 @@ class TransactionsController < ApplicationController
     @transaction.category = @subcategory.category if @subcategory
 
     if transaction_params.key?("subcategory_name") &&
-      @subcategory.nil?
+       @subcategory.nil?
       @transaction.errors.add(:subcategory, "is invalid")
     end
 
     if @transaction.errors.empty? &&
-      @transaction.update(
-        transaction_params.except(
-          :subcategory_name
-        )
-      )
+       @transaction.update(
+         transaction_params.except(
+           :subcategory_name
+         )
+       )
       render json: @transaction
     else
       render json: @transaction.errors, status: :unprocessable_entity
@@ -79,7 +90,7 @@ class TransactionsController < ApplicationController
 
   def set_subcategory
     @subcategory = Subcategory.find_by(
-      name: transaction_params[:subcategory_name]
+      name: transaction_params[:subcategory_name],
     )
   end
 
@@ -90,7 +101,7 @@ class TransactionsController < ApplicationController
       :amount,
       :description,
       :account_id,
-      :subcategory_name
+      :subcategory_name,
     ]
 
   def transaction_params

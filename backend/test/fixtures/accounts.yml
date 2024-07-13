@@ -26,8 +26,16 @@ two:
   name: Quicksilver
   account_type: Credit Card
   active: true
-  deletable: false
+  deletable: true
   user: two
+
+three:
+  bank_name: Chase
+  name: Amazon
+  account_type: Credit Card
+  active: true
+  deletable: true
+  user: one
 
 non_deletable_account:
   name: Cash

@@ -1,95 +1,89 @@
 class TransactionDataEntity
-  # query - include transactions that contain the query in the description, amount, bank, name
-  # starting_after - token cursor to get records after the transaction_date + transaction ID
-  # account_excludes - array of Account IDs to exclude
-  # user_excludes - array of User IDs to exclude
+  # page_size: number of items to return from the first item after starting_after.
+  # starting_after: Token cursor to get records after the transaction_date + transaction ID.
+  #                 If not provided, will start at most recent transaction.
+  # query: Filter for transactions that contain the query in the description, amount, bank, name
+  # accounts: array of Account IDs to filter for.
+  # users: array of User IDs to filter for.
+  # sort_by: the transaction attribute to sort the data by. Valid options are:
+  #           transaction_date
+  #           amount
+  # sort_direction: The direction to sort the sort_by attribute. Valid options are:
+  #           asc
+  #           desc
   def initialize(
-    query=nil,
-    page_size=10,
-    starting_after=nil,
-    account_excludes=nil,
-    user_excludes=nil
+    page_size: 50,
+    starting_after: nil,
+    search_string: nil,
+    accounts: nil,
+    users: nil,
+    sort_by: "transaction_date",
+    sort_direction: "desc"
   )
-    @query = query
     @page_size = page_size
     @starting_after = starting_after
-    @account_excludes = account_excludes
-    @user_excludes = user_excludes
+    @search_string = search_string
+    @accounts = accounts
+    @users = users
+    @sort_by = sort_by
+    @sort_direction = sort_direction.downcase == "asc" ? "ASC" : "DESC"
   end
 
   def get_data
     {
       total_items: Transaction.count,
       filtered_items: filtered_count,
-      transactions: filtered_transactions
+      transactions: filtered_transactions,
     }
   end
 
-  def filtered_transaction_query
-    transactions = Transaction
-      .includes(:account, {account: :user}, :category, :subcategory)
+  private
+
+  def base_transaction_query
+    Transaction
+      .includes(:account, { account: :user }, :category, :subcategory)
       .references(:account, :category, :subcategory)
+  end
 
-    transactions = transactions
-      .where.not(account_id: @account_excludes) if @account_excludes.present?
+  # Apply filters to the base query
+  def filtered_transaction_query
+    query = base_transaction_query
+    query = query
+      .where(account_id: @accounts) if @accounts.present?
+    query = query
+      .where(accounts: { user_id: @users }) if @users.present?
+    query = apply_search_filter(query) if @search_string.present?
 
-    transactions = transactions
-      .where.not(accounts: { user_id: @user_excludes }) if @user_excludes.present?
-    if @query.present?
-      transactions = transactions.where("
-        transactions.description ILIKE :query OR
-        transactions.amount::text ILIKE :query OR
-        accounts.bank_name ILIKE :query OR
-        accounts.name ILIKE :query OR
-        users.name ILIKE :query",
-        query: "%#{@query}%"
-      )
-    end
+    query
+  end
 
-    transactions
+  def apply_search_filter(query)
+    query.where("transactions.description ILIKE :search_string OR \
+        transactions.amount::text ILIKE :search_string OR \
+        accounts.bank_name ILIKE :search_string OR \
+        accounts.name ILIKE :search_string OR \
+        users.name ILIKE :search_string",
+                search_string: "%#{@search_string}%")
   end
 
   def filtered_transactions
     paginate_data(filtered_transaction_query).map do |t|
-      {
-        id: t.id,
-        transaction_date: t.transaction_date,
-        amount: t.amount,
-        description: t.description,
-        account: {
-          id: t.account.id,
-          bank: t.account.bank_name,
-          name:  t.account.name
-        },
-        user: {
-          id: t.account.user.id,
-          name: t.account.user.name
-        },
-        category: {
-          id: t.category.id,
-          name: t.category.name
-        },
-        subcategory: {
-          id: t.subcategory.id,
-          name: t.subcategory.name
-        }
-      }
+      TransactionSerializer.new(t).as_json
     end
   end
 
-  def paginate_data(transactions)
-    if @starting_after.present?
-      date, id = @starting_after.split('+')
-      transactions = transactions.where(
-        "transaction_date > :date OR
-        (transaction_date = :date AND id > :id)",
-        date: date, id: id
-      )
-    end
-
-    transactions
-      .order(transaction_date: :desc, id: :desc)
+  def paginate_data(query)
+    query = apply_pagination_cursor(query) if @starting_after.present?
+    query
+      .order("#{@sort_by} #{@sort_direction}", id: @sort_direction)
       .limit(@page_size)
+  end
+
+  def apply_pagination_cursor(query)
+    date, id = @starting_after.split("+")
+    query.where("transaction_date > :date OR \
+                (transaction_date = :date AND transactions.id > :id)",
+                date: date, id: id)
   end
 
   def filtered_count

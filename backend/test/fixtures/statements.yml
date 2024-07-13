@@ -11,7 +11,7 @@
 #
 
 one:
-  statement_date: 2024-07-03
+  statement_date: 2024-06-03
   account: one
   statement_balance: 103.55
 
@@ -19,3 +19,8 @@ two:
   statement_date: 2024-07-03
   account: two
   statement_balance: 14.21
+
+three:
+  statement_date: 2024-07-03
+  account: three
+  statement_balance: 4.21

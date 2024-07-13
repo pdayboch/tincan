@@ -31,3 +31,39 @@ two:
   statement: two
   category: two
   subcategory: two
+
+three:
+  transaction_date: 2024-07-04
+  amount: 2.33
+  description: "parking"
+  account: three
+  statement: three
+  category: two
+  subcategory: two
+
+four:
+  transaction_date: 2024-07-04
+  amount: 2.33
+  description: "bus"
+  account: three
+  statement: three
+  category: one
+  subcategory: one
+
+five:
+  transaction_date: 2024-07-05
+  amount: 4.00
+  description: "coffee"
+  account: one
+  statement: three
+  category: one
+  subcategory: one
+
+six:
+  transaction_date: 2024-07-06
+  amount: 4.00
+  description: "coffee"
+  account: one
+  statement: three
+  category: one
+  subcategory: one
