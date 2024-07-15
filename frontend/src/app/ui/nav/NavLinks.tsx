@@ -42,14 +42,14 @@ export default function NavLinks() {
           key={link.name}
           href={link.href}
           className={clsx(
-            'flex h-[48px] items-center justify-center gap-2 rounded-md mr-7 text-gray-900 dark:text-white hover:underline',
+            'flex h-[48px] items-center justify-center gap-2 rounded-md mr-7 text-gray-900 dark:text-white hover:underline text-md',
             {
               'text-theme-drk-orange': pathname === link.href,
             }
           )}
         >
           <div className="flex flex-row">
-            <LinkIcon className="w-7 h-5 pr-1" aria-hidden="true" />
+            <LinkIcon className="w-7 h-7 pr-1" aria-hidden="true" />
             <p className="hidden md:block">{link.name}</p>
           </div>
         </Link>
