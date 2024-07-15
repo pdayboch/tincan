@@ -67,3 +67,12 @@ six:
   statement: three
   category: one
   subcategory: one
+
+seven:
+  transaction_date: 2024-07-07
+  amount: 2.39
+  description: "hotdog"
+  account: one
+  statement: three
+  category: one
+  subcategory: one

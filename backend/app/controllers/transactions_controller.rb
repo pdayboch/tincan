@@ -4,12 +4,13 @@ class TransactionsController < ApplicationController
 
   # GET /transactions
   def index
-    page_size = params[:page_size] ? params[:page_size].to_i : 10
-    if page_size < 5 || page_size > 50
-      render json: { page_size: ["must be a number between 5 and 50"] }
+    page_size = params[:pageSize] ? params[:pageSize].to_i : 10
+    if page_size < 3 || page_size > 50
+      return render json: { pageSize: ["must be a number between 3 and 50"] }
     end
 
-    startingAfter = params[:startingAfter]
+    starting_after = params[:startingAfter]
+    ending_before = params[:endingBefore]
     search_string = params[:searchString]
     accounts = params[:accounts]
     users = params[:users]
@@ -18,7 +19,8 @@ class TransactionsController < ApplicationController
 
     data = TransactionDataEntity
       .new(page_size: page_size,
-           starting_after: startingAfter,
+           starting_after: starting_after,
+           ending_before: ending_before,
            search_string: search_string,
            accounts: accounts,
            users: users,
