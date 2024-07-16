@@ -1,8 +1,11 @@
+import { useSearchParams } from "next/navigation";
 import {
   CategoryResponse,
   TransactionsResponse,
   TransactionUpdate,
-  Transaction
+  Transaction,
+  Account,
+  User
 } from "./definitions";
 
 export async function fetchCategories(): Promise<CategoryResponse> {
@@ -21,15 +24,43 @@ export async function fetchCategories(): Promise<CategoryResponse> {
   return data;
 }
 
+export async function fetchUsers(): Promise<User[]> {
+  const url = 'http://127.0.0.1:3005/users';
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error fetching users: ${response.status}`);
+  }
+  const data: User[] = await response.json();
+  return data;
+}
+
+export async function fetchAccounts(): Promise<Account[]> {
+  const url = 'http://127.0.0.1:3005/accounts';
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error fetching accounts: ${response.status}`);
+  }
+  const data: Account[] = await response.json();
+  return data;
+}
+
 export async function fetchTransactions(
-  query: string,
-  startingAfter: string
+  searchParams: URLSearchParams
 ):Promise<TransactionsResponse> {
-  const params = new URLSearchParams({
-    query: query,
-    startingAfter: startingAfter
-  })
-  const url = `http://127.0.0.1:3005/transactions?${params}`;
+  const params = new URLSearchParams(searchParams);
+  const url = `http://127.0.0.1:3005/transactions?${searchParams}`;
   const response = await fetch(url,{
     method: 'GET',
     headers: {

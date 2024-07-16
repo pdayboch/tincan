@@ -5,7 +5,7 @@ export function CreateTransaction() {
   return (
     <Link
       href="/dashboard/invoices/create"
-      className="flex h-10 items-center rounded-lg px-4 text-medium font-medium text-black transition-colors bg-theme-lgt-green hover:bg-theme-drk-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+      className="flex h-full items-center rounded-lg px-4 text-medium font-medium text-black transition-colors bg-theme-lgt-green hover:bg-theme-drk-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
     >
       <span className="hidden md:block">Add Transaction</span>
       <PlusIcon className="h-5 md:ml-4" />

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Category, Transaction } from "../../lib/definitions";
 import TransactionsTableHeader from "./TransactionsTableHeader";
-import TransactionsTableMobileRow from "./TransactionsTableMobileRow";
 import TransactionsTableRow from "./TransactionsTableRow";
 import TransactionsTableRowExpanded from "./TransactionsTableRowExpanded";
 import { updateTransaction } from '@/app/lib/data';
@@ -105,15 +104,7 @@ export default function TransactionsTable({
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-          <div className="md:hidden">
-            {transactions.map((transaction) => (
-              <TransactionsTableMobileRow
-                key={transaction.id}
-                transaction={transaction}
-              />
-            ))}
-          </div>
-          <table className="hidden min-w-full text-gray-900 md:table">
+          <table className="min-w-full text-gray-900">
             <TransactionsTableHeader />
             <tbody className="bg-white">
               {transactions.map((transaction) => {

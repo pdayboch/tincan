@@ -9,8 +9,8 @@ type FilterBarProps = {
 
 export default function FilterBar({accounts, users}: FilterBarProps) {
   return (
-    <div className="flex">
-      <AccountSelector accounts={accounts} />
+    <div className="flex gap-2 h-full">
+      <AccountSelector accounts={accounts} users={users} />
       <UserSelector users={users} />
     </div>
   )

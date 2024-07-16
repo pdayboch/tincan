@@ -5,24 +5,10 @@ import { CreateTransaction } from './table/buttons';
 import TransactionsTable from './table/TransactionsTable';
 import FilterBar from './filter-bar/FilterBar';
 import { Account, Category, Transaction, User } from '../lib/definitions';
-import { fetchCategories, fetchTransactions } from '../lib/data';
+import { fetchAccounts, fetchCategories, fetchTransactions, fetchUsers } from '../lib/data';
+import { useSearchParams } from 'next/navigation';
 
-const accounts: Account[] = [
-  { id: 1, bankName: "Chase", name: 'Freedom', accountType: "credit card", user: "Phil" }
-]
-
-const users: User[] = [
-  { id: 1, name: 'Phil' }
-]
-
-export default function Page({
-  searchParams,
-}:{
-  searchParams?: {
-    query?: string;
-    startingAfter?: string;
-  };
-}) {
+export default function Page() {
   const [
     isLoadingTransactions,
     setLoadingTransactions
@@ -43,10 +29,57 @@ export default function Page({
     setCategories
   ] = useState<Category[]>([]);
 
-  const query = searchParams?.query || '';
-  const startingAfter = (searchParams?.startingAfter) || '';
+  const[
+    isLoadingAccounts,
+    setLoadingAccounts
+  ] = useState<boolean>(true);
 
-//  const totalPages = await fetchTransactionsPages(query);
+  const [
+    accounts,
+    setAccounts
+  ] = useState<Account[]>([]);
+
+  const[
+    isLoadingUsers,
+    setLoadingUsers
+  ] = useState<boolean>(true);
+
+  const [
+    users,
+    setUsers
+  ] = useState<User[]>([]);
+
+  const searchParams = useSearchParams();
+
+  // fetch and store all users
+  useEffect(() => {
+    setLoadingUsers(true);
+    fetchUsers()
+      .then(data => {
+        setUsers(data);
+        setLoadingUsers(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setUsers([]);
+        setLoadingUsers(false);
+      });
+  }, []);
+
+  // fetch and store all accounts
+  useEffect(() => {
+    setLoadingAccounts(true);
+    fetchAccounts()
+      .then(data => {
+        setAccounts(data);
+        setLoadingAccounts(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setAccounts([]);
+        setLoadingAccounts(false);
+      });
+  }, []);
 
   // fetch and store all categories
   useEffect(() => {
@@ -66,36 +99,50 @@ export default function Page({
   // fetch and store filtered transactions
   useEffect(() => {
     setLoadingTransactions(true);
-    fetchTransactions(query, startingAfter)
-      .then(data => {
-        setTransactions(data.transactions);
-        setLoadingTransactions(false);
-      })
-      .catch(error => {
-        console.error(error);
-        setTransactions([]);
-        setLoadingTransactions(false);
-      });
-  }, [query, startingAfter]);
+    fetchTransactions(searchParams)
+    .then(data => {
+      setTransactions(data.transactions);
+      setLoadingTransactions(false);
+    })
+    .catch(error => {
+      console.error(error);
+      setTransactions([]);
+      setLoadingTransactions(false);
+    });
+  }, [searchParams]);
 
   return (
-    <div className="w-full">
-      <div className="flex w-full items-center justify-between">
-        <h1 className={`text-2xl`}>Transactions</h1>
+    <div className="flex m-4">
+      {/* Left panel */}
+      <div className="hidden lg:block flex-none w-40">
+        <p>Accounts</p>
+        <div className="flex items-center justify-between gap-2">
+          <FilterBar accounts={accounts} users={users} />
+        </div>
+        <p>Users</p>
       </div>
-      <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <FilterBar accounts={accounts} users={users} />
-        <Search placeholder="Search transactions..." />
-        <CreateTransaction />
+
+      {/* Center content */}
+      <div className="flex-none flex-col w-[600px] mx-auto">
+       {/* FilterBar, Search, and CreateTransaction in one row */}
+        <div className="flex items-center justify-between gap-2 my-3 h-10">
+          {/* Show FilterBar only on "sm" screens */}
+          <div className="lg:hidden h-full">
+            <FilterBar accounts={accounts} users={users} />
+          </div>
+          {/* Search and CreateTransaction always visible */}
+          <Search placeholder="Search transactions..." />
+          <CreateTransaction />
+        </div>
+        <TransactionsTable
+          transactions={transactions}
+          categories={categories}
+          setTransactions={setTransactions}
+        />
       </div>
-      <TransactionsTable
-        transactions={transactions}
-        categories={categories}
-        setTransactions={setTransactions}
-      />
-      <div className="mt-5 flex w-full justify-center">
-        {/* <Pagination totalPages={totalPages} /> */}
-      </div>
+
+      {/* Right panel */}
+      <div className="flex-auto"></div>
     </div>
   );
 }

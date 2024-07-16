@@ -1,67 +1,49 @@
 import React, { useState } from 'react';
+import DropdownItem from './Dropdown/DropdownItem';
+import { Account, User } from '@/app/lib/definitions';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { Account } from '@/app/lib/definitions';
 
 type AccountSelectorProps = {
   accounts: Account[];
+  users: User[]
 };
 
-function formatAccount(account: Account) {
-  return (
-    <div className="flex text-md">
-      {account.bankName + " " + account.name}
-      <span className="text-sm text-gray-500 ml-2 mt-1">
-        {account.user}
-      </span>
-    </div>
-  );
-}
-
-export default function AccountSelector({ accounts }: AccountSelectorProps) {
+export default function AccountSelector({ accounts, users }: AccountSelectorProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const handleSelectionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Get the value of the checkbox that triggered the event
-    const checkboxValue = event.target.value;
-    // Determine if the checkbox was checked or unchecked
-    const isChecked = event.target.checked;
-
+  const handleAccountClick = (value: number) => {
     // Clone the current search params
     const params = new URLSearchParams(searchParams);
     // Reset pagination to page 1 since accounts are changing.
-    params.set('page', '1');
+    params.delete('startingAfter');
+    params.delete('endingBefore');
 
-    // Get the current array of filtered accounts
-    let filteredAccounts = params.getAll('filteredAccounts');
-
-    if (!isChecked) {
-      // If the account was unchecked, add it to the filteredAccounts array
-      if (!filteredAccounts.includes(checkboxValue)) {
-        filteredAccounts.push(checkboxValue);
-      }
+    let selectedAccounts = params.getAll('accounts');
+    if (value === 0) {
+      // if the value is 0, All was selected, so remove filter.
+      params.delete('accounts');
     } else {
-      // If the account was checked, remove it from the filteredAccounts array
-      filteredAccounts = filteredAccounts
-        .filter((account) => account !== checkboxValue)
+      // Add value to selected accounts.
+      if (!selectedAccounts.includes(value.toString())){
+        params.append('accounts', value.toString());
+      } else {
+        // Remove value from selected accounts.
+        selectedAccounts = selectedAccounts
+          .filter(account => account !== value.toString());
+        params.delete('accounts');
+        selectedAccounts.forEach(account => {
+          params.append('accounts', account);
+        });
+      }
     }
-
-    // Clear the existing 'filteredAccounts' query parameters
-    params.delete('filteredAccounts');
-    // Re-add the updated list of account IDs to the query parameters
-    filteredAccounts.forEach((account) => {
-      params.append('filteredAccounts', account);
-    });
 
     replace(`${pathname}?${params.toString()}`)
   };
 
-  // Get the current filtered accounts from the URL
-  const filteredAccounts = searchParams.getAll('filteredAccounts');
-  const checkedAccounts = accounts
-    .map((account) => account.id.toString())
-    .filter((account) => !filteredAccounts.includes(account))
+  // Get the selected accounts from the URL
+  const selectedAccounts = searchParams.getAll('accounts');
 
   // State to control the visibility of the dropdown
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -70,30 +52,37 @@ export default function AccountSelector({ accounts }: AccountSelectorProps) {
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       <button
         type="button"
-        className="border border-gray-300 bg-white p-2 rounded"
+        className="border border-gray-300 bg-white hover:bg-blue-100 rounded w-full h-full py-0 px-2"
         onClick={toggleDropdown}
       >
-        Select Accounts
+        Accounts
       </button>
 
       {isDropdownOpen && (
-        <div className="absolute z-9 mt-1 w-64 rounded-md bg-white shadow-lg">
+        <div className="absolute z-9 mt-1 w-64 h-auto max-h-96 overflow-y-auto rounded-md bg-white shadow-lg">
+          <hr className="my-1"/>
+          <DropdownItem
+            key={0}
+            title="All"
+            subtitle="5 accounts"
+            isSelected={selectedAccounts.length === 0}
+            onClick={() => handleAccountClick(0)}
+          />
+          <hr className="my-1"/>
           {accounts.map((account) => {
-            const isChecked = !filteredAccounts
-              .includes(account.id.toString());
+            const title = account.bank_name ? `${account.bank_name} ${account.name}` : account.name
+            const user = users.find(user => account.user_id === user.id)
             return(
-              <label key={account.id} className="flex items-center p-2">
-                <input
-                  type="checkbox"
-                  value={account.id}
-                  checked={isChecked}
-                  onChange={handleSelectionChange}
-                />
-                <span className="ml-2">{formatAccount(account)}</span>
-              </label>
+              <DropdownItem
+                key={account.id}
+                title={title}
+                subtitle={user?.name || ''}
+                isSelected={selectedAccounts.includes(account.id.toString())}
+                onClick={() => handleAccountClick(account.id)}
+              />
             );
           })}
         </div>

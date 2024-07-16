@@ -26,15 +26,20 @@ export type Transaction = {
 
 export type Account = {
   id: number,
-  bankName: string,
+  bank_name: string,
   name: string,
-  accountType: string,
-  user: string,
+  account_type: string,
+  active: boolean,
+  deletable: boolean,
+  user_id: number,
+  created_at: string,
+  updated_at: string
 }
 
 export type User = {
   id: number,
-  name: string
+  name: string,
+  email: string
 }
 
 export type CategoryResponse = {
