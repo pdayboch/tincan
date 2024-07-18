@@ -18,4 +18,6 @@ class Transaction < ApplicationRecord
   belongs_to :statement, optional: true
   belongs_to :category
   belongs_to :subcategory
+
+  validates :transaction_date, presence: true
 end
