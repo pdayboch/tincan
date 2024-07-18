@@ -24,22 +24,20 @@ export default function TransactionTableRow({
       [&:last-child>td:first-child]:rounded-bl-lg \
       [&:last-child>td:last-child]:rounded-br-lg"
     >
-      <td className="whitespace-nowrap w-32 p-2">
+      <td className="w-24 align-top whitespace-nowrap p-2">
         <span>{transaction.transaction_date}</span>
       </td>
-      <td className="whitespace-nowrap p-2">
-          <span>{transaction.description}</span>
+      <td className="w-64 align-top whitespace-nowrap p-2">
+        <span>{transaction.description}</span>
       </td>
-      <td className="whitespace-nowrap p-2">
+      <td className="w-40 align-top whitespace-nowrap p-2">
         <span>{transaction.subcategory.name}</span>
       </td>
-      <td className="whitespace-nowrap p-2">
+      <td className="w-24 align-top whitespace-nowrap p-2">
         <span>{formatCurrency(transaction.amount)}</span>
       </td>
-      <td className="whitespace-nowrap w-3">
-        <div className="flex justify-end gap-3 w-4/5 h-4/5">
-          <BarsArrowDownIcon className='w-full h-full' />
-        </div>
+      <td className="w-4 whitespace-nowrap">
+        <BarsArrowDownIcon className='w-4 h-4' />
       </td>
     </tr>
   );

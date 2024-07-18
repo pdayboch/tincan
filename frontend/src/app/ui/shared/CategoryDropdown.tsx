@@ -75,9 +75,6 @@ export default function CategoryDropdown({
         overflow-y-auto
         ${isOpen ? 'bg-theme-drk-green border-2 shadow-lg z-50' : ''}
       `}
-      style={{
-        top: "43%"
-      }}
     >
       {!isOpen && (
         <button

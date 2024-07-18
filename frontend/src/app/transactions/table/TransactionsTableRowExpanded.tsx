@@ -21,7 +21,10 @@ export default function TransactionTableRowExpanded({
   onUpdateTransactionDate,
   onUpdateTransactionSubcategory
 }: TransactionTableRowExpandedProps) {
-  const [isDatePickerVisible, setDatePickerVisible] = useState<boolean>(false);
+  const [
+    isDatePickerVisible,
+    setDatePickerVisible
+  ] = useState<boolean>(false);
 
   const toggleDatePickerVisible = () =>
     setDatePickerVisible(!isDatePickerVisible)
@@ -29,7 +32,7 @@ export default function TransactionTableRowExpanded({
   // Event handler for when date is selected:
   const handleDateSelect = (date: Date | null) => {
     if (date) {
-      const newDate = date.toISOString().split('T')[0];
+      const newDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
       onUpdateTransactionDate(transaction.id, newDate);
       setDatePickerVisible(false);
     } else {
@@ -37,46 +40,35 @@ export default function TransactionTableRowExpanded({
     }
   }
 
-  return (
+  return (<>
+    {/* original row */}
     <tr
       key={transaction.id}
-      className="bg-theme-drk-green w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg h-64"
+      className="bg-neutral-50 mb-2 \
+      text-sm
+      last-of-type:border-none"
     >
-      <td className="whitespace-nowrap px-2 py-2">
-        <div className="flex flex-col">
-        <div className="flex-none h-4">
-        <span onClick={() => setDatePickerVisible(true)}>
+      <td className="w-24 absolute align-top whitespace-nowrap p-2">
+        <div className="z-1" onClick={() => setDatePickerVisible(true)}>
           {transaction.transaction_date}
-        </span>
         </div>
-        <div className="flex-none h-10">
-        {isDatePickerVisible && (
-          <DatePicker
-            selected={new Date(transaction.transaction_date)}
-            isClearable={false}
-            onChange={handleDateSelect}
-            onClickOutside={toggleDatePickerVisible}
-            fixedHeight
-            inline
-          />
-        )}
-        </div>
+        <div>
+          {isDatePickerVisible && (
+            <DatePicker
+              selected={new Date(transaction.transaction_date)}
+              isClearable={false}
+              onChange={handleDateSelect}
+              onClickOutside={toggleDatePickerVisible}
+              fixedHeight
+              inline
+            />
+          )}
         </div>
       </td>
-      <td className="whitespace-nowrap pl-6 pr-3 py-2">
-        <input
-          type="text"
-          value={transaction.description}
-          className="w-full box-border p-2"
-        />
+      <td className="w-64 whitespace-nowrap p-2 align-top">
+          <span>{transaction.description}</span>
       </td>
-      <td className="whitespace-nowrap px-3 py-2">
-        <span>{transaction.account.bank} {transaction.account.name}</span>
-      </td>
-      <td className="whitespace-nowrap px-3 py-2">
-        <span>{transaction.user.name}</span>
-      </td>
-      <td className="relative whitespace-nowrap px-3 py-2">
+      <td className="w-40 absolute align-top whitespace-nowrap p-2">
         <CategoryDropdown
           categories={categories}
           currentCategory={transaction.subcategory.name}
@@ -88,17 +80,34 @@ export default function TransactionTableRowExpanded({
           }
         />
       </td>
-      <td className="whitespace-nowrap px-3 py-2">
+      <td className="w-24 whitespace-nowrap p-2">
         <span>{formatCurrency(transaction.amount)}</span>
       </td>
-      <td className="whitespace-nowrap p-0 w-1 h-full hover:bg-theme-lgt-green border border-black">
-        <button
-          className="w-full h-full flex justify-center items-center"
-          onClick={() => setExpandedRowTransactionId(null)}
-        >
-          <ChevronDoubleUpIcon className='w-7 h-5 cursor-pointer' />
-        </button>
+      <td>
+        <div className="w-4"/>
       </td>
     </tr>
-  );
+    {/* expanded row */}
+    <tr className="bg-neutral-50">
+      <td colSpan={5}>
+        <hr/>
+        <div className="flex justify-between w-full h-40">
+          {/* Additional transaction content here */}
+          <p className="flex-none content-start pl-2">Extra transaction data...</p>
+          <div
+            className="w-7 h-full whitespace-nowrap \
+              order-last flex-none justify-self-end\
+              flex justify-center items-center  \
+              cursor-pointer \
+              hover:bg-slate-100 hover:rounded-lg \
+              hover:border hover:border-bg-slate-100"
+            onClick={() => setExpandedRowTransactionId(null)}
+          >
+            <ChevronDoubleUpIcon className='w-4 h-4' />
+          </div>
+        </div>
+        <hr/>
+      </td>
+    </tr>
+  </>);
 }
