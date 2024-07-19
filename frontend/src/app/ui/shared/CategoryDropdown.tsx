@@ -1,6 +1,8 @@
 'use client'
 import { Category } from '@/app/lib/definitions';
 import React, { useState, useEffect, useRef } from 'react';
+import CategoryDropdownItem from './CategoryDropdownItem';
+import clsx from 'clsx';
 
 interface CategoryDropdownProps {
   categories: Category[];
@@ -67,26 +69,14 @@ export default function CategoryDropdown({
   return (
     <div
       ref={dropdownRef}
-      className={`
-        absolute
-        w-auto
-        min-w-full
-        min-h-52
-        overflow-y-auto
-        ${isOpen ? 'bg-theme-drk-green border-2 shadow-lg z-50' : ''}
-      `}
+      className={clsx('relative', 'w-full')}
     >
-      {!isOpen && (
-        <button
-          onClick={toggleDropdown}
-          className="bg-transparent"
-        >
-          {currentCategory}
-        </button>
-      )}
-
+      <button onClick={toggleDropdown}>
+        {currentCategory}
+      </button>
+      {/* The expanded dropdown */}
       {isOpen && (
-        <>
+        <div className="absolute w-full bg-slate-300 z-3 border-3">
           <input
             type="text"
             placeholder="Search categories..."
@@ -95,31 +85,17 @@ export default function CategoryDropdown({
             autoFocus
             className="w-full box-border p-2"
           />
-          <div
-            className="max-h-52 overflow-y-auto w-auto"
-          >
-            <ul
-              className="list-none p-1 m-0"
-            >
+          <div className="max-h-52 overflow-y-auto w-auto">
+            <ul className="list-none p-1">
               {filteredCategories.map((category) => (
-                <li key={category.id} className="pt-4">
-                  <strong>{category.name}</strong>
-                  <ul>
-                    {category.subcategories.map((subcategory) => (
-                      <li key={subcategory.id} className="p-2">
-                        <button
-                          onClick={() => handleSelection(subcategory.name)}
-                        >
-                          {subcategory.name}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
+                <CategoryDropdownItem
+                  category={category}
+                  onClick={handleSelection}
+                />
               ))}
             </ul>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
