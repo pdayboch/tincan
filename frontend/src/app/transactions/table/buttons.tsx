@@ -3,13 +3,16 @@ import Link from 'next/link';
 
 export function CreateTransaction() {
   return (
-    <Link
-      href="/dashboard/invoices/create"
-      className="flex h-full items-center rounded-lg px-4 text-medium font-medium text-black transition-colors bg-theme-lgt-green hover:bg-theme-drk-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+    <div
+      className="flex items-center justify-center \
+        h-full w-12 \
+        rounded-lg cursor-pointer \
+        bg-theme-lgt-green hover:bg-theme-drk-green \
+        active:bg-theme-pressed-green active:scale-95 active:shadow-inner"
+      onClick={()=>console.log("should add a transaction.")}
     >
-      <span className="hidden md:block">Add Transaction</span>
-      <PlusIcon className="h-5 md:ml-4" />
-    </Link>
+      <PlusIcon className="h-5 w-5" />
+    </div>
   );
 }
 
