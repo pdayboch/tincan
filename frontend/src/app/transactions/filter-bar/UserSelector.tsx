@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+'use client'
+import React, { useEffect, useRef, useState } from 'react';
 import DropdownItem from './Dropdown/DropdownItem';
 import { User } from '@/app/lib/definitions';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
@@ -19,21 +20,21 @@ export default function UserSelector({ users }: UserSelectorProps) {
     params.delete('startingAfter');
     params.delete('endingBefore');
 
-    let selectedUsers = params.getAll('users');
+    let selectedUsers = params.getAll('users[]');
     if (value === 0) {
       // if the value is 0, All was selected, so remove filter.
-      params.delete('users');
+      params.delete('users[]');
     } else {
       // Add value to selected users.
       if (!selectedUsers.includes(value.toString())){
-        params.append('users', value.toString());
+        params.append('users[]', value.toString());
       } else {
         // Remove value from selected users.
         selectedUsers = selectedUsers
           .filter(user => user !== value.toString());
-        params.delete('users');
+        params.delete('users[]');
         selectedUsers.forEach(user => {
-          params.append('users', user);
+          params.append('users[]', user);
         });
       }
     }
@@ -42,7 +43,7 @@ export default function UserSelector({ users }: UserSelectorProps) {
   };
 
   // Get the selected users from the URL
-  const selectedUsers = searchParams.getAll('users');
+  const selectedUsers = searchParams.getAll('users[]');
 
   // State to control the visibility of the dropdown
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -50,11 +51,34 @@ export default function UserSelector({ users }: UserSelectorProps) {
   // Toggle the dropdown open/close
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
+  // Ref for the Selector component
+  const selectorRef = useRef<HTMLDivElement>(null);
+
+  // Event handler for closing the dropdown if clicked outside
+  const handleClickOutside = (event: MouseEvent) => {
+    if (selectorRef.current &&
+        !selectorRef.current.contains(event.target as Node)) {
+      setIsDropdownOpen(false);
+    }
+  }
+
+  // Add event listener when the component mounts
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      // Remove event listener when the component unmounts
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [])
+
   return (
-    <div className="relative h-full">
+    <div className="relative h-full" ref={selectorRef}>
       <button
         type="button"
-        className="border border-gray-300 bg-white hover:bg-blue-100 rounded w-full h-full py-0 px-2"
+        className="w-full h-full py-0 px-2 rounded \
+        bg-theme-lgt-green hover:bg-theme-drk-green \
+        active:bg-theme-pressed-green active:scale-95 active:shadow-inner \
+        border border-gray-300"
         onClick={toggleDropdown}
       >
         Users
