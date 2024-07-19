@@ -48,7 +48,7 @@ export default function TransactionTableRowExpanded({
       text-sm
       last-of-type:border-none"
     >
-      <td className="w-24 absolute align-top whitespace-nowrap p-2">
+      <td className="w-24 p-2 absolute align-top whitespace-nowrap">
         <div className="z-1" onClick={() => setDatePickerVisible(true)}>
           {transaction.transaction_date}
         </div>
@@ -65,10 +65,10 @@ export default function TransactionTableRowExpanded({
           )}
         </div>
       </td>
-      <td className="w-64 whitespace-nowrap p-2 align-top">
+      <td className="w-64 p-2 align-top whitespace-nowrap">
           <span>{transaction.description}</span>
       </td>
-      <td className="w-40 absolute align-top whitespace-nowrap p-2">
+      <td className="w-48 p-2 absolute align-top whitespace-nowrap">
         <CategoryDropdown
           categories={categories}
           currentCategory={transaction.subcategory.name}
@@ -80,7 +80,7 @@ export default function TransactionTableRowExpanded({
           }
         />
       </td>
-      <td className="w-24 whitespace-nowrap p-2">
+      <td className="w-24 p-2 align-top whitespace-nowrap">
         <span>{formatCurrency(transaction.amount)}</span>
       </td>
       <td>
@@ -103,7 +103,7 @@ export default function TransactionTableRowExpanded({
               hover:border hover:border-bg-slate-100"
             onClick={() => setExpandedRowTransactionId(null)}
           >
-            <ChevronDoubleUpIcon className='w-4 h-4' />
+            <ChevronDoubleUpIcon className="w-4 h-4" />
           </div>
         </div>
         <hr/>
