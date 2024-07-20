@@ -14,6 +14,8 @@ export default function topNav() {
             width={60}
             height={60}
             alt="Logo"
+            style={{ width: 'auto', height: 'auto' }}
+            priority
           />
           <span className="self-center text-3xl font-semibold whitespace-nowrap dark:text-white">
             Tincan
