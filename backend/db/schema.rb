@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_04_033116) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_20_153329) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,8 +50,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_04_033116) do
   end
 
   create_table "transactions", force: :cascade do |t|
-    t.date "transaction_date"
-    t.decimal "amount", precision: 10, scale: 2
+    t.date "transaction_date", null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
     t.text "description"
     t.bigint "account_id", null: false
     t.bigint "statement_id"
@@ -59,6 +59,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_04_033116) do
     t.bigint "subcategory_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "notes"
+    t.text "statement_description"
+    t.date "statement_transaction_date"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["category_id"], name: "index_transactions_on_category_id"
     t.index ["statement_id"], name: "index_transactions_on_statement_id"
