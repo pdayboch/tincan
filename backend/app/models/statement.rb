@@ -8,6 +8,7 @@
 #  statement_balance :float
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
+#  pdf_file_path     :text
 #
 class Statement < ApplicationRecord
   belongs_to :account

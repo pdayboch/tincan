@@ -2,15 +2,16 @@
 #
 # Table name: accounts
 #
-#  id           :bigint           not null, primary key
-#  bank_name    :string
-#  name         :string           not null
-#  account_type :string
-#  active       :boolean          default(TRUE)
-#  deletable    :boolean          default(TRUE)
-#  user_id      :bigint           not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
+#  id                  :bigint           not null, primary key
+#  bank_name           :string
+#  name                :string           not null
+#  account_type        :string
+#  active              :boolean          default(TRUE)
+#  deletable           :boolean          default(TRUE)
+#  user_id             :bigint           not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  statement_directory :text
 #
 require "test_helper"
 
