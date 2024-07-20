@@ -21,22 +21,11 @@ export default function TransactionTableRowExpanded({
   onUpdateTransactionDate,
   onUpdateTransactionSubcategory
 }: TransactionTableRowExpandedProps) {
-  const [
-    isDatePickerVisible,
-    setDatePickerVisible
-  ] = useState<boolean>(false);
-
-  const toggleDatePickerVisible = () =>
-    setDatePickerVisible(!isDatePickerVisible)
-
   // Event handler for when date is selected:
   const handleDateSelect = (date: Date | null) => {
     if (date) {
       const newDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
-      onUpdateTransactionDate(transaction.id, newDate);
-      setDatePickerVisible(false);
-    } else {
-      setDatePickerVisible(false);
+    onUpdateTransactionDate(transaction.id, newDate);
     }
   }
 
@@ -45,25 +34,18 @@ export default function TransactionTableRowExpanded({
     <tr
       key={transaction.id}
       className="bg-neutral-50 mb-2 \
-      text-sm
+      text-sm \
       last-of-type:border-none"
     >
-      <td className="w-24 p-2 absolute align-top whitespace-nowrap">
-        <div className="z-1" onClick={() => setDatePickerVisible(true)}>
-          {transaction.transaction_date}
-        </div>
-        <div>
-          {isDatePickerVisible && (
-            <DatePicker
-              selected={new Date(transaction.transaction_date)}
-              isClearable={false}
-              onChange={handleDateSelect}
-              onClickOutside={toggleDatePickerVisible}
-              fixedHeight
-              inline
-            />
-          )}
-        </div>
+      <td className="w-24 p-2 align-top whitespace-nowrap">
+        <DatePicker
+          className="w-full"
+          selected={new Date(transaction.transaction_date)}
+          isClearable={false}
+          onChange={(date) => handleDateSelect(date)}
+          fixedHeight
+          popperPlacement="bottom-end"
+        />
       </td>
       <td className="w-64 p-2 align-top whitespace-nowrap">
           <span>{transaction.description}</span>

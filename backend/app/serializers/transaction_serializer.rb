@@ -1,8 +1,11 @@
 class TransactionSerializer < ActiveModel::Serializer
   attributes :id,
-    :transaction_date,
     :amount,
     :description
+
+  attribute :transaction_date do
+    object.transaction_date.strftime('%m/%d/%Y')
+  end
 
   attribute :account do
     {
