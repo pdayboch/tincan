@@ -85,15 +85,14 @@ export default function CategoryDropdown({
             autoFocus
             className="w-full box-border p-2"
           />
-          <div className="max-h-52 overflow-y-auto w-auto">
-            <ul className="list-none p-1">
-              {filteredCategories.map((category) => (
-                <CategoryDropdownItem
-                  category={category}
-                  onClick={handleSelection}
-                />
-              ))}
-            </ul>
+          <div className="max-h-52 overflow-y-auto w-auto px-2">
+            {filteredCategories.map((category) => (
+              <CategoryDropdownItem
+                key={category.id}
+                category={category}
+                onClick={handleSelection}
+              />
+            ))}
           </div>
         </div>
       )}

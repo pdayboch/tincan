@@ -11,18 +11,16 @@ export default function CategoryDropdownItem({
 }: CategoryDropdownItemProps) {
 
   return (
-    <li key={category.id} className="pt-2">
+    <div key={category.id} className="pt-2">
       <strong>{category.name}</strong>
-      <ul>
-        {category.subcategories.map((subcategory) => (
-          <li
-            key={subcategory.id}
-            className="p-2 rounded-md hover:bg-slate-100 cursor-pointer"
-            onClick={() => onClick(subcategory.name)}>
-              {subcategory.name}
-          </li>
-        ))}
-      </ul>
-    </li>
+      {category.subcategories.map((subcategory) => (
+        <div
+          key={subcategory.id}
+          className="p-2 rounded-md hover:bg-slate-100 cursor-pointer"
+          onClick={() => onClick(subcategory.name)}>
+          {subcategory.name}
+        </div>
+      ))}
+    </div>
   );
 }
