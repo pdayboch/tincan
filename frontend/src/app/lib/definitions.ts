@@ -3,7 +3,7 @@ export type TransactionUpdate = Partial<{
   transaction_date: string;
   amount: number;
   description: string;
-  account_id: number;
+  notes: string;
   subcategory_name: string;
 }>;
 
@@ -16,8 +16,11 @@ export type TransactionsResponse = {
 export type Transaction = {
   id: number,
   transaction_date: string,
+  statement_transaction_date: string,
   amount: number,
   description: string,
+  statement_description: string,
+  notes: string,
   account: { id: number, bank: string, name: string }
   user: { id: number, name: string },
   category: { id: number, name: string },

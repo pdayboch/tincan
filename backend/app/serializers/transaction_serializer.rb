@@ -18,12 +18,11 @@
 #
 class TransactionSerializer < ActiveModel::Serializer
   attributes :id,
+    :transaction_date,
+    :statement_transaction_date,
     :amount,
-    :description
-
-  attribute :transaction_date do
-    object.transaction_date.strftime('%m/%d/%Y')
-  end
+    :description,
+    :statement_description
 
   attribute :account do
     {
