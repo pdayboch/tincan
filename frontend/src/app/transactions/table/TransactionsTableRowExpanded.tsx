@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
@@ -33,9 +32,8 @@ export default function TransactionTableRowExpanded({
     {/* original row */}
     <tr
       key={transaction.id}
-      className="bg-neutral-50 mb-2 \
-      text-sm \
-      last-of-type:border-none"
+      className="expanded-row bg-neutral-50 mb-2 \
+        text-sm last-of-type:border-none"
     >
       <td className="w-24 p-2 align-top whitespace-nowrap">
         <DatePicker
@@ -70,12 +68,25 @@ export default function TransactionTableRowExpanded({
       </td>
     </tr>
     {/* expanded row */}
-    <tr className="bg-neutral-50">
+    <tr className="expanded-row bg-neutral-50">
       <td colSpan={5}>
         <hr/>
         <div className="flex justify-between w-full h-40">
           {/* Additional transaction content here */}
-          <p className="flex-none content-start pl-2">Extra transaction data...</p>
+          <div
+            className="flex-none content-start pl-2 \
+              flex flex-col text-sm"
+          >
+            <p>
+              <b>Account: </b>
+              {transaction.account.bank} {transaction.account.name}
+            </p>
+            <p>
+              <b>Appears on statement as </b>
+              {transaction.description}
+            </p>
+            <span>Split transaction</span>
+          </div>
           <div
             className="w-7 h-full whitespace-nowrap \
               order-last flex-none justify-self-end\

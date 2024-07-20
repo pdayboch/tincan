@@ -21,8 +21,6 @@ export default function TransactionsTable({
     setExpandedRowTransactionId
   ] = useState<number | null>(null);
 
-  const rowRef = useRef<HTMLTableElement>(null);
-
   // Handler to expand the row when clicked
   const handleRowClick = (transactionId: number) => {
     setExpandedRowTransactionId(prevId => {
@@ -36,8 +34,18 @@ export default function TransactionsTable({
 
   // Handler to collapse row when clicked outside.
   const handleClickOutside = (event: MouseEvent) => {
-    if (rowRef.current && !rowRef.current.contains(event.target as Node)) {
-      setExpandedRowTransactionId(null);
+    if (event.target instanceof Element) {
+      // Check if the click target is inside the transactions table
+      const isInsideTransactionsTable = event.target.closest('.transactions-table');
+
+      // Check if the click target is not part of the expanded row
+      const isOutsideExpandedRow = !event.target.closest('.expanded-row');
+
+      // Collapse the expanded row only if the click is outside
+      // the expanded row and not inside the transactions table
+      if (isOutsideExpandedRow && !isInsideTransactionsTable) {
+        setExpandedRowTransactionId(null);
+      }
     }
   };
 
@@ -106,7 +114,7 @@ export default function TransactionsTable({
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
           <table className="min-w-full text-gray-900">
             <TransactionsTableHeader />
-            <tbody className="bg-white">
+            <tbody className="transactions-table bg-white">
               {transactions.map((transaction) => {
                 if (transaction.id === expandedRowTransactionId) {
                   return (
