@@ -39,9 +39,7 @@ class TransactionsController < ApplicationController
       )
     )
 
-    @transaction.subcategory = @subcategory ||
-                               Subcategory.find_by(name: "Uncategorized")
-    @transaction.category = @transaction.subcategory.category
+    @transaction.subcategory = @subcategory
 
     if transaction_params.key?("subcategory_name") &&
        @subcategory.nil?
@@ -59,7 +57,6 @@ class TransactionsController < ApplicationController
   # PUT /transactions/1
   def update
     @transaction.subcategory = @subcategory if @subcategory
-    @transaction.category = @subcategory.category if @subcategory
 
     if transaction_params.key?("subcategory_name") &&
        @subcategory.nil?
