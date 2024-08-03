@@ -12,6 +12,7 @@
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  statement_directory :text
+#  parser_class        :string
 #
 require "test_helper"
 

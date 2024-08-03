@@ -12,6 +12,7 @@
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  statement_directory :text
+#  parser_class        :string
 #
 class Account < ApplicationRecord
   belongs_to :user
@@ -19,6 +20,10 @@ class Account < ApplicationRecord
   has_many :transactions, dependent: :destroy
 
   before_destroy :check_deletable
+
+  def statement_parser(file_path)
+    "StatementParser::#{parser_class}".constantize.new(file_path) if parser_class.present?
+  end
 
   private
 
