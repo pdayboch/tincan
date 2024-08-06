@@ -49,11 +49,13 @@ class TransactionDataEntity
     has_prev_page = first_possible_record_id != transactions.first[:id] if transactions.any?
 
     {
-      total_items: Transaction.count,
-      filtered_items: filtered_count,
+      meta: {
+        totalCount: Transaction.count,
+        filteredCount: filtered_count,
+        prevPage: has_prev_page ? page_token(transactions.first) : nil,
+        nextPage: has_next_page ? page_token(transactions.last) : nil,
+      },
       transactions: transactions,
-      prev_page: has_prev_page ? page_token(transactions.first) : nil,
-      next_page: has_next_page ? page_token(transactions.last) : nil,
     }
   end
 

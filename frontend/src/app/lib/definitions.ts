@@ -7,12 +7,6 @@ export type TransactionUpdate = Partial<{
   subcategory_name: string;
 }>;
 
-export type TransactionsResponse = {
-  total_items: number,
-  filtered_item: number,
-  transactions: Transaction[]
-}
-
 export type Transaction = {
   id: number,
   transaction_date: string,
@@ -25,6 +19,18 @@ export type Transaction = {
   user: { id: number, name: string },
   category: { id: number, name: string },
   subcategory: { id: number, name: string }
+}
+
+export type TransactionMetaData = {
+  totalCount: number,
+  filteredCount: number,
+  prevPage: string | null
+  nextPage: string | null
+}
+
+export type TransactionsResponse = {
+  meta: TransactionMetaData,
+  transactions: Transaction[]
 }
 
 export type Account = {

@@ -4,7 +4,7 @@ import Search from './table/Search';
 import { CreateTransaction } from './table/buttons';
 import TransactionsTable from './table/TransactionsTable';
 import FilterBar from './filter-bar/FilterBar';
-import { Account, Category, Transaction, User } from '../lib/definitions';
+import { Account, Category, Transaction, TransactionMetaData, User } from '../lib/definitions';
 import { fetchAccounts, fetchCategories, fetchTransactions, fetchUsers } from '../lib/data';
 import { useSearchParams } from 'next/navigation';
 
@@ -18,6 +18,16 @@ export default function Page() {
     transactions,
     setTransactions
   ] = useState<Transaction[]>([]);
+
+  const [
+    transactionMetaData,
+    setTransactionMetaData
+  ] = useState<TransactionMetaData>({
+    totalCount: 0,
+    filteredCount: 0,
+    prevPage: null,
+    nextPage: null
+  })
 
   const [
     isLoadingCategories,
@@ -102,6 +112,12 @@ export default function Page() {
     fetchTransactions(searchParams)
     .then(data => {
       setTransactions(data.transactions);
+      setTransactionMetaData({
+        totalCount: data.meta.totalCount,
+        filteredCount: data.meta.filteredCount,
+        prevPage: data.meta.prevPage,
+        nextPage: data.meta.nextPage
+    });
       setLoadingTransactions(false);
     })
     .catch(error => {
