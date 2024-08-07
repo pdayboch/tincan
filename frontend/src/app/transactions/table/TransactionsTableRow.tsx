@@ -1,6 +1,7 @@
 import { BarsArrowDownIcon } from "@heroicons/react/24/outline";
 import { Transaction } from "../../lib/definitions";
-import { formatCurrency } from '@/app/lib/helpers';
+import { formatCurrency, formatDate } from '@/app/lib/helpers';
+import clsx from "clsx";
 
 interface TransactionTableRowProps {
   transaction: Transaction;
@@ -11,6 +12,11 @@ export default function TransactionTableRow({
   transaction,
   onClick
 }: TransactionTableRowProps) {
+  const amountClass = clsx({
+    'text-green-600': transaction.amount >= 0,
+    'text-red-600': transaction.amount < 0,
+  });
+
   return (
     <tr
       key={transaction.id}
@@ -25,7 +31,7 @@ export default function TransactionTableRow({
       [&:last-child>td:last-child]:rounded-br-lg"
     >
       <td className="w-24 p-2 align-top whitespace-nowrap">
-        <span>{transaction.transaction_date}</span>
+        <span>{formatDate(transaction.transaction_date)}</span>
       </td>
       <td className="w-64 p-2 align-top whitespace-nowrap">
         <span>{transaction.description}</span>
@@ -33,8 +39,8 @@ export default function TransactionTableRow({
       <td className="w-48 p-2 align-top whitespace-nowrap">
         <span>{transaction.subcategory.name}</span>
       </td>
-      <td className="w-24 p-2 align-top whitespace-nowrap">
-        <span>{formatCurrency(transaction.amount)}</span>
+      <td className={clsx("w-24 p-2 align-top whitespace-nowrap font-mono", amountClass)}>
+        {formatCurrency(transaction.amount)}
       </td>
       <td className="w-4 whitespace-nowrap">
         <BarsArrowDownIcon className="w-4 h-4" />

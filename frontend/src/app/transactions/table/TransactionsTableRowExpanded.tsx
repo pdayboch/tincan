@@ -4,6 +4,7 @@ import { ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
 import { Category, Transaction } from "../../lib/definitions";
 import CategoryDropdown from "@/app/ui/shared/CategoryDropdown";
 import { formatCurrency } from '@/app/lib/helpers';
+import clsx from 'clsx';
 
 interface TransactionTableRowExpandedProps {
   transaction: Transaction;
@@ -27,6 +28,11 @@ export default function TransactionTableRowExpanded({
     onUpdateTransactionDate(transaction.id, newDate);
     }
   }
+
+  const amountClass = clsx({
+    'text-green-600': transaction.amount >= 0,
+    'text-red-600': transaction.amount < 0,
+  });
 
   return (<>
     {/* original row */}
@@ -60,8 +66,8 @@ export default function TransactionTableRowExpanded({
           }
         />
       </td>
-      <td className="w-24 p-2 align-top whitespace-nowrap">
-        <span>{formatCurrency(transaction.amount)}</span>
+      <td className={clsx("w-24 p-2 align-top whitespace-nowrap font-mono", amountClass)}>
+        {formatCurrency(transaction.amount)}
       </td>
       <td>
         <div className="w-4"/>
