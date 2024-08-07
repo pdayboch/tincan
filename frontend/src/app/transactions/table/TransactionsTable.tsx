@@ -1,18 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Category, Transaction } from "../../lib/definitions";
+import React, { useState, useEffect } from 'react';
+import { Category, Transaction, TransactionMetaData } from "../../lib/definitions";
 import TransactionsTableHeader from "./TransactionsTableHeader";
 import TransactionsTableRow from "./TransactionsTableRow";
 import TransactionsTableRowExpanded from "./TransactionsTableRowExpanded";
 import { updateTransaction } from '@/app/lib/data';
+import PaginationBar from '../../ui/shared/pagination-bar/PaginationBar';
 
 interface TransactionsTableProps {
   transactions: Transaction[];
+  transactionMetaData: TransactionMetaData;
   categories: Category[];
   setTransactions: React.Dispatch<React.SetStateAction<Transaction[]>>;
 }
 
 export default function TransactionsTable({
   transactions,
+  transactionMetaData,
   categories,
   setTransactions
 }: TransactionsTableProps) {
@@ -109,10 +112,10 @@ export default function TransactionsTable({
   }, [])
 
   return (
-    <div className="mt-6 flow-root">
+    <div className="mt-6">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-          <table className="min-w-full text-gray-900">
+          <table className="min-w-full text-gray-900 table-fixed">
             <TransactionsTableHeader />
             <tbody className="transactions-table bg-white">
               {transactions.map((transaction) => {
@@ -139,6 +142,10 @@ export default function TransactionsTable({
               })}
             </tbody>
           </table>
+          <PaginationBar
+          prevPage={transactionMetaData.prevPage}
+          nextPage={transactionMetaData.nextPage}
+          />
         </div>
       </div>
     </div>

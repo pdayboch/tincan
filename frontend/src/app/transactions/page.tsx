@@ -139,7 +139,7 @@ export default function Page() {
       </div>
 
       {/* Center content */}
-      <div className="flex-none flex-col w-[600px] mx-auto">
+      <div className="flex-grow flex flex-col w-full lg:w-[600px] mx-auto">
        {/* FilterBar, Search, and CreateTransaction in one row */}
         <div className="flex items-center justify-between gap-2 my-3 h-10">
           {/* Show FilterBar only on "sm" screens */}
@@ -152,6 +152,7 @@ export default function Page() {
         </div>
         <TransactionsTable
           transactions={transactions}
+          transactionMetaData={transactionMetaData}
           categories={categories}
           setTransactions={setTransactions}
         />
