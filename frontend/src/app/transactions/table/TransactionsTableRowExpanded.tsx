@@ -33,7 +33,6 @@ export default function TransactionTableRowExpanded({
   useEffect(() => {
     const isSaved = description === transaction.description;
     setIsDescriptionSaved(isSaved);
-    console.log("description is " + isSaved + " saved");
   }, [description, transaction.description]);
 
   const handleDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,8 +67,6 @@ export default function TransactionTableRowExpanded({
   });
 
   const transactionDate = parseISO(transaction.transaction_date);
-  const formattedDate = format(transactionDate, 'MM-dd-yyyy');
-  const dateForPicker = new Date(formattedDate);
 
   return (<>
     {/* original row */}
@@ -78,10 +75,10 @@ export default function TransactionTableRowExpanded({
       className="expanded-row bg-neutral-50 mb-2 \
         text-sm last-of-type:border-none"
     >
-      <td className="w-24 p-2 align-top whitespace-nowrap">
+      <td className="w-24 px-1 py-2 align-top whitespace-nowrap">
         <DatePicker
-          className="w-full"
-          selected={dateForPicker}
+          className="w-full border border-gray-300 p-1 rounded-md"
+          selected={transactionDate}
           isClearable={false}
           onChange={(date) => handleDateSelect(date)}
           fixedHeight
@@ -89,7 +86,7 @@ export default function TransactionTableRowExpanded({
           dateFormat="MM-dd-yyyy"
         />
       </td>
-      <td className="w-64 p-2 align-top whitespace-nowrap">
+      <td className="w-64 px-1 py-2 align-top whitespace-nowrap">
         <div className="flex items-center">
           <input
             type="text"
@@ -161,7 +158,7 @@ export default function TransactionTableRowExpanded({
             </p>
             <p>
               <b>Appears on statement as </b>
-              {transaction.description}
+              {transaction.statement_description}
             </p>
             <span>Split transaction</span>
           </div>
