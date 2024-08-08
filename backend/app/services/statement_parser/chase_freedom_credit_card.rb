@@ -1,8 +1,8 @@
 module StatementParser
-  class BarclaysViewCreditCard < Base
+  class ChaseFreedomCreditCard < Base
     def statement_end_date
       @statement_end_date ||= begin
-          regex = /Statement Period\s+\d{2}\/\d{2}\/\d{2}\s*-\s*(\d{2}\/\d{2}\/\d{2})/
+          regex = /Opening\/Closing Date\s+\d{2}\/\d{2}\/\d{2} - (\d{2}\/\d{2}\/\d{2})/
           date_format = "%m/%d/%y"
 
           match = @text.match(regex)
@@ -14,7 +14,7 @@ module StatementParser
 
     def statement_start_date
       @statement_start_date ||= begin
-          regex = /Statement Period\s+(\d{2}\/\d{2}\/\d{2})\s*-\s*\d{2}\/\d{2}\/\d{2}/
+          regex = /Opening\/Closing Date\s+(\d{2}\/\d{2}\/\d{2}) - \d{2}\/\d{2}\/\d{2}/
           date_format = "%m/%d/%y"
 
           match = @text.match(regex)
@@ -26,27 +26,17 @@ module StatementParser
 
     def statement_balance
       @statement_balance ||= begin
-          regex = /Statement Balance:\s+\$([\d,]+\.\d{2})/
+          regex = /New Balance\s+.*\n\s*([-]?\$[\d,]+\.\d{2})/
 
           match = @text.match(regex)
           raise("Could not extract statement balance for #{@file_path}") unless match
-          match[1].gsub(",", "").to_f
+          match[1].gsub(/[,$]/, "").to_f
         end
     end
 
     def transactions
-      regex = %r{
-        (\w{3}\s\d{2})       # Transaction date
-        \s+                  # Any number of spaces
-        \w{3}\s\d{2}         # Posted date
-        \s+
-        (.+?)                # Description
-        \s+
-        (?:\d{1,3}(?:,\d{3})*|N\/A)          # Points
-        \s+
-        (-?\$\d{1,3}(?:,\d{3})*(?:\.\d{2})?) # Amount
-      }x
-      date_format = "%b %d"
+      regex = /(\d{2}\/\d{2})\s{14,}(.+)\s+([-\d,]+\.\d{2})/
+      date_format = "%m/%d"
 
       matches = @text.scan(regex)
       matches.map do |match|
@@ -56,7 +46,7 @@ module StatementParser
 
         {
           date: transaction_date,
-          description: match[1],
+          description: match[1].strip,
           amount: -format_amount(match[2]),
         }
       end
@@ -65,7 +55,7 @@ module StatementParser
     private
 
     def calculate_transaction_year(date_str)
-      transaction_date = Date.strptime("#{date_str} #{statement_end_date.year}", "%b %d %Y")
+      transaction_date = Date.strptime("#{date_str}/#{statement_end_date.year}", "%m/%d/%Y")
       # if the transaction month is higher than the statement end month,
       # that indicates the statement spans multiple years and the transaction
       # happened in the previous year.
