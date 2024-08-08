@@ -4,6 +4,7 @@ import { ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
 import { Category, Transaction } from "../../lib/definitions";
 import CategoryDropdown from "@/app/ui/shared/CategoryDropdown";
 import { formatCurrency } from '@/app/lib/helpers';
+import { parseISO, format } from 'date-fns';
 import clsx from 'clsx';
 
 interface TransactionTableRowExpandedProps {
@@ -34,6 +35,10 @@ export default function TransactionTableRowExpanded({
     'text-red-600': transaction.amount < 0,
   });
 
+  const transactionDate = parseISO(transaction.transaction_date);
+  const formattedDate = format(transactionDate, 'MM-dd-yyyy');
+  const dateForPicker = new Date(formattedDate);
+
   return (<>
     {/* original row */}
     <tr
@@ -44,11 +49,12 @@ export default function TransactionTableRowExpanded({
       <td className="w-24 p-2 align-top whitespace-nowrap">
         <DatePicker
           className="w-full"
-          selected={new Date(transaction.transaction_date)}
+          selected={dateForPicker}
           isClearable={false}
           onChange={(date) => handleDateSelect(date)}
           fixedHeight
           popperPlacement="bottom-end"
+          dateFormat="MM-dd-yyyy"
         />
       </td>
       <td className="w-64 p-2 align-top whitespace-nowrap">
