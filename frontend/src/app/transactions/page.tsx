@@ -130,22 +130,15 @@ export default function Page() {
   return (
     <div className="flex m-4">
       {/* Left panel */}
-      <div className="hidden lg:block flex-none w-40">
-        <p>Accounts</p>
+      <div className="block flex-none w-40">
         <div className="flex items-center justify-between gap-2">
           <FilterBar accounts={accounts} users={users} />
         </div>
-        <p>Users</p>
       </div>
 
-      {/* Center content */}
+      {/* Content */}
       <div className="flex-grow flex flex-col w-full lg:w-[600px] mx-auto">
-       {/* FilterBar, Search, and CreateTransaction in one row */}
         <div className="flex items-center justify-between gap-2 my-3 h-10">
-          {/* Show FilterBar only on "sm" screens */}
-          <div className="lg:hidden h-full">
-            <FilterBar accounts={accounts} users={users} />
-          </div>
           {/* Search and CreateTransaction always visible */}
           <Search placeholder="Search transactions..." />
           <CreateTransaction />
@@ -157,9 +150,6 @@ export default function Page() {
           setTransactions={setTransactions}
         />
       </div>
-
-      {/* Right panel */}
-      <div className="flex-auto"></div>
     </div>
   );
 }
