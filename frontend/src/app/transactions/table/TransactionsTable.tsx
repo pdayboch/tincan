@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Category, Transaction, TransactionMetaData } from "../../lib/definitions";
+import { updateTransaction } from '@/app/lib/data';
 import TransactionsTableHeader from "./TransactionsTableHeader";
 import TransactionsTableRow from "./TransactionsTableRow";
 import TransactionsTableRowExpanded from "./TransactionsTableRowExpanded";
-import { updateTransaction } from '@/app/lib/data';
 import PaginationBar from '../../ui/shared/pagination-bar/PaginationBar';
 
 interface TransactionsTableProps {
@@ -83,6 +83,27 @@ export default function TransactionsTable({
     }
   };
 
+  const handleUpdateTransactionDescription = async (
+    transaction_id: number,
+    description: string
+  ): Promise<boolean> => {
+    try {
+      const updatedTransaction = await updateTransaction(
+        transaction_id,
+        { description: description }
+      )
+      updateTransactionInState(updatedTransaction);
+      return true;
+    } catch(error) {
+      if (error instanceof Error) {
+        console.error(`Error updating transaction description: ${error.message}`);
+      } else {
+        console.log('Error updating transaction: An unknown error occurred');
+      }
+      return false;
+    }
+  };
+
   const handleUpdateTransactionSubcategory = async (
     transactionId: number,
     newSubcategoryName: string
@@ -126,8 +147,9 @@ export default function TransactionsTable({
                       transaction={transaction}
                       categories={categories}
                       setExpandedRowTransactionId={setExpandedRowTransactionId}
-                      onUpdateTransactionSubcategory={handleUpdateTransactionSubcategory}
                       onUpdateTransactionDate={handleUpdateTransactionDate}
+                      onUpdateTransactionDescription={handleUpdateTransactionDescription}
+                      onUpdateTransactionSubcategory={handleUpdateTransactionSubcategory}
                     />
                   );
                 } else {

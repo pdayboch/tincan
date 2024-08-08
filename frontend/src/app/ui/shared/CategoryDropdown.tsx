@@ -1,8 +1,9 @@
 'use client'
-import { Category } from '@/app/lib/definitions';
 import React, { useState, useEffect, useRef } from 'react';
-import CategoryDropdownItem from './CategoryDropdownItem';
 import clsx from 'clsx';
+import { Category } from '@/app/lib/definitions';
+import { ChevronDoubleDownIcon } from "@heroicons/react/24/outline";
+import CategoryDropdownItem from './CategoryDropdownItem';
 
 interface CategoryDropdownProps {
   categories: Category[];
@@ -71,12 +72,17 @@ export default function CategoryDropdown({
       ref={dropdownRef}
       className={clsx('relative', 'w-full')}
     >
-      <button onClick={toggleDropdown}>
+      <div
+        className="flex items-center justify-left h-full cursor-pointer"
+        onClick={toggleDropdown}
+        title="Select a category"
+      >
         {currentCategory}
-      </button>
+        {!isOpen && <ChevronDoubleDownIcon className="w-4 h-4 ml-2 text-gray-500" />}
+      </div>
       {/* The expanded dropdown */}
       {isOpen && (
-        <div className="absolute w-full bg-slate-300 z-3 border-3">
+        <div className="w-full bg-slate-300 z-3 border-3">
           <input
             type="text"
             placeholder="Search categories..."
