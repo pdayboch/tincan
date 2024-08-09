@@ -35,14 +35,14 @@ export type TransactionsResponse = {
 
 export type Account = {
   id: number,
-  bank_name: string,
+  bankName: string,
   name: string,
-  account_type: string,
+  accountType: string,
   active: boolean,
   deletable: boolean,
-  user_id: number,
-  created_at: string,
-  updated_at: string
+  userId: number,
+  statementDirectory: string,
+  parserClass: string
 }
 
 export type User = {

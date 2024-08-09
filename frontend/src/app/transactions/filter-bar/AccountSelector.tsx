@@ -97,8 +97,8 @@ export default function AccountSelector({ accounts, users }: AccountSelectorProp
           />
           <hr className="my-1"/>
           {accounts.map((account) => {
-            const title = account.bank_name ? `${account.bank_name} ${account.name}` : account.name
-            const user = users.find(user => account.user_id === user.id)
+            const title = account.bankName ? `${account.bankName} ${account.name}` : account.name
+            const user = users.find(user => account.userId === user.id)
             return(
               <DropdownItem
                 key={account.id}
