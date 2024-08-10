@@ -70,7 +70,7 @@ export default function CategoryDropdown({
   return (
     <div
       ref={dropdownRef}
-      className={clsx('relative', 'w-full')}
+      className="relative w-full"
     >
       <div
         className="flex items-center justify-left h-full cursor-pointer"

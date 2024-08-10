@@ -9,7 +9,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="w-full flex-none">
           <TopNav />
         </div>
-        <div className="pl-8 pr-8">
+        <div className="px-3 py-5">
           {children}
         </div>
       </body>

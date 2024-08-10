@@ -128,18 +128,15 @@ export default function Page() {
   }, [searchParams]);
 
   return (
-    <div className="flex m-4">
+    <div className="flex">
       {/* Left panel */}
-      <div className="block flex-none w-40">
-        <div className="flex items-center justify-between gap-2">
-          <FilterBar accounts={accounts} users={users} />
-        </div>
+      <div className="block flex-none w-40 mr-3">
+        <FilterBar accounts={accounts} users={users} />
       </div>
 
       {/* Content */}
-      <div className="flex-grow flex flex-col w-full lg:w-[600px] mx-auto">
+      <div className="flex-grow flex flex-col w-full mx-auto">
         <div className="flex items-center justify-between gap-2 my-3 h-10">
-          {/* Search and CreateTransaction always visible */}
           <Search placeholder="Search transactions..." />
           <CreateTransaction />
         </div>

@@ -73,10 +73,10 @@ export default function AccountSelector({ accounts, users }: AccountSelectorProp
   }, [])
 
   return (
-    <div className="relative h-full" ref={selectorRef}>
+    <div className="h-auto w-full my-1" ref={selectorRef}>
       <button
         type="button"
-        className="w-full h-full py-0 px-2 rounded \
+        className="w-full h-10 py-0 px-2 rounded \
         bg-theme-lgt-green hover:bg-theme-drk-green \
         active:bg-theme-pressed-green active:scale-95 active:shadow-inner \
         border border-gray-300"
@@ -86,7 +86,7 @@ export default function AccountSelector({ accounts, users }: AccountSelectorProp
       </button>
 
       {isDropdownOpen && (
-        <div className="absolute z-9 mt-1 w-64 h-auto max-h-96 overflow-y-auto rounded-md bg-white shadow-lg">
+        <div className="w-full h-auto max-h-96 overflow-y-auto rounded-md bg-white shadow-lg">
           <hr className="my-1"/>
           <DropdownItem
             key={0}

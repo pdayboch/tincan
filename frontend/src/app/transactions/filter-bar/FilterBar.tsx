@@ -12,8 +12,8 @@ type FilterBarProps = {
 
 export default function FilterBar({accounts, users}: FilterBarProps) {
   return (
-    <div className="flex flex-col gap-2 h-full">
-    <span className={clsx("justify-self-center text-3xl", font.className)}>Filters</span>
+    <div className="flex flex-col items-center h-full w-full">
+      <span className={clsx("text-2xl", font.className)}>Filters</span>
       <AccountSelector accounts={accounts} users={users} />
       <UserSelector users={users} />
     </div>
