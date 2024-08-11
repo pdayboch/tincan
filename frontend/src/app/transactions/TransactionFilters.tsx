@@ -18,7 +18,7 @@ export default function TransactionFilters({
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const handleAccountClick = (id: number) => {
+  const handleAccountClick = (id: string) => {
     // Clone the current search params
     const params = new URLSearchParams(searchParams);
     // Reset pagination to page 1 since accounts are changing.
@@ -26,17 +26,17 @@ export default function TransactionFilters({
     params.delete('endingBefore');
 
     let selectedAccounts = params.getAll('accounts[]');
-    if (id === 0) {
+    if (id === "0") {
       // if the value is 0, All was selected, so remove filter.
       params.delete('accounts[]');
     } else {
       // Add value to selected accounts.
-      if (!selectedAccounts.includes(id.toString())){
-        params.append('accounts[]', id.toString());
+      if (!selectedAccounts.includes(id)){
+        params.append('accounts[]', id);
       } else {
         // Remove value from selected accounts.
         selectedAccounts = selectedAccounts
-          .filter(account => account !== id.toString());
+          .filter(account => account !== id);
         params.delete('accounts[]');
         selectedAccounts.forEach(account => {
           params.append('accounts[]', account);
@@ -47,7 +47,7 @@ export default function TransactionFilters({
     replace(`${pathname}?${params.toString()}`)
   };
 
-  const handleUserClick = (id: number) => {
+  const handleUserClick = (id: string) => {
     // Clone the current search params
     const params = new URLSearchParams(searchParams);
 
@@ -56,17 +56,17 @@ export default function TransactionFilters({
     params.delete('endingBefore');
 
     let selectedUsers = params.getAll('users[]');
-    if (id === 0) {
+    if (id === "0") {
       // if the value is 0, All was selected, so remove filter.
       params.delete('users[]');
     } else {
       // Add value to selected users.
-      if (!selectedUsers.includes(id.toString())){
-        params.append('users[]', id.toString());
+      if (!selectedUsers.includes(id)){
+        params.append('users[]', id);
       } else {
         // Remove value from selected users.
         selectedUsers = selectedUsers
-          .filter(item => item !== id.toString());
+          .filter(item => item !== id);
         params.delete('users[]');
         selectedUsers.forEach(user => {
           params.append('users[]', user);
@@ -87,7 +87,7 @@ export default function TransactionFilters({
     const user = users.find(user => account.userId === user.id);
 
     return {
-      id: account.id,
+      id: account.id.toString(),
       label: label,
       sublabel: user?.name || ''
     }
@@ -95,7 +95,7 @@ export default function TransactionFilters({
 
   const userItems: FilterItemType[] = users.map((user) => {
     return {
-      id: user.id,
+      id: user.id.toString(),
       label: user.name,
       sublabel: null
     }

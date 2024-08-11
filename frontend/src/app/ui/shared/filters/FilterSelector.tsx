@@ -6,7 +6,7 @@ type UserSelectorProps = {
   title: string;
   items: FilterItemType[];
   selectedItems: string[];
-  onItemClick: (itemId: number) => void;
+  onItemClick: (itemId: string) => void;
 };
 
 export default function UserSelector({
@@ -62,7 +62,7 @@ export default function UserSelector({
             title="All"
             subtitle={items.length.toString()}
             isSelected={selectedItems.length === 0}
-            onClick={() => onItemClick(0)}
+            onClick={() => onItemClick("0")}
           />
           <hr className="my-1"/>
           {items.map((item) => {
@@ -71,7 +71,7 @@ export default function UserSelector({
                 key={item.id}
                 title={item.label}
                 subtitle={item.sublabel ? item.sublabel : ""}
-                isSelected={selectedItems.includes(item.id.toString())}
+                isSelected={selectedItems.includes(item.id)}
                 onClick={() => onItemClick(item.id)}
               />
             );

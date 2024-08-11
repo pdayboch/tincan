@@ -71,7 +71,7 @@ export type Subcategory = {
 }
 
 export type FilterItemType = {
-  id: number,
+  id: string,
   label: string,
   sublabel: string | null
 }
