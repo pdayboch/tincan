@@ -105,16 +105,16 @@ export default function TransactionFilters({
     <div className="flex flex-col items-center h-full w-full">
       <span className={clsx("text-2xl", font.className)}>Filters</span>
       <FilterSelector
-        title="Accounts"
-        items={accountItems}
-        selectedItems={selectedAccounts}
-        onItemClick={handleAccountClick}
-      />
-      <FilterSelector
         title="Users"
         items={userItems}
         selectedItems={selectedUsers}
         onItemClick={handleUserClick}
+      />
+      <FilterSelector
+        title="Accounts"
+        items={accountItems}
+        selectedItems={selectedAccounts}
+        onItemClick={handleAccountClick}
       />
     </div>
   )

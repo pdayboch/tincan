@@ -1,12 +1,12 @@
 "use client"
 import { useState, useEffect } from 'react'
-import Search from './table/Search';
-import { CreateTransaction } from './table/buttons';
+import { useSearchParams } from 'next/navigation';
+import Search from './Search';
+import { CreateTransaction } from './buttons';
 import TransactionsTable from './table/TransactionsTable';
 import Filters from './TransactionFilters';
 import { Account, Category, Transaction, TransactionMetaData, User } from '../lib/definitions';
 import { fetchAccounts, fetchCategories, fetchTransactions, fetchUsers } from '../lib/data';
-import { useSearchParams } from 'next/navigation';
 
 export default function Page() {
   const [
