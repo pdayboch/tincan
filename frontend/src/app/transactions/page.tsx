@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Search from './table/Search';
 import { CreateTransaction } from './table/buttons';
 import TransactionsTable from './table/TransactionsTable';
-import FilterBar from './filter-bar/FilterBar';
+import Filters from './TransactionFilters';
 import { Account, Category, Transaction, TransactionMetaData, User } from '../lib/definitions';
 import { fetchAccounts, fetchCategories, fetchTransactions, fetchUsers } from '../lib/data';
 import { useSearchParams } from 'next/navigation';
@@ -131,7 +131,7 @@ export default function Page() {
     <div className="flex">
       {/* Left panel */}
       <div className="block flex-none w-40 mr-3">
-        <FilterBar accounts={accounts} users={users} />
+        <Filters accounts={accounts} users={users} />
       </div>
 
       {/* Content */}
