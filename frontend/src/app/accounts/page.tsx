@@ -4,6 +4,9 @@ import { Account, User } from '../lib/definitions';
 import { fetchAccounts, fetchUsers } from '../lib/data';
 import Filters from './AccountFilters';
 import AccountsTable from './table/AccountsTable';
+import { Inter } from "next/font/google";
+import clsx from 'clsx';
+const font = Inter({ weight:["400"], subsets:['latin'] });
 
 export default function Page() {
   const [users, setUsers] = useState<User[]>([]);
@@ -31,7 +34,11 @@ export default function Page() {
     setIsLoadingAccounts(true);
     fetchAccounts()
       .then(data => {
-        setAccounts(data);
+        // Filter out accounts named "Cash" or without an accountType
+        const filteredAccounts = data.filter(
+          (account: Account) => account.name !== "Cash" && account.accountType
+        );
+        setAccounts(filteredAccounts);
         setIsLoadingAccounts(false);
       })
       .catch(error => {
@@ -42,7 +49,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="flex">
+    <div className={clsx("flex",font.className)}>
       {/* Left panel */}
       <div className="block flex-none w-40 mr-3">
         <Filters accounts={accounts} users={users} />
@@ -51,6 +58,8 @@ export default function Page() {
       {/* Content */}
       <div className="flex-grow flex flex-col w-full mx-auto">
         <AccountsTable
+          accounts={accounts}
+          users={users}
         />
       </div>
     </div>

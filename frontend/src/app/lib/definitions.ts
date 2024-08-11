@@ -41,8 +41,7 @@ export type Account = {
   active: boolean,
   deletable: boolean,
   userId: number,
-  statementDirectory: string,
-  parserClass: string
+  statementDirectory: string
 }
 
 export type User = {

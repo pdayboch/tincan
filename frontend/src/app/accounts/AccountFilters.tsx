@@ -101,7 +101,7 @@ export default function AccountFilters({
 
   return (
     <div className="flex flex-col items-center h-full w-full">
-      <span className={clsx("text-2xl", font.className)}>Filters</span>
+      <span className={clsx("text-xl", font.className)}>Filters</span>
       <FilterSelector
         title="Users"
         items={userItems}
