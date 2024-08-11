@@ -69,3 +69,9 @@ export type Subcategory = {
   name: string,
   has_transactions: boolean
 }
+
+export type FilterItemType = {
+  id: number,
+  label: string,
+  sublabel: string | null
+}
