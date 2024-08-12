@@ -1,4 +1,5 @@
 import { Account, User } from "@/app/lib/definitions";
+import AccountSubRow from "./AccountSubRow";
 
 type BankRowProps = {
   bankName: string,
@@ -24,12 +25,7 @@ export default function BankRow({
         </div>
         <div className="text-md">
           {accounts.map(account => (
-            <div
-              key={account.id}
-              className="my-1"
-            >
-              {account.name}
-            </div>
+            <AccountSubRow key={account.id} account={account} />
           ))}
         </div>
       </div>
