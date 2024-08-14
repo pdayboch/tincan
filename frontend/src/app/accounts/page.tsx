@@ -6,7 +6,7 @@ import Filters from './AccountFilters';
 import AccountsTable from './table/AccountsTable';
 import { Inter } from "next/font/google";
 import clsx from 'clsx';
-const font = Inter({ weight:["400"], subsets:['latin'] });
+const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 export default function Page() {
   const [users, setUsers] = useState<User[]>([]);
@@ -49,7 +49,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className={clsx("flex",font.className)}>
+    <div className={clsx("flex", font.className)}>
       {/* Left panel */}
       <div className="block flex-none w-40 mr-3">
         <Filters accounts={accounts} users={users} />
@@ -60,6 +60,7 @@ export default function Page() {
         <AccountsTable
           accounts={accounts}
           users={users}
+          setAccounts={setAccounts}
         />
       </div>
     </div>
