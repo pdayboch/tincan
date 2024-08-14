@@ -1,5 +1,9 @@
 module StatementParser
   class BarclaysViewCreditCard < Base
+    BANK_NAME = "Barclays"
+    ACCOUNT_NAME = "View Credit Card"
+    ACCOUNT_TYPE = "credit card"
+
     def statement_end_date
       @statement_end_date ||= begin
           regex = /Statement Period\s+\d{2}\/\d{2}\/\d{2}\s*-\s*(\d{2}\/\d{2}\/\d{2})/

@@ -1,0 +1,1 @@
+class InvalidParser < StandardError; end

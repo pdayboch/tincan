@@ -1,5 +1,9 @@
 module StatementParser
   class ChaseFreedomCreditCard < Base
+    BANK_NAME = "Chase"
+    ACCOUNT_NAME = "Freedom Credit Card"
+    ACCOUNT_TYPE = "credit card"
+
     def statement_end_date
       @statement_end_date ||= begin
           regex = /Opening\/Closing Date\s+\d{2}\/\d{2}\/\d{2} - (\d{2}\/\d{2}\/\d{2})/

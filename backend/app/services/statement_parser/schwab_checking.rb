@@ -1,5 +1,9 @@
 module StatementParser
   class SchwabChecking < Base
+    BANK_NAME = "Schwab"
+    ACCOUNT_NAME = "Checking"
+    ACCOUNT_TYPE = "checking"
+
     ALL_MONTHS = "January|February|March|April|May|June|July|August|September|October|November|December"
     DEBIT_KEYWORDS = ["withdrawal", "funds transfer to", "debit", "check"]
     CREDIT_KEYWORDS = ["deposit", "funds transfer from", "credit", "interest paid", "atm fee rebate", "money transfer visa direct"]
