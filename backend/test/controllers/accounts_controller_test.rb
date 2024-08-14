@@ -12,15 +12,19 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create account" do
     assert_difference("Account.count") do
-      post accounts_url, params: { account: { account_type: @account.account_type, active: @account.active, bank_name: @account.bank_name, deletable: @account.deletable, name: @account.name, user_id: @account.user_id } }, as: :json
+      post accounts_url, params: { accountType: @account.account_type, active: true, bankName: @account.bank_name, deletable: @account.deletable, name: @account.name, userId: @account.user_id, statementDirectory: "credit cards/chase" }, as: :json
     end
 
     assert_response :created
   end
 
   test "should update account" do
-    patch account_url(@account), params: { account: { account_type: @account.account_type, active: @account.active, bank_name: @account.bank_name, deletable: @account.deletable, name: @account.name, user_id: @account.user_id } }, as: :json
+    patch account_url(@account), params: { active: false, statementDirectory: "credit cards/new" }, as: :json
+
     assert_response :success
+    @account.reload
+    assert_equal @account.active, false, "Account was not updated"
+    assert_equal @account.statement_directory, "credit cards/new", "Account was not updated"
   end
 
   test "should destroy account" do

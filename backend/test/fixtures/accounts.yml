@@ -22,6 +22,7 @@ one:
   active: true
   deletable: true
   user: one
+  statement_directory: "credit card/chase freedom"
 
 two:
   bank_name: Capital One
@@ -30,6 +31,7 @@ two:
   active: true
   deletable: true
   user: two
+  statement_directory: "credit card/capital one quicksilver"
 
 three:
   bank_name: Chase
@@ -38,6 +40,7 @@ three:
   active: true
   deletable: true
   user: one
+  statement_directory: "chase/amazon card"
 
 non_deletable_account:
   name: Cash
