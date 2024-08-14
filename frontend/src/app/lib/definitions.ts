@@ -7,6 +7,13 @@ export type TransactionUpdate = Partial<{
   subcategory_name: string;
 }>;
 
+export type AccountUpdate = Partial<{
+  // Include only the fields that can be updated
+  active: boolean;
+  statementDirectory: string;
+  nickname: string;
+}>;
+
 export type Transaction = {
   id: number,
   transaction_date: string,
@@ -41,7 +48,8 @@ export type Account = {
   active: boolean,
   deletable: boolean,
   userId: number,
-  statementDirectory: string
+  statementDirectory: string,
+  nickname: string
 }
 
 export type User = {

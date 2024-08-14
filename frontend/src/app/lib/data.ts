@@ -1,11 +1,11 @@
-import { useSearchParams } from "next/navigation";
 import {
   CategoryResponse,
   TransactionsResponse,
   TransactionUpdate,
   Transaction,
   Account,
-  User
+  User,
+  AccountUpdate
 } from "./definitions";
 
 export async function fetchCategories(): Promise<CategoryResponse> {
@@ -53,6 +53,26 @@ export async function fetchAccounts(): Promise<Account[]> {
     throw new Error(`Error fetching accounts: ${response.status}`);
   }
   const data: Account[] = await response.json();
+  return data;
+}
+
+export async function updateAccount(
+  accountId: number,
+  updates: AccountUpdate
+): Promise<Account> {
+  const url = `http://127.0.0.1:3005/accounts/${accountId}`
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(updates)
+  });
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(`Error updating account: ${errorMessage}`)
+  }
+  const data: Account = await response.json();
   return data;
 }
 
