@@ -32,8 +32,4 @@ class AccountSerializer < ActiveModel::Serializer
   attribute :statementDirectory do
     object.statement_directory
   end
-
-  attribute :parserClass do
-    object.parser_class
-  end
 end
