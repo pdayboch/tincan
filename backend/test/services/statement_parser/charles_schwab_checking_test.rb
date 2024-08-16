@@ -2,7 +2,7 @@ require "test_helper"
 require "timecop"
 
 module StatementParser
-  class SchwabCheckingTest < ActiveSupport::TestCase
+  class CharlesSchwabCheckingTest < ActiveSupport::TestCase
     def setup
       @file_path = "path/to/statement.pdf"
     end
@@ -12,8 +12,8 @@ module StatementParser
       Account Number        Statement Period
       FNAME LNAME           1234567890134         November 1-30, 2023
       TEXT
-      SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-      parser = SchwabChecking.new(@file_path)
+      CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = CharlesSchwabChecking.new(@file_path)
 
       assert_equal Date.new(2023, 11, 30), parser.statement_end_date
     end
@@ -24,16 +24,16 @@ module StatementParser
       Account Number          December 30, 2023 to
       FNAME LNAME             123456789012      January 31, 2024
       TEXT
-      SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-      parser = SchwabChecking.new(@file_path)
+      CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = CharlesSchwabChecking.new(@file_path)
 
       assert_equal Date.new(2024, 1, 31), parser.statement_end_date
     end
 
     def test_statement_end_date_raises_error
       mock_text = "Invalid text"
-      SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-      parser = SchwabChecking.new(@file_path)
+      CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = CharlesSchwabChecking.new(@file_path)
 
       assert_raises(RuntimeError, "Could not extract statement end date for #{@file_path}") do
         parser.statement_end_date
@@ -45,8 +45,8 @@ module StatementParser
       Account Number        Statement Period
       FNAME LNAME           1234567890134         November 1-30, 2023
       TEXT
-      SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-      parser = SchwabChecking.new(@file_path)
+      CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = CharlesSchwabChecking.new(@file_path)
 
       assert_equal Date.new(2023, 11, 1), parser.statement_start_date
     end
@@ -57,16 +57,16 @@ module StatementParser
       Account Number          December 30, 2023 to
       FNAME LNAME             123456789012      January 31, 2024
       TEXT
-      SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-      parser = SchwabChecking.new(@file_path)
+      CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = CharlesSchwabChecking.new(@file_path)
 
       assert_equal Date.new(2023, 12, 30), parser.statement_start_date
     end
 
     def test_statement_start_date_raises_error
       mock_text = "Invalid text"
-      SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-      parser = SchwabChecking.new(@file_path)
+      CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = CharlesSchwabChecking.new(@file_path)
 
       assert_raises(RuntimeError, "Could not extract statement start date for #{@file_path}") do
         parser.statement_start_date
@@ -81,16 +81,16 @@ module StatementParser
       11/30    Interest Paid                                             $1.23                   $1,234.56
       11/30    Ending Balance                                                                    $1,234.56
       TEXT
-      SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-      parser = SchwabChecking.new(@file_path)
+      CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = CharlesSchwabChecking.new(@file_path)
 
       assert_equal 1234.56, parser.statement_balance
     end
 
     def test_statement_balance_raises_error
       mock_text = "Invalid text"
-      SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-      parser = SchwabChecking.new(@file_path)
+      CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = CharlesSchwabChecking.new(@file_path)
 
       assert_raises(RuntimeError, "Could not extract statement balance for #{@file_path}") do
         parser.statement_balance
@@ -125,8 +125,8 @@ module StatementParser
       11/30    Interest Paid                                                                                                $2.54                   $5,638.71
       11/30    Ending Balance                                                                                                                    $5,638.71
       TEXT
-      SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-      parser = SchwabChecking.new(@file_path)
+      CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = CharlesSchwabChecking.new(@file_path)
 
       transactions = parser.transactions
       assert_equal 6, transactions.size
@@ -185,8 +185,8 @@ module StatementParser
       10/31    Interest Paid                                                                                                $2.54                   $11,838.71
       10/31    Ending Balance                                                                                                                    $11,838.71
       TEXT
-      SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-      parser = SchwabChecking.new(@file_path)
+      CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = CharlesSchwabChecking.new(@file_path)
 
       transactions = parser.transactions
       assert_equal 4, transactions.size
@@ -232,8 +232,8 @@ module StatementParser
       01/31    Interest Paid                                                                                                $2.54                   $11,838.71
       01/31    Ending Balance                                                                                                                    $11,838.71
       TEXT
-      SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-      parser = SchwabChecking.new(@file_path)
+      CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = CharlesSchwabChecking.new(@file_path)
 
       transactions = parser.transactions
       assert_equal 3, transactions.size
@@ -272,8 +272,8 @@ module StatementParser
       TEXT
 
       Timecop.travel(Date.new(2025, 10, 1)) do
-        SchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
-        parser = SchwabChecking.new(@file_path)
+        CharlesSchwabChecking.any_instance.stubs(:get_statement_text).returns(mock_text)
+        parser = CharlesSchwabChecking.new(@file_path)
         transactions = parser.transactions
 
         assert_equal 1, transactions.size

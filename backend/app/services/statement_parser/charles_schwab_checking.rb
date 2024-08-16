@@ -1,8 +1,9 @@
 module StatementParser
-  class SchwabChecking < Base
-    BANK_NAME = "Schwab"
+  class CharlesSchwabChecking < Base
+    BANK_NAME = "Charles Schwab"
     ACCOUNT_NAME = "Checking"
     ACCOUNT_TYPE = "checking"
+    IMAGE_FILENAME = "charles_schwab_checking.png"
 
     ALL_MONTHS = "January|February|March|April|May|June|July|August|September|October|November|December"
     DEBIT_KEYWORDS = ["withdrawal", "funds transfer to", "debit", "check"]

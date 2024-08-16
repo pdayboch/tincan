@@ -4,6 +4,7 @@ class StatementParser::DummyParser < StatementParser::Base
   BANK_NAME = "Dummy Bank"
   ACCOUNT_NAME = "Dummy Account"
   ACCOUNT_TYPE = "dummy type"
+  IMAGE_FILENAME = "dummy_filename.png"
 
   def statement_end_date; end
   def statement_start_date; end
@@ -28,6 +29,7 @@ class SupportedAccountsEntityTest < ActiveSupport::TestCase
         bankName: "Dummy Bank",
         accountName: "Dummy Account",
         accountType: "dummy type",
+        imageFilename: "images/account_providers/dummy_filename.png",
       },
     ]
 
