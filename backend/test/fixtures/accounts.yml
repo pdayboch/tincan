@@ -33,7 +33,6 @@ two:
   deletable: true
   user: two
   statement_directory: "credit card/capital one quicksilver"
-  parser_class: "CapitalOneCreditCard"
 
 three:
   bank_name: Chase
@@ -43,7 +42,6 @@ three:
   deletable: true
   user: one
   statement_directory: "chase/amazon card"
-  parser_class: "ChaseAmazonCreditCard"
 
 non_deletable_account:
   name: Cash
