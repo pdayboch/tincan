@@ -18,7 +18,7 @@
 one:
   bank_name: Chase
   name: Freedom
-  account_type: Credit Card
+  account_type: credit card
   active: true
   deletable: true
   user: one
@@ -28,7 +28,7 @@ one:
 two:
   bank_name: Capital One
   name: Quicksilver
-  account_type: Credit Card
+  account_type: credit card
   active: true
   deletable: true
   user: two
@@ -37,7 +37,7 @@ two:
 three:
   bank_name: Chase
   name: Amazon
-  account_type: Credit Card
+  account_type: credit card
   active: true
   deletable: true
   user: one

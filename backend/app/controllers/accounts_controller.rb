@@ -4,9 +4,14 @@ class AccountsController < ApplicationController
 
   # GET /accounts
   def index
-    @accounts = Account.all
+    user_ids = params[:userIds]
+    account_types = params[:accountTypes]
 
-    render json: @accounts
+    data = AccountDataEntity
+      .new(user_ids: user_ids, account_types: account_types)
+      .get_data
+
+    render json: data
   end
 
   # POST /accounts
