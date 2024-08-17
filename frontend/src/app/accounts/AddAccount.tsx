@@ -18,19 +18,23 @@ export default function AddAccount({
 }: AddAccountProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [supportedAccounts, setSupportedAccounts] = useState<SupportedAccount[]>([]);
+  const [filteredAccounts, setFilteredAccounts] = useState<SupportedAccount[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<SupportedAccount | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [statementDirectory, setStatementDirectory] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Fetch Supported Accounts on component load.
   useEffect(() => {
     fetchSupportedAccounts()
       .then(data => {
         setSupportedAccounts(data);
+        setFilteredAccounts(data);
       })
       .catch(error => {
         console.error(error);
         setSupportedAccounts([]);
+        setFilteredAccounts([]);
       });
   }, []);
 
@@ -40,6 +44,8 @@ export default function AddAccount({
 
   const handleCloseModal = () => {
     handleBackButtonClick(); // reset the modal state
+    setSearchQuery(""); // reset the seach query
+    setFilteredAccounts(supportedAccounts);
     setIsModalOpen(false);
   };
 
@@ -68,6 +74,20 @@ export default function AddAccount({
     return `http://127.0.0.1:3005/${imageFilename}`;
   }
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    const filtered = supportedAccounts.filter(account =>
+      `${account.bankName} ${account.accountName}`.toLowerCase().includes(query)
+    );
+    setFilteredAccounts(filtered);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setFilteredAccounts(supportedAccounts);
+  }
+
   return (
     <div>
       {/* Add Button */}
@@ -81,7 +101,7 @@ export default function AddAccount({
         onClick={handleButtonClick}
       >
         <PlusIcon className="h-5 w-5" />
-        <span>Add Account</span>
+        <span className="text-m">Add Account</span>
       </div>
       {/* Add Account Modal */}
       {isModalOpen && (
@@ -90,14 +110,29 @@ export default function AddAccount({
             {/* X (close) button */}
             <button
               onClick={handleCloseModal}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
             >&times;</button>
             {!selectedAccount ? (
               // Add account first screen - select provider
               <>
                 <p>Select account</p>
-                <div className="grid grid-cols-3 gap-4">
-                  {supportedAccounts.map((account) => (
+                <div className="flex my-4">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    placeholder="Search accounts"
+                    className="p-2 border rounded w-full"
+                  />
+                  <button
+                    onClick={handleClearSearch}
+                    className="ml-2 p-2 rounded"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <div className="grid grid-cols-3 gap-4 overflow-y-auto h-96">
+                  {filteredAccounts.map((account) => (
                     <div
                       key={account.accountProvider}
                       className="fex flex-col items-center cursor-pointer"

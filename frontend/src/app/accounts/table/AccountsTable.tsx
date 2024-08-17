@@ -139,7 +139,7 @@ export default function AccountsTable({
   const shouldDisplayUser = users.length > 1;
 
   return (
-    <div className="w-full">
+    <div className="w-3/4">
       {/* Add account top section */}
       <div className="flex justify-center my-4">
         <AddAccount
