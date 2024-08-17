@@ -1,7 +1,7 @@
-import { Account, AccountUpdate, User } from "@/app/lib/definitions";
+import { Account, AccountUpdate, SupportedAccount, User } from "@/app/lib/definitions";
 import AddAccount from "../AddAccount";
 import AccountSubRow from "./AccountSubRow";
-import { updateAccount } from "@/app/lib/data";
+import { createAccount, deleteAccount, updateAccount } from "@/app/lib/data";
 
 type AccountsTableProps = {
   accounts: Account[];
@@ -44,11 +44,53 @@ export default function AccountsTable({
       if (error instanceof Error) {
         console.error(`Error updating account data: ${error.message}`);
       } else {
-        console.log('Error updating transaction: An unknown error occurred');
+        console.log('Error updating account: An unknown error occurred');
       }
       return false;
     }
-  }
+  };
+
+  const handleAddAccount = async (
+    accountProvider: SupportedAccount,
+    userId: number,
+    statementDirectory: string
+  ): Promise<boolean> => {
+    try {
+      const createdAccount = await createAccount(
+        accountProvider.accountProvider,
+        userId,
+        statementDirectory
+      );
+      const updatedAccounts = [...accounts, createdAccount];
+      setAccounts(updatedAccounts);
+      return true;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(`Error adding account ${error.message}`);
+      } else {
+        console.log('Error adding account: An unknown error occurred');
+      }
+      return false;
+    }
+  };
+
+  const handleDeleteAccount = async (accountId: number): Promise<boolean> => {
+    try {
+      const success = await deleteAccount(accountId)
+      if (success) {
+        const updatedAccounts = accounts.filter(account => account.id != accountId);
+        setAccounts(updatedAccounts);
+      }
+      return success;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(`Error deleting account data: ${error.message}`);
+      } else {
+        console.log('Error deleting account: An unknown error occurred');
+      }
+      return false;
+    }
+  };
 
   const groupAndSortAccounts = (): GroupedAccounts[] => {
     // Filter out cash accounts
@@ -100,7 +142,10 @@ export default function AccountsTable({
     <div className="w-full">
       {/* Add account top section */}
       <div className="flex justify-center my-4">
-        <AddAccount />
+        <AddAccount
+          users={users}
+          onAddAccount={handleAddAccount}
+        />
       </div>
 
       {/* Table */}
@@ -136,6 +181,7 @@ export default function AccountsTable({
                           key={account.id}
                           account={account}
                           onUpdateAccount={handleUpdateAccount}
+                          onDeleteAccount={handleDeleteAccount}
                         />
                       ))}
                     </div>

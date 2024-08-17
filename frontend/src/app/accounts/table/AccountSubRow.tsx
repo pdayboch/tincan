@@ -6,11 +6,13 @@ import AccountModal from "../AccountModal";
 type AccountSubRowProps = {
   account: Account;
   onUpdateAccount: (accountId: number, data: AccountUpdate) => void;
+  onDeleteAccount: (accountId: number) => void;
 };
 
 export default function AccountSubRow({
   account,
-  onUpdateAccount
+  onUpdateAccount,
+  onDeleteAccount
 }: AccountSubRowProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -39,6 +41,7 @@ export default function AccountSubRow({
           account={account}
           onClose={handleCloseModal}
           onUpdateAccount={onUpdateAccount}
+          onDeleteAccount={onDeleteAccount}
         />
       )}
     </div>

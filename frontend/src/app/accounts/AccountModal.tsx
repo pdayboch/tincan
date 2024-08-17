@@ -8,12 +8,14 @@ type AccountModalProps = {
   account: Account;
   onClose: () => void;
   onUpdateAccount: (accountId: number, data: AccountUpdate) => void;
+  onDeleteAccount: (accountId: number) => void;
 };
 
 export default function AccountModal({
   account,
   onClose,
-  onUpdateAccount
+  onUpdateAccount,
+  onDeleteAccount
 }: AccountModalProps) {
   const [statementDirectory, setStatementDirectory] = useState(account.statementDirectory);
   const [isStatementDirectorySaved, setIsStatementDirectorySaved] = useState(true);
@@ -57,7 +59,7 @@ export default function AccountModal({
       `Are you sure you want to delete ${accountDisplayName}?\n\nThis will delete all associated transactions. To keep the transactions but disable the account, click cancel and disable the account from the previous screen.`
     );
     if (confirmation) {
-      // Handle the deletion logic here
+      onDeleteAccount(account.id);
       onClose();
     }
   };

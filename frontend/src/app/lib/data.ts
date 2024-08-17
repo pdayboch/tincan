@@ -5,7 +5,8 @@ import {
   Transaction,
   Account,
   User,
-  AccountUpdate
+  AccountUpdate,
+  SupportedAccount
 } from "./definitions";
 
 export async function fetchCategories(): Promise<CategoryResponse> {
@@ -76,12 +77,69 @@ export async function updateAccount(
   return data;
 }
 
+export async function createAccount(
+  accountProvider: string,
+  userId: number,
+  statementDirectory: string
+): Promise<Account> {
+  const url = `http://127.0.0.1:3005/accounts`
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      accountProvider: accountProvider,
+      userId: userId,
+      statementDirectory: statementDirectory
+    })
+  });
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(`Error Creating Account: ${errorMessage}`)
+  }
+  const data: Account = await response.json();
+  return data;
+}
+
+export async function deleteAccount(
+  accountId: number,
+): Promise<boolean> {
+  const url = `http://127.0.0.1:3005/accounts/${accountId}`
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(`Error deleting account: ${errorMessage}`)
+  }
+  return true;
+}
+
+export async function fetchSupportedAccounts(): Promise<SupportedAccount[]> {
+  const url = 'http://127.0.0.1:3005/accounts/supported';
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`Error fetching supported accounts: ${response.status}`);
+  }
+  const data: SupportedAccount[] = await response.json();
+  return data;
+}
+
 export async function fetchTransactions(
   searchParams: URLSearchParams
-):Promise<TransactionsResponse> {
+): Promise<TransactionsResponse> {
   const params = new URLSearchParams(searchParams);
   const url = `http://127.0.0.1:3005/transactions?${searchParams}`;
-  const response = await fetch(url,{
+  const response = await fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
