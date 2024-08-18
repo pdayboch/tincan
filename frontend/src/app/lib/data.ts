@@ -9,8 +9,12 @@ import {
   SupportedAccount
 } from "./definitions";
 
+const getBaseUrl = () => {
+  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:3005';
+};
+
 export async function fetchCategories(): Promise<CategoryResponse> {
-  const url = 'http://127.0.0.1:3005/categories';
+  const url = `${getBaseUrl()}/categories`;
   const response = await fetch(url, {
     method: 'GET',
     headers: {
@@ -26,7 +30,7 @@ export async function fetchCategories(): Promise<CategoryResponse> {
 }
 
 export async function fetchUsers(): Promise<User[]> {
-  const url = 'http://127.0.0.1:3005/users';
+  const url = `${getBaseUrl()}/users`;
   const response = await fetch(url, {
     method: 'GET',
     headers: {
@@ -42,7 +46,7 @@ export async function fetchUsers(): Promise<User[]> {
 }
 
 export async function fetchAccounts(): Promise<Account[]> {
-  const url = 'http://127.0.0.1:3005/accounts';
+  const url = `${getBaseUrl()}/accounts`;
   const response = await fetch(url, {
     method: 'GET',
     headers: {
@@ -61,7 +65,7 @@ export async function updateAccount(
   accountId: number,
   updates: AccountUpdate
 ): Promise<Account> {
-  const url = `http://127.0.0.1:3005/accounts/${accountId}`
+  const url = `${getBaseUrl()}/accounts/${accountId}`;
   const response = await fetch(url, {
     method: 'PUT',
     headers: {
@@ -82,7 +86,7 @@ export async function createAccount(
   userId: number,
   statementDirectory: string
 ): Promise<Account> {
-  const url = `http://127.0.0.1:3005/accounts`
+  const url = `${getBaseUrl()}/accounts`;
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -105,7 +109,7 @@ export async function createAccount(
 export async function deleteAccount(
   accountId: number,
 ): Promise<boolean> {
-  const url = `http://127.0.0.1:3005/accounts/${accountId}`
+  const url = `${getBaseUrl()}/accounts/${accountId}`;
   const response = await fetch(url, {
     method: 'DELETE',
     headers: {
@@ -120,7 +124,7 @@ export async function deleteAccount(
 }
 
 export async function fetchSupportedAccounts(): Promise<SupportedAccount[]> {
-  const url = 'http://127.0.0.1:3005/accounts/supported';
+  const url = `${getBaseUrl()}/accounts/supported`;
   const response = await fetch(url, {
     method: 'GET',
     headers: {
@@ -138,7 +142,7 @@ export async function fetchTransactions(
   searchParams: URLSearchParams
 ): Promise<TransactionsResponse> {
   const params = new URLSearchParams(searchParams);
-  const url = `http://127.0.0.1:3005/transactions?${searchParams}`;
+  const url = `${getBaseUrl()}/transactions?${searchParams}`;
   const response = await fetch(url, {
     method: 'GET',
     headers: {
@@ -157,7 +161,7 @@ export async function updateTransaction(
   transaction_id: number,
   updates: TransactionUpdate
 ): Promise<Transaction> {
-  const url = `http://127.0.0.1:3005/transactions/${transaction_id}`
+  const url = `${getBaseUrl()}/transactions/${transaction_id}`;
   const response = await fetch(url, {
     method: 'PUT',
     headers: {

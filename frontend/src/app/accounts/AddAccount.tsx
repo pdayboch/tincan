@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { SupportedAccount, User } from '../lib/definitions';
@@ -140,10 +141,13 @@ export default function AddAccount({
                     >
                       <div className="relative">
                         <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
-                          <img
+                          <Image
                             src={getImageUrl(account.imageFilename)}
+                            width={96}
+                            height={96}
                             alt={`${account.bankName} ${account.accountName}`}
-                            className="w-24 h-24 object-contain rounded-lg"
+                            className="object-contain rounded-lg"
+                            style={{ height: '96px', width: 'auto' }}
                           />
                         </div>
                       </div>

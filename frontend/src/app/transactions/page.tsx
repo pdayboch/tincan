@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation';
 import Search from './Search';
 import { CreateTransaction } from './buttons';
@@ -8,7 +8,7 @@ import Filters from './TransactionFilters';
 import { Account, Category, Transaction, TransactionMetaData, User } from '../lib/definitions';
 import { fetchAccounts, fetchCategories, fetchTransactions, fetchUsers } from '../lib/data';
 
-export default function Page() {
+function TransactionsContent() {
   const [
     isLoadingTransactions,
     setLoadingTransactions
@@ -39,7 +39,7 @@ export default function Page() {
     setCategories
   ] = useState<Category[]>([]);
 
-  const[
+  const [
     isLoadingAccounts,
     setLoadingAccounts
   ] = useState<boolean>(true);
@@ -49,7 +49,7 @@ export default function Page() {
     setAccounts
   ] = useState<Account[]>([]);
 
-  const[
+  const [
     isLoadingUsers,
     setLoadingUsers
   ] = useState<boolean>(true);
@@ -110,21 +110,21 @@ export default function Page() {
   useEffect(() => {
     setLoadingTransactions(true);
     fetchTransactions(searchParams)
-    .then(data => {
-      setTransactions(data.transactions);
-      setTransactionMetaData({
-        totalCount: data.meta.totalCount,
-        filteredCount: data.meta.filteredCount,
-        prevPage: data.meta.prevPage,
-        nextPage: data.meta.nextPage
-    });
-      setLoadingTransactions(false);
-    })
-    .catch(error => {
-      console.error(error);
-      setTransactions([]);
-      setLoadingTransactions(false);
-    });
+      .then(data => {
+        setTransactions(data.transactions);
+        setTransactionMetaData({
+          totalCount: data.meta.totalCount,
+          filteredCount: data.meta.filteredCount,
+          prevPage: data.meta.prevPage,
+          nextPage: data.meta.nextPage
+        });
+        setLoadingTransactions(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setTransactions([]);
+        setLoadingTransactions(false);
+      });
   }, [searchParams]);
 
   return (
@@ -148,5 +148,13 @@ export default function Page() {
         />
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TransactionsContent />
+    </Suspense>
   );
 }

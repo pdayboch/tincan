@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Account, User } from '../lib/definitions';
 import { fetchAccounts, fetchUsers } from '../lib/data';
 import Filters from './AccountFilters';
@@ -8,7 +8,7 @@ import { Inter } from "next/font/google";
 import clsx from 'clsx';
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
-export default function Page() {
+function AccountsContent() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(true)
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -64,5 +64,13 @@ export default function Page() {
         />
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AccountsContent />
+    </Suspense>
   );
 }

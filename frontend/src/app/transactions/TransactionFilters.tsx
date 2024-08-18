@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import clsx from "clsx";
 import FilterSelector from "@/app/ui/shared/filters/FilterSelector";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-const font = Inter({ weight:["400"], subsets:['latin'] });
+const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 type TransactionFiltersProps = {
   accounts: Account[];
@@ -31,7 +31,7 @@ export default function TransactionFilters({
       params.delete('accounts[]');
     } else {
       // Add value to selected accounts.
-      if (!selectedAccounts.includes(id)){
+      if (!selectedAccounts.includes(id)) {
         params.append('accounts[]', id);
       } else {
         // Remove value from selected accounts.
@@ -61,7 +61,7 @@ export default function TransactionFilters({
       params.delete('users[]');
     } else {
       // Add value to selected users.
-      if (!selectedUsers.includes(id)){
+      if (!selectedUsers.includes(id)) {
         params.append('users[]', id);
       } else {
         // Remove value from selected users.

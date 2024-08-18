@@ -25,6 +25,19 @@ services:
     depends_on:
       - db
 
+  frontend:
+    build:
+      context: ./frontend/
+      args:
+        - NEXT_PUBLIC_API_BASE_URL=${API_BASE_URL}
+    image: tincan/frontend:latest
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=${API_BASE_URL}
+    ports:
+      - "3000:3000"
+    networks:
+      - tincan-backend
+
 networks:
   tincan-backend:
     driver: bridge
