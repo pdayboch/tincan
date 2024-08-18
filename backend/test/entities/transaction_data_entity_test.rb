@@ -228,6 +228,13 @@ class TransactionTest < ActiveSupport::TestCase
   end
 
   test "initialize raises error when starting_after and ending_before are both populated" do
+    error = assert_raises(
+      ArgumentError
+    ) do
+      TransactionDataEntity.new(starting_after: "1234.123", ending_before: "2345.234")
+    end
+
+    assert_equal "Cannot specify both starting_after and ending_before parameters.", error.message
   end
 
   test "initialize raises error when sort_by is invalid" do
