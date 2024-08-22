@@ -6,7 +6,6 @@ class SupportedAccountsEntity
         bankName: parser_class::BANK_NAME,
         accountName: parser_class::ACCOUNT_NAME,
         accountType: parser_class::ACCOUNT_TYPE,
-        imageFilename: image_path_from_filename(parser_class::IMAGE_FILENAME),
       }
     end
   end
@@ -22,11 +21,5 @@ class SupportedAccountsEntity
     else
       raise InvalidParser, "Invalid accountProvider: #{provider}"
     end
-  end
-
-  private
-
-  def image_path_from_filename(filename)
-    "images/account_providers/#{filename}"
   end
 end

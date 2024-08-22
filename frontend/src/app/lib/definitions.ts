@@ -56,8 +56,7 @@ export type SupportedAccount = {
   accountProvider: string,
   bankName: string,
   accountName: string,
-  accountType: string,
-  imageFilename: string
+  accountType: string
 }
 
 export type User = {

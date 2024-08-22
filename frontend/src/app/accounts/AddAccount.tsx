@@ -71,10 +71,6 @@ export default function AddAccount({
     }
   };
 
-  const getImageUrl = (imageFilename: string) => {
-    return `http://127.0.0.1:3005/${imageFilename}`;
-  }
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
@@ -87,6 +83,10 @@ export default function AddAccount({
   const handleClearSearch = () => {
     setSearchQuery("");
     setFilteredAccounts(supportedAccounts);
+  }
+
+  const getImageUrl = (accountPovider: string) => {
+    return `/account_providers/${accountPovider}.png`;
   }
 
   return (
@@ -142,7 +142,7 @@ export default function AddAccount({
                       <div className="relative">
                         <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
                           <Image
-                            src={getImageUrl(account.imageFilename)}
+                            src={getImageUrl(account.accountProvider)}
                             width={96}
                             height={96}
                             alt={`${account.bankName} ${account.accountName}`}

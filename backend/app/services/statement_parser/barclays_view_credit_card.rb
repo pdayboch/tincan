@@ -3,7 +3,6 @@ module StatementParser
     BANK_NAME = "Barclays"
     ACCOUNT_NAME = "View Credit Card"
     ACCOUNT_TYPE = "credit card"
-    IMAGE_FILENAME = "barclays_view.png"
 
     def statement_end_date
       @statement_end_date ||= begin

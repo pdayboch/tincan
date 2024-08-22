@@ -3,7 +3,6 @@ module StatementParser
     BANK_NAME = "Chase"
     ACCOUNT_NAME = "Amazon Credit Card"
     ACCOUNT_TYPE = "credit card"
-    IMAGE_FILENAME = "chase_amazon.png"
 
     def statement_end_date
       @statement_end_date ||= begin
