@@ -11,18 +11,13 @@ max_threads_count = ENV.fetch("RAILS_MAX_THREADS") { 5 }
 min_threads_count = ENV.fetch("RAILS_MIN_THREADS") { max_threads_count }
 threads min_threads_count, max_threads_count
 
+port ENV.fetch("PORT") { 3005 }
+
 # Specifies that the worker count should equal the number of processors in production.
 if ENV["RAILS_ENV"] == "production"
-  ssl_bind '0.0.0.0', '3005', {
-    key: '/etc/ssl/private/server.key',
-    cert: '/etc/ssl/certs/server.crt',
-    verify_mode: 'none'
-  }
   require "concurrent-ruby"
   worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { Concurrent.physical_processor_count })
   workers worker_count if worker_count > 1
-else
-  port ENV.fetch("PORT") { 3005 }
 end
 
 # Specifies the `worker_timeout` threshold that Puma will use to wait before

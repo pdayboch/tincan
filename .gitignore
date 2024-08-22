@@ -32,3 +32,11 @@
 /backend/config/credentials/development.key
 /backend/config/credentials/production.key
 /backend/config/credentials/test.key
+
+# Ignore SSL certs for nginx
+/nginx/ssl/*
+!/nginx/ssl/.keep
+
+# Ignore nginx logs
+/nginx/logs/*
+!/nginx/logs/.keep

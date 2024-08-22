@@ -21,14 +21,8 @@ FROM base AS build
 # and generate ssl certs.
 RUN apt-get update -qq && \
   apt-get install --no-install-recommends -y build-essential \
-  git libpq-dev pkg-config openssl
+  git libpq-dev pkg-config
 
-# Generate self signed SSL certs
-RUN mkdir -p /etc/ssl/certs && \
-  openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
-  -keyout /etc/ssl/private/server.key \
-  -out /etc/ssl/certs/server.crt \
-  -subj "/C=US/ST=New York/O=Dayboch Labs/CN=localhost"
 
 # Make sure Bundler version matches the bundler version in Gemfile.lock
 # and install Bundler
@@ -67,16 +61,10 @@ RUN apt-get update -qq && \
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
-COPY --from=build /etc/ssl/private/server.key /etc/ssl/private/server.key
-COPY --from=build /etc/ssl/certs/server.crt /etc/ssl/certs/server.crt
 
 # Own certs and the runtime files as a non-root user for security
 RUN chown -R rails:rails \
-  db log storage tmp \
-  /etc/ssl/private/server.key \
-  /etc/ssl/certs/server.crt && \
-  chgrp -R rails /etc/ssl/private && \
-  chmod 750 /etc/ssl/private
+  db log storage tmp
 
 USER rails:rails
 
