@@ -21,6 +21,8 @@ class Account < ApplicationRecord
 
   before_destroy :check_deletable
 
+  scope :active, -> { where(active: true) }
+
   def statement_parser(file_path)
     "StatementParser::#{parser_class}".constantize.new(file_path) if parser_class.present?
   end

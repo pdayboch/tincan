@@ -27,4 +27,16 @@ class AccountTest < ActiveSupport::TestCase
     # Reload the account from the database and assert that it still exists
     refute_nil Account.find_by(id: account.id), 'Account was deleted despite being non-deletable'
   end
+
+  test 'active scope should return only active accounts' do
+# Fetch active accounts using the scope
+    active_accounts = Account.active
+
+    # Assert that the active scope returns only the active accounts
+    assert_includes active_accounts, accounts(:one), 'Active account one is not included in the active scope'
+    assert_includes active_accounts, accounts(:two), 'Active account two is not included in the active scope'
+    assert_includes active_accounts, accounts(:three), 'Active account three is not included in the active scope'
+    assert_includes active_accounts, accounts(:non_deletable_account), 'Non-deletable active account is not included in the active scope'
+    assert_not_includes active_accounts, accounts(:inactive_account), 'Inactive account is included in the active scope'
+  end
 end

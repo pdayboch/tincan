@@ -49,3 +49,11 @@ non_deletable_account:
   active: true
   deletable: false
   user: one
+
+inactive_account:
+  bank_name: Inactive bank
+  name: Inactive account
+  account_type: credit card
+  active: false
+  deletable: true
+  user: one
