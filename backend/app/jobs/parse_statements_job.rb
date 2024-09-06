@@ -4,7 +4,7 @@ class ParseStatementsJob < ApplicationJob
   ROOT_DOC_DIR = ENV["ROOT_DOC_DIR"]
 
   def perform(*args)
-    Account.find_each do |account|
+    Account.active.find_each do |account|
       # Skip account if statement_directory or parser_class is blank
       next if account.statement_directory.blank? || account.parser_class.blank?
 

@@ -31,8 +31,10 @@ module StatementParser
     def statement_balance
       @statement_balance ||= begin
           regex = /New Balance\s+.*\n\s*([-]?\$[\d,]+\.\d{2})/
+          regex_second_format = /New Balance\n[\s\w:]+[\w\s]+([-]?\$[\d,]+\.\d{2})/
 
           match = @text.match(regex)
+          match ||= @text.match(regex_second_format)
           raise("Could not extract statement balance for #{@file_path}") unless match
           match[1].gsub(/[,$]/, "").to_f
         end

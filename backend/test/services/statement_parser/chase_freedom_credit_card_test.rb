@@ -8,7 +8,7 @@ module StatementParser
     end
 
     def test_statement_end_date
-      mock_text = <<-TEXT
+      mock_text = <<~TEXT
       ACCOUNT  SUMMARY
       Account Number: 1234 5678 1234 5678
       Previous Balance                                   $0.00
@@ -45,7 +45,7 @@ module StatementParser
     end
 
     def test_statement_start_date
-      mock_text = <<-TEXT
+      mock_text = <<~TEXT
       ACCOUNT  SUMMARY
       Account Number: 1234 5678 1234 5678
       Previous Balance                                   $0.00
@@ -82,14 +82,17 @@ module StatementParser
     end
 
     def test_statement_balance
-      mock_text = <<-TEXT
-      Manageyour accountonlinat:    CustomerService:      Mobile:Downloadthe
-      www.chase.com/cardhelp        1-800-524-3880        ChaseMobileapp today
-      SCENARIO-1D
-      New Balance
-      January 2023             CHASE        FREEDOM:       ULTIMATE
-      $406.19
-      S   M   T   W    T   F    S           REWARDS®         SUMMARY
+      mock_text = <<~TEXT
+        Manageyour accountonlinat:    CustomerService:      Mobile:Downloadthe
+        www.chase.com/cardhelp        1-800-524-3880        ChaseMobileapp today
+        SCENARIO-1D
+        New Balance
+        January 2023             CHASE        FREEDOM:       ULTIMATE
+        $406.19
+        S   M   T   W    T   F    S           REWARDS®         SUMMARY
+        Minimum Payment Due
+        31   1    2   3    4   5    6                                 Previous points balance                             8,115
+        $40.00                      + 1% (1 Pt)/$1 earned on all purchases                94
       TEXT
       ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
@@ -98,19 +101,64 @@ module StatementParser
     end
 
     def test_negative_statement_balance
-      mock_text = <<-TEXT
-      Manageyour accountonlinat:    CustomerService:      Mobile:Downloadthe
-      www.chase.com/cardhelp        1-800-524-3880        ChaseMobileapp today
-      SCENARIO-1D
-      New Balance
-      January 2023             CHASE        FREEDOM:       ULTIMATE
-      -$406.19
-      S   M   T   W    T   F    S           REWARDS®         SUMMARY
+      mock_text = <<~TEXT
+        Manageyour accountonlinat:    CustomerService:      Mobile:Downloadthe
+        www.chase.com/cardhelp        1-800-524-3880        ChaseMobileapp today
+        SCENARIO-1D
+        New Balance
+        January 2023             CHASE        FREEDOM:       ULTIMATE
+        -$406.19
+        S   M   T   W    T   F    S           REWARDS®         SUMMARY
+        Minimum Payment Due
+        31   1    2   3    4   5    6                                 Previous points balance                             8,115
+        $40.00                      + 1% (1 Pt)/$1 earned on all purchases                94
       TEXT
       ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
-      assert_equal -406.19, parser.statement_balance
+      assert_equal(-406.19, parser.statement_balance)
+    end
+
+    def test_statement_balance_second_format
+      mock_text = <<~TEXT
+        Manage youraccount onlinat:          CustomerService:       Mobile:Downloadthe
+        www.chase.com/cardhelp               1-800-524-3880                   ®
+        ChaseMobileapp today
+        SCENARIO-1D
+        New Balance
+        March 2024                                          CHASE        FREEDOM:           ULTIMATE
+        S   M    T   W   T    F   S      $406.19
+        REWARDS®             SUMMARY
+        Minimum Payment Due
+        25   26  27  28   29   1   2
+        Previous points balance                               71
+        $40.00
+      TEXT
+      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = ChaseFreedomCreditCard.new(@file_path)
+
+      assert_equal 406.19, parser.statement_balance
+    end
+
+    def test_negative_statement_balance_second_format
+      mock_text = <<~TEXT
+        Manage youraccount onlinat:          CustomerService:       Mobile:Downloadthe
+        www.chase.com/cardhelp               1-800-524-3880                   ®
+        ChaseMobileapp today
+        SCENARIO-1D
+        New Balance
+        March 2024                                          CHASE        FREEDOM:           ULTIMATE
+        S   M    T   W   T    F   S      -$406.19
+        REWARDS®             SUMMARY
+        Minimum Payment Due
+        25   26  27  28   29   1   2
+        Previous points balance                               71
+        $40.00
+      TEXT
+      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      parser = ChaseFreedomCreditCard.new(@file_path)
+
+      assert_equal(-406.19, parser.statement_balance)
     end
 
     def test_statement_balance_raises_error
@@ -124,23 +172,23 @@ module StatementParser
     end
 
     def test_transactions
-      mock_text = <<-TEXT
-      Opening/Closing Date                    01/02/23 - 01/31/23
-      TabSummary
-      ACCOUNT             ACTIVITY
-      Date of
-      Transaction                              Merchant Name or Transaction Description        $ Amount
-      PAYMENTS      AND   OTHER     CREDITS
-      01/26                   AUTOMATIC PAYMENT - THANK YOU                                    -406.29
-      PURCHASE
-      01/20                   CLIPPER SERVICES CONCORD CA                                       20.00
-      01/26                   PG&E WEBRECURRING 800-743-5000 CA                                 73.31
-      01/28                   NOE VALLEY PET COMPANY SAN FRANCISCO CA                            5.42
-      2023 Totals Year-to-Date
-      Total fees charged in 2023                       $0.00
-      Total interest charged in 2023                   $0.00
-      Year-to-date totals do not reflect any fee or interest refunds
-      yo may ave received.
+      mock_text = <<~TEXT
+        Opening/Closing Date                    01/02/23 - 01/31/23
+        TabSummary
+        ACCOUNT             ACTIVITY
+        Date of
+        Transaction                              Merchant Name or Transaction Description        $ Amount
+        PAYMENTS      AND   OTHER     CREDITS
+        01/26                   AUTOMATIC PAYMENT - THANK YOU                                    -406.29
+        PURCHASE
+        01/20                   CLIPPER SERVICES CONCORD CA                                       20.00
+        01/26                   PG&E WEBRECURRING 800-743-5000 CA                                 73.31
+        01/28                   NOE VALLEY PET COMPANY SAN FRANCISCO CA                            5.42
+        2023 Totals Year-to-Date
+        Total fees charged in 2023                       $0.00
+        Total interest charged in 2023                   $0.00
+        Year-to-date totals do not reflect any fee or interest refunds
+        yo may ave received.
       TEXT
 
       ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
@@ -175,22 +223,22 @@ module StatementParser
     end
 
     def test_multi_month_statement_transactions
-      mock_text = <<-TEXT
-      Opening/Closing Date                    03/20/23 - 04/19/23
-      TabSummary
-      ACCOUNT             ACTIVITY
-      Date of
-      Transaction                              Merchant Name or Transaction Description        $ Amount
-      PAYMENTS      AND   OTHER     CREDITS
-      03/26                   AUTOMATIC PAYMENT - THANK YOU                                    -406.29
-      PURCHASE
-      03/20                   CLIPPER SERVICES CONCORD CA                                       20.00
-      04/18                   NOE VALLEY PET COMPANY SAN FRANCISCO CA                            5.42
-      2023 Totals Year-to-Date
-      Total fees charged in 2023                       $0.00
-      Total interest charged in 2023                   $0.00
-      Year-to-date totals do not reflect any fee or interest refunds
-      yo may ave received.
+      mock_text = <<~TEXT
+        Opening/Closing Date                    03/20/23 - 04/19/23
+        TabSummary
+        ACCOUNT             ACTIVITY
+        Date of
+        Transaction                              Merchant Name or Transaction Description        $ Amount
+        PAYMENTS      AND   OTHER     CREDITS
+        03/26                   AUTOMATIC PAYMENT - THANK YOU                                    -406.29
+        PURCHASE
+        03/20                   CLIPPER SERVICES CONCORD CA                                       20.00
+        04/18                   NOE VALLEY PET COMPANY SAN FRANCISCO CA                            5.42
+        2023 Totals Year-to-Date
+        Total fees charged in 2023                       $0.00
+        Total interest charged in 2023                   $0.00
+        Year-to-date totals do not reflect any fee or interest refunds
+        yo may ave received.
       TEXT
 
       ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
@@ -219,23 +267,23 @@ module StatementParser
     end
 
     def test_multi_year_statement_transactions
-      mock_text = <<-TEXT
-      Opening/Closing Date                    12/20/22 - 01/19/23
-      TabSummary
-      ACCOUNT             ACTIVITY
-      Date of
-      Transaction                              Merchant Name or Transaction Description        $ Amount
-      PAYMENTS      AND   OTHER     CREDITS
-      12/26                   AUTOMATIC PAYMENT - THANK YOU                                    -406.29
-      PURCHASE
-      12/21                   CLIPPER SERVICES CONCORD CA                                       20.00
-      01/02                   PG&E WEBRECURRING 800-743-5000 CA                                 73.31
-      01/15                   NOE VALLEY PET COMPANY SAN FRANCISCO CA                            5.42
-      2023 Totals Year-to-Date
-      Total fees charged in 2023                       $0.00
-      Total interest charged in 2023                   $0.00
-      Year-to-date totals do not reflect any fee or interest refunds
-      yo may ave received.
+      mock_text = <<~TEXT
+        Opening/Closing Date                    12/20/22 - 01/19/23
+        TabSummary
+        ACCOUNT             ACTIVITY
+        Date of
+        Transaction                              Merchant Name or Transaction Description        $ Amount
+        PAYMENTS      AND   OTHER     CREDITS
+        12/26                   AUTOMATIC PAYMENT - THANK YOU                                    -406.29
+        PURCHASE
+        12/21                   CLIPPER SERVICES CONCORD CA                                       20.00
+        01/02                   PG&E WEBRECURRING 800-743-5000 CA                                 73.31
+        01/15                   NOE VALLEY PET COMPANY SAN FRANCISCO CA                            5.42
+        2023 Totals Year-to-Date
+        Total fees charged in 2023                       $0.00
+        Total interest charged in 2023                   $0.00
+        Year-to-date totals do not reflect any fee or interest refunds
+        yo may ave received.
       TEXT
 
       ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
@@ -270,21 +318,21 @@ module StatementParser
     end
 
     def test_leap_day_transaction
-      mock_text = <<-TEXT
-      Opening/Closing Date                    02/20/24 - 03/19/24
-      TabSummary
-      ACCOUNT             ACTIVITY
-      Date of
-      Transaction                              Merchant Name or Transaction Description        $ Amount
-      PAYMENTS      AND   OTHER     CREDITS
-      02/25                   AUTOMATIC PAYMENT - THANK YOU                                    -406.29
-      PURCHASE
-      02/29                   CLIPPER SERVICES CONCORD CA                                       20.00
-      2024 Totals Year-to-Date
-      Total fees charged in 2024                       $0.00
-      Total interest charged in 2024                   $0.00
-      Year-to-date totals do not reflect any fee or interest refunds
-      yo may ave received.
+      mock_text = <<~TEXT
+        Opening/Closing Date                    02/20/24 - 03/19/24
+        TabSummary
+        ACCOUNT             ACTIVITY
+        Date of
+        Transaction                              Merchant Name or Transaction Description        $ Amount
+        PAYMENTS      AND   OTHER     CREDITS
+        02/25                   AUTOMATIC PAYMENT - THANK YOU                                    -406.29
+        PURCHASE
+        02/29                   CLIPPER SERVICES CONCORD CA                                       20.00
+        2024 Totals Year-to-Date
+        Total fees charged in 2024                       $0.00
+        Total interest charged in 2024                   $0.00
+        Year-to-date totals do not reflect any fee or interest refunds
+        yo may ave received.
       TEXT
 
       Timecop.travel(Date.new(2025, 10, 1)) do
