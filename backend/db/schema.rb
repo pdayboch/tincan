@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_03_222107) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_10_000015) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -32,6 +32,25 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_03_222107) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "categorization_conditions", force: :cascade do |t|
+    t.bigint "categorization_rule_id", null: false
+    t.string "transaction_field", null: false
+    t.string "match_type", null: false
+    t.string "match_value", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["categorization_rule_id"], name: "index_categorization_conditions_on_categorization_rule_id"
+  end
+
+  create_table "categorization_rules", force: :cascade do |t|
+    t.bigint "category_id", null: false
+    t.bigint "subcategory_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_categorization_rules_on_category_id"
+    t.index ["subcategory_id"], name: "index_categorization_rules_on_subcategory_id"
   end
 
   create_table "statements", force: :cascade do |t|
@@ -80,6 +99,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_03_222107) do
   end
 
   add_foreign_key "accounts", "users"
+  add_foreign_key "categorization_conditions", "categorization_rules"
+  add_foreign_key "categorization_rules", "categories"
+  add_foreign_key "categorization_rules", "subcategories"
   add_foreign_key "statements", "accounts"
   add_foreign_key "subcategories", "categories"
   add_foreign_key "transactions", "accounts"
