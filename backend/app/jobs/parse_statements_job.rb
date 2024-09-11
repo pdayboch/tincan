@@ -8,7 +8,8 @@ class ParseStatementsJob < ApplicationJob
       # Skip account if statement_directory or parser_class is blank
       next if account.statement_directory.blank? || account.parser_class.blank?
 
-      account_statements_directory = "#{ROOT_DOC_DIR}/#{account.statement_directory}"
+      dir = ROOT_DOC_DIR.chomp('/')
+      account_statements_directory = "#{dir}/#{account.statement_directory}"
 
       # Skip if the statement directory is missing
       # TODO - raise error if directory missing and bubble up to User facing?

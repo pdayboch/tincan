@@ -47,7 +47,7 @@ class ParseStatementsJobTest < ActiveJob::TestCase
   end
 
   teardown do
-    FileUtils.rm_rf(@account_directory)
+    FileUtils.rm_rf(@statement_directory)
   end
 
   test "should process statements and transactions" do
