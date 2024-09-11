@@ -13,9 +13,18 @@ class CategorizationRule < ApplicationRecord
   belongs_to :category
   belongs_to :subcategory
 
+  before_validation :sync_category_with_subcategory
+
   def match?(transaction)
     categorization_conditions.all? do |condition|
       condition.matches?(transaction)
     end
+  end
+
+  private
+
+  # Ensure that the category is in sync with the subcategory
+  def sync_category_with_subcategory
+    self.category = subcategory.category if subcategory
   end
 end
