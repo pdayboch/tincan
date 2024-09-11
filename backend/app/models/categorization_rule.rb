@@ -9,10 +9,13 @@
 #  updated_at     :datetime         not null
 #
 class CategorizationRule < ApplicationRecord
+  has_many :categorization_conditions
   belongs_to :category
   belongs_to :subcategory
 
   def match?(transaction)
-    categorization_conditions.all? { |condition| condition.match?(transaction) }
+    categorization_conditions.all? do |condition|
+      condition.matches?(transaction)
+    end
   end
 end

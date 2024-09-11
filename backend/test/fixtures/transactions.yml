@@ -79,3 +79,11 @@ seven:
   statement: three
   category: one
   subcategory: one
+
+uncategorized:
+  transaction_date: 2024-09-10
+  amount: 12.19
+  description: "uncategorized transaction"
+  account: one
+  category: uncategorized
+  subcategory: uncategorized
