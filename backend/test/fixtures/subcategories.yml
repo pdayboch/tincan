@@ -17,6 +17,10 @@ two:
   name: Restaurants
   category: two
 
+cash_and_atm:
+  name: "Cash and Atm"
+  category: misc
+
 unused_subcategory:
   name: Unused
   category: unused_category

@@ -10,9 +10,5 @@
 #
 
 one:
-  category: one
-  subcategory: one
-
-two:
-  category: two
-  subcategory: two
+  category: misc
+  subcategory: cash_and_atm

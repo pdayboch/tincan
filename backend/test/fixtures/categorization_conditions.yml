@@ -11,14 +11,62 @@
 #  updated_at             :datetime         not null
 #
 
-one:
+description_exactly:
   categorization_rule: one
-  transaction_field: MyString
-  match_type: MyString
-  match_value: MyString
+  transaction_field: description
+  match_type: exactly
+  match_value: "ATM"
 
-two:
-  categorization_rule: two
-  transaction_field: MyString
-  match_type: MyString
-  match_value: MyString
+description_starts_with:
+  categorization_rule: one
+  transaction_field: description
+  match_type: starts_with
+  match_value: "ATM"
+
+description_ends_with:
+  categorization_rule: one
+  transaction_field: description
+  match_type: ends_with
+  match_value: "ATM"
+
+amount_exactly:
+  categorization_rule: one
+  transaction_field: amount
+  match_type: exactly
+  match_value: 9.99
+
+amount_greater_than:
+  categorization_rule: one
+  transaction_field: amount
+  match_type: greater_than
+  match_value: 9.98
+
+amount_less_than:
+  categorization_rule: one
+  transaction_field: amount
+  match_type: less_than
+  match_value: 10.00
+
+date_exactly:
+  categorization_rule: one
+  transaction_field: date
+  match_type: exactly
+  match_value: 2024-07-02
+
+date_greater_than:
+  categorization_rule: one
+  transaction_field: date
+  match_type: greater_than
+  match_value: 2024-07-01
+
+date_less_than:
+  categorization_rule: one
+  transaction_field: date
+  match_type: less_than
+  match_value: 2024-07-03
+
+account_exactly:
+  categorization_rule: one
+  transaction_field: account
+  match_type: exactly
+  match_value: <%= ActiveRecord::FixtureSet.identify(:one, :accounts) %>

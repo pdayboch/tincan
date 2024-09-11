@@ -11,4 +11,8 @@
 class CategorizationRule < ApplicationRecord
   belongs_to :category
   belongs_to :subcategory
+
+  def match?(transaction)
+    categorization_conditions.all? { |condition| condition.match?(transaction) }
+  end
 end
