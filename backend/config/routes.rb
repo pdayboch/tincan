@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   namespace :categorization do
     resources :conditions, only: [:index, :create, :update, :destroy]
+    resources :rules, only: [:index, :create, :update, :destroy]
   end
 
   get "accounts/supported", to: "supported_accounts#index"

@@ -9,7 +9,7 @@
 #  updated_at     :datetime         not null
 #
 class CategorizationRule < ApplicationRecord
-  has_many :categorization_conditions
+  has_many :categorization_conditions, dependent: :destroy
   belongs_to :category
   belongs_to :subcategory
 
