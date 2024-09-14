@@ -18,10 +18,16 @@ class Account::CreateAccountService
       parser_class: @account_provider,
     )
 
-    if account.save
+    if account.errors.empty? && account.save
       account
     else
-      raise ActiveRecord::RecordInvalid, account
+      raise UnprocessableEntityError.new(account.errors)
     end
+
+  rescue InvalidParser => e
+    error = {
+      account_provider: ["'#{e.message}' is not a valid value."]
+    }
+    raise UnprocessableEntityError.new(error)
   end
 end

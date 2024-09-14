@@ -4,6 +4,11 @@ Rails.application.routes.draw do
   resources :users
   resources :subcategories, only: [:create, :update, :destroy]
   resources :categories, only: [:index, :create, :update, :destroy]
+
+  namespace :categorization do
+    resources :conditions, only: [:index, :create, :update, :destroy]
+  end
+
   get "accounts/supported", to: "supported_accounts#index"
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -19,7 +19,7 @@ class SupportedAccountsEntity
     if Object.const_defined?(class_name)
       class_name.constantize
     else
-      raise InvalidParser, "Invalid accountProvider: #{provider}"
+      raise InvalidParser, provider
     end
   end
 end

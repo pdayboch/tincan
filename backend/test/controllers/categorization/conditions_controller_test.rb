@@ -28,20 +28,24 @@ class Categorization::ConditionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal json_response['matchValue'], 'Coffee'
   end
 
-  test "should not create condition with missing matchValue" do
+  test "should render create errors with invalid params" do
     rule = categorization_rules(:one)
     assert_no_difference('CategorizationCondition.count') do
       post categorization_conditions_url, params: {
         categorizationRuleId: rule.id,
         transactionField: 'description',
         matchType: 'exactly',
-        matchValue: ''
       }
     end
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
 
-    assert_includes json_response["match_value"], "can't be blank"
+    expected_error = {
+      "field" => "matchValue",
+      "message" =>  "matchValue can't be blank"
+    }
+
+    assert_includes json_response['errors'], expected_error
   end
 
   test "should update condition" do
@@ -60,7 +64,7 @@ class Categorization::ConditionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal condition.match_value, '1.23'
   end
 
-  test "should not update condition with invalid matchType" do
+  test "should render update errors with invalid params" do
     condition = categorization_conditions(:description_exactly)
 
     patch categorization_condition_url(condition), params: {
@@ -71,7 +75,12 @@ class Categorization::ConditionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     json_response = JSON.parse(response.body)
 
-    assert_includes json_response["match_type"], "can't be blank"
+    expected_error = {
+      "field" => "matchType",
+      "message" =>  "matchType is not valid for the field 'amount` Valid match types are: greater_than, less_than, exactly"
+    }
+
+    assert_includes json_response['errors'], expected_error
   end
 
   test "should destroy condition" do
