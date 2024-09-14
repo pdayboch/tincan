@@ -5,6 +5,10 @@ class ApplicationController < ActionController::API
     render json: { errors: e.errors }, status: :unprocessable_entity
   end
 
+  rescue_from BadRequestError do |e|
+    render json: { errors: e.errors }, status: :bad_request
+  end
+
   private
 
   # Transform camelCase params to snake_case
