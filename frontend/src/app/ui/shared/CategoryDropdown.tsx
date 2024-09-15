@@ -31,7 +31,7 @@ export default function CategoryDropdown({
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return() => {
+    return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     }
   }, []);
@@ -62,8 +62,8 @@ export default function CategoryDropdown({
     }
   };
 
-  const handleSelection = async (subcategory_name: string) => {
-    onChange(subcategory_name);
+  const handleSelection = async (subcategoryName: string) => {
+    onChange(subcategoryName);
     toggleDropdown();
   }
 

@@ -46,7 +46,7 @@ export default function TransactionTableRowExpanded({
   }
 
   // Event handler for when description is saved:
-  const handleSaveDescription = async () =>{
+  const handleSaveDescription = async () => {
     setIsDescriptionLoading(true);
     await onUpdateTransactionDescription(transaction.id, description);
     setIsDescriptionLoading(false);
@@ -56,8 +56,8 @@ export default function TransactionTableRowExpanded({
   // Event handler for when date is selected:
   const handleDateSelect = (date: Date | null) => {
     if (date) {
-      const newDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
-    onUpdateTransactionDate(transaction.id, newDate);
+      const newDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+      onUpdateTransactionDate(transaction.id, newDate);
     }
   }
 
@@ -66,7 +66,7 @@ export default function TransactionTableRowExpanded({
     'text-red-600': transaction.amount < 0,
   });
 
-  const transactionDate = parseISO(transaction.transaction_date);
+  const transactionDate = parseISO(transaction.transactionDate);
 
   return (<>
     {/* original row */}
@@ -139,13 +139,13 @@ export default function TransactionTableRowExpanded({
         {formatCurrency(transaction.amount)}
       </td>
       <td>
-        <div className="w-4"/>
+        <div className="w-4" />
       </td>
     </tr>
     {/* expanded row */}
     <tr className="expanded-row bg-neutral-50">
       <td colSpan={5}>
-        <hr/>
+        <hr />
         <div className="flex justify-between w-full h-40">
           {/* Additional transaction content here */}
           <div
@@ -158,7 +158,7 @@ export default function TransactionTableRowExpanded({
             </p>
             <p>
               <b>Appears on statement as </b>
-              {transaction.statement_description}
+              {transaction.statementDescription}
             </p>
             <span>Split transaction</span>
           </div>
@@ -174,7 +174,7 @@ export default function TransactionTableRowExpanded({
             <ChevronDoubleUpIcon className="w-4 h-4" />
           </div>
         </div>
-        <hr/>
+        <hr />
       </td>
     </tr>
   </>);

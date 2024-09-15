@@ -134,7 +134,7 @@ class TransactionDataEntity
 
   # Generate pagination token for the next/prev page
   def page_token(transaction)
-    "#{transaction[@sort_by.to_sym]}.#{transaction[:id]}"
+    "#{transaction[@sort_by.camelize(:lower).to_sym]}.#{transaction[:id]}"
   end
 
   def filtered_count

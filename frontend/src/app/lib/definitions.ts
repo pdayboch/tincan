@@ -1,26 +1,10 @@
-export type TransactionUpdate = Partial<{
-  // Include only the fields that can be updated
-  transaction_date: string;
-  amount: number;
-  description: string;
-  notes: string;
-  subcategory_name: string;
-}>;
-
-export type AccountUpdate = Partial<{
-  // Include only the fields that can be updated
-  active: boolean;
-  statementDirectory: string;
-  nickname: string;
-}>;
-
 export type Transaction = {
   id: number,
-  transaction_date: string,
-  statement_transaction_date: string,
+  transactionDate: string,
+  statementTransactionDate: string,
   amount: number,
   description: string,
-  statement_description: string,
+  statementDescription: string,
   notes: string,
   account: { id: number, bank: string, name: string }
   user: { id: number, name: string },
@@ -40,6 +24,17 @@ export type TransactionsResponse = {
   transactions: Transaction[]
 }
 
+export type TransactionUpdate = Partial<{
+  // Include only the fields that can be updated
+  transactionDate: string;
+  amount: number;
+  description: string;
+  accountId: number,
+  statementId: number,
+  notes: string;
+  subcategoryName: string;
+}>;
+
 export type Account = {
   id: number,
   bankName: string,
@@ -51,6 +46,13 @@ export type Account = {
   statementDirectory: string,
   nickname: string
 }
+
+export type AccountUpdate = Partial<{
+  // Include only the fields that can be updated
+  active: boolean;
+  statementDirectory: string;
+  nickname: string;
+}>;
 
 export type SupportedAccount = {
   accountProvider: string,
@@ -65,17 +67,17 @@ export type User = {
   email: string
 }
 
-export type CategoryResponse = {
-  total_items: number,
-  filtered_items: number,
-  categories: Category[]
-}
-
 export type Category = {
   id: number,
   name: string,
   has_transactions: boolean,
   subcategories: Subcategory[]
+}
+
+export type CategoryResponse = {
+  total_items: number,
+  filtered_items: number,
+  categories: Category[]
 }
 
 export type Subcategory = {

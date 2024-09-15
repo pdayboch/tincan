@@ -69,11 +69,11 @@ export default function TransactionsTable({
     try {
       const updatedTransaction = await updateTransaction(
         transaction_id,
-        { transaction_date: newDate }
+        { transactionDate: newDate }
       )
       updateTransactionInState(updatedTransaction);
       return true;
-    } catch(error) {
+    } catch (error) {
       if (error instanceof Error) {
         console.error(`Error updating transaction date: ${error.message}`);
       } else {
@@ -94,7 +94,7 @@ export default function TransactionsTable({
       )
       updateTransactionInState(updatedTransaction);
       return true;
-    } catch(error) {
+    } catch (error) {
       if (error instanceof Error) {
         console.error(`Error updating transaction description: ${error.message}`);
       } else {
@@ -111,7 +111,7 @@ export default function TransactionsTable({
     try {
       const updatedTransaction = await updateTransaction(
         transactionId,
-        { subcategory_name: newSubcategoryName }
+        { subcategoryName: newSubcategoryName }
       )
       updateTransactionInState(updatedTransaction);
       return true;
@@ -127,7 +127,7 @@ export default function TransactionsTable({
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
-    return() => {
+    return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [])
@@ -165,8 +165,8 @@ export default function TransactionsTable({
             </tbody>
           </table>
           <PaginationBar
-          prevPage={transactionMetaData.prevPage}
-          nextPage={transactionMetaData.nextPage}
+            prevPage={transactionMetaData.prevPage}
+            nextPage={transactionMetaData.nextPage}
           />
         </div>
       </div>

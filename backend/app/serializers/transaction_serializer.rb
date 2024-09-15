@@ -17,12 +17,19 @@
 #  statement_transaction_date :date
 #
 class TransactionSerializer < ActiveModel::Serializer
-  attributes :id,
-    :transaction_date,
-    :statement_transaction_date,
-    :amount,
-    :description,
-    :statement_description
+  attributes :id, :amount, :description, :notes
+
+  attribute :transactionDate do
+    object.transaction_date
+  end
+
+  attribute :statementTransactionDate do
+    object.statement_transaction_date
+  end
+
+  attribute :statementDescription do
+    object.statement_description
+  end
 
   attribute :account do
     {

@@ -83,6 +83,7 @@ class TransactionsController < ApplicationController
       :description,
       :account_id,
       :statement_id,
+      :notes,
       :subcategory_name
     )
   end

@@ -31,7 +31,7 @@ export default function TransactionTableRow({
       [&:last-child>td:last-child]:rounded-br-lg"
     >
       <td className="w-24 p-2 align-top whitespace-nowrap">
-        <span>{formatDate(transaction.transaction_date)}</span>
+        <span>{formatDate(transaction.transactionDate)}</span>
       </td>
       <td className="w-64 p-2 align-top whitespace-nowrap">
         <span>{transaction.description}</span>

@@ -16,14 +16,14 @@ class TransactionTest < ActiveSupport::TestCase
     entity = TransactionDataEntity.new
     data = entity.get_data
 
-    assert(data[:transactions].each_cons(2).all? { |a, b| a[:transaction_date] >= b[:transaction_date] })
+    assert(data[:transactions].each_cons(2).all? { |a, b| a[:transactionDate] >= b[:transactionDate] })
   end
 
   test 'get_data returns transactions sorted by transaction_date asc' do
     entity = TransactionDataEntity.new(sort_direction: 'asc')
     data = entity.get_data
 
-    assert(data[:transactions].each_cons(2).all? { |a, b| a[:transaction_date] <= b[:transaction_date] })
+    assert(data[:transactions].each_cons(2).all? { |a, b| a[:transactionDate] <= b[:transactionDate] })
   end
 
   test 'get_data returns transactions sorted by amount asc' do
@@ -99,7 +99,7 @@ class TransactionTest < ActiveSupport::TestCase
 
     assert_equal 3, data[:transactions].size
     assert_nil data[:meta][:prevPage]
-    assert_equal "#{last_transaction[:transaction_date]}.#{last_transaction[:id]}", data[:meta][:nextPage]
+    assert_equal "#{last_transaction[:transactionDate]}.#{last_transaction[:id]}", data[:meta][:nextPage]
   end
 
   test 'get_data paginates with a starting_after cursor with sort_direction desc with next and prev page' do
@@ -112,9 +112,9 @@ class TransactionTest < ActiveSupport::TestCase
     data = entity.get_data
 
     assert(data[:transactions].none? { |t| t[:id] == last_transaction.id })
-    assert(data[:transactions].all? { |t| t[:transaction_date] <= last_transaction.transaction_date })
-    assert_equal "#{data[:transactions].first[:transaction_date]}.#{data[:transactions].first[:id]}", data[:meta][:prevPage]
-    assert_equal "#{data[:transactions].last[:transaction_date]}.#{data[:transactions].last[:id]}", data[:meta][:nextPage]
+    assert(data[:transactions].all? { |t| t[:transactionDate] <= last_transaction.transaction_date })
+    assert_equal "#{data[:transactions].first[:transactionDate]}.#{data[:transactions].first[:id]}", data[:meta][:prevPage]
+    assert_equal "#{data[:transactions].last[:transactionDate]}.#{data[:transactions].last[:id]}", data[:meta][:nextPage]
   end
 
   test 'get_data paginates with a ending_before cursor with sort_direction desc with next and prev page' do
@@ -127,9 +127,9 @@ class TransactionTest < ActiveSupport::TestCase
     data = entity.get_data
 
     assert(data[:transactions].none? { |t| t[:id] == first_transaction.id })
-    assert(data[:transactions].all? { |t| t[:transaction_date] >= first_transaction.transaction_date })
-    assert_equal "#{data[:transactions].first[:transaction_date]}.#{data[:transactions].first[:id]}", data[:meta][:prevPage]
-    assert_equal "#{data[:transactions].last[:transaction_date]}.#{data[:transactions].last[:id]}", data[:meta][:nextPage]
+    assert(data[:transactions].all? { |t| t[:transactionDate] >= first_transaction.transaction_date })
+    assert_equal "#{data[:transactions].first[:transactionDate]}.#{data[:transactions].first[:id]}", data[:meta][:prevPage]
+    assert_equal "#{data[:transactions].last[:transactionDate]}.#{data[:transactions].last[:id]}", data[:meta][:nextPage]
   end
 
   test 'get_data paginates with a starting_after cursor with sort_direction asc with next and prev page' do
@@ -142,9 +142,9 @@ class TransactionTest < ActiveSupport::TestCase
     data = entity.get_data
 
     assert(data[:transactions].none? { |t| t[:id] == last_transaction.id })
-    assert(data[:transactions].all? { |t| t[:transaction_date] >= last_transaction.transaction_date })
-    assert_equal "#{data[:transactions].first[:transaction_date]}.#{data[:transactions].first[:id]}", data[:meta][:prevPage]
-    assert_equal "#{data[:transactions].last[:transaction_date]}.#{data[:transactions].last[:id]}", data[:meta][:nextPage]
+    assert(data[:transactions].all? { |t| t[:transactionDate] >= last_transaction.transaction_date })
+    assert_equal "#{data[:transactions].first[:transactionDate]}.#{data[:transactions].first[:id]}", data[:meta][:prevPage]
+    assert_equal "#{data[:transactions].last[:transactionDate]}.#{data[:transactions].last[:id]}", data[:meta][:nextPage]
   end
 
   test 'get_data paginates with a ending_before cursor with sort_direction asc' do
@@ -157,9 +157,9 @@ class TransactionTest < ActiveSupport::TestCase
     data = entity.get_data
 
     assert(data[:transactions].none? { |t| t[:id] == first_transaction.id })
-    assert(data[:transactions].all? { |t| t[:transaction_date] <= first_transaction.transaction_date })
-    assert_equal "#{data[:transactions].first[:transaction_date]}.#{data[:transactions].first[:id]}", data[:meta][:prevPage]
-    assert_equal "#{data[:transactions].last[:transaction_date]}.#{data[:transactions].last[:id]}", data[:meta][:nextPage]
+    assert(data[:transactions].all? { |t| t[:transactionDate] <= first_transaction.transaction_date })
+    assert_equal "#{data[:transactions].first[:transactionDate]}.#{data[:transactions].first[:id]}", data[:meta][:prevPage]
+    assert_equal "#{data[:transactions].last[:transactionDate]}.#{data[:transactions].last[:id]}", data[:meta][:nextPage]
   end
 
   test 'get_data paginates with a starting_after cursor with no next page with prev page' do
@@ -181,7 +181,7 @@ class TransactionTest < ActiveSupport::TestCase
     transaction = transactions.offset(3).first
     expected_starting_after = "#{transaction.transaction_date}.#{transaction.id}"
     starting_after = '1900-01-01.0' # definitely no records before this.
-    entity = TransactionDataEntity.new(page_size: 4, starting_after: starting_after, sort_direction: "ASC")
+    entity = TransactionDataEntity.new(page_size: 4, starting_after: starting_after, sort_direction: 'asc')
     data = entity.get_data
 
     assert_equal expected_starting_after, data[:meta][:nextPage]
@@ -194,7 +194,7 @@ class TransactionTest < ActiveSupport::TestCase
     first_transaction = transactions.offset(Transaction.count - 3).first
     expected_ending_before = "#{first_transaction.transaction_date}.#{first_transaction.id}"
     ending_before = '3000-12-31.999999' # definitely no records after this
-    entity = TransactionDataEntity.new(page_size: 3, ending_before: ending_before, sort_direction: "ASC")
+    entity = TransactionDataEntity.new(page_size: 3, ending_before: ending_before, sort_direction: 'asc')
     data = entity.get_data
 
     assert_equal expected_ending_before, data[:meta][:prevPage]
@@ -207,7 +207,7 @@ class TransactionTest < ActiveSupport::TestCase
     transactions = transactions.offset(2)
     ending_before = "#{transactions[1].transaction_date}.#{transactions[1].id}"
     expected_starting_after = "#{transactions.first.transaction_date}.#{transactions.first.id}"
-    entity = TransactionDataEntity.new(page_size: 5, ending_before: ending_before, sort_direction: 'ASC')
+    entity = TransactionDataEntity.new(page_size: 5, ending_before: ending_before, sort_direction: 'asc')
     data = entity.get_data
 
     assert_nil data[:meta][:prevPage]
