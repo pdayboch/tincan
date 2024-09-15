@@ -24,7 +24,7 @@ class Transaction < ApplicationRecord
 
   before_validation :apply_categorization_rule, on: :create
   before_validation :sync_category_with_subcategory,
-    if: -> { will_save_change_to_subcategory_id? }
+                    if: -> { will_save_change_to_subcategory_id? }
 
   private
 
@@ -43,7 +43,7 @@ class Transaction < ApplicationRecord
   end
 
   def set_default_category_and_subcategory
-    self.subcategory ||= Subcategory.find_by(name: "Uncategorized")
+    self.subcategory ||= Subcategory.find_by(name: 'Uncategorized')
     self.category = self.subcategory.category
   end
 

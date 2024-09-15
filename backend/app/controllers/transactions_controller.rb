@@ -1,77 +1,47 @@
 class TransactionsController < ApplicationController
-  before_action :set_transaction, only: %i[ update destroy ]
-  before_action :set_subcategory, only: %i[ create update ]
+  before_action :set_transaction, only: %i[update destroy]
+  before_action :set_subcategory, only: %i[create update]
 
   # GET /transactions
   def index
-    page_size = params[:pageSize] ? params[:pageSize].to_i : 10
-    if page_size < 3 || page_size > 50
-      return render json: { pageSize: ["must be a number between 3 and 50"] }
-    end
-
-    starting_after = params[:startingAfter]
-    ending_before = params[:endingBefore]
-    search_string = params[:searchString]
-    accounts = params[:accounts]
-    users = params[:users]
-    sort_by = params[:sortBy] || "transaction_date"
-    sort_direction = params[:sortDirection] || "desc"
-
-    data = TransactionDataEntity
-      .new(page_size: page_size,
-           starting_after: starting_after,
-           ending_before: ending_before,
-           search_string: search_string,
-           accounts: accounts,
-           users: users,
-           sort_by: sort_by,
-           sort_direction: sort_direction)
-      .get_data
+    data = TransactionDataEntity.new(transaction_read_params).get_data
 
     render json: data
   end
 
   # POST /transactions
   def create
-    @transaction = Transaction.new(
-      transaction_params.except(
-        :subcategory_name
-      )
-    )
-
-    @transaction.subcategory = @subcategory
-
-    if transaction_params.key?("subcategory_name") &&
-       @subcategory.nil?
-      @transaction.errors.add(:subcategory, "is invalid")
+    if transaction_write_params.key?('subcategory_name') && @subcategory.nil?
+      raise UnprocessableEntityError.new(subcategory_name: ['is invalid'])
     end
 
-    # Attempt to save the transaction only if there are no errors
-    if @transaction.errors.empty? && @transaction.save
-      render json: @transaction, status: :created, location: @transaction
+    params_without_subcategory = transaction_write_params.except(:subcategory_name)
+    transaction = Transaction.new(params_without_subcategory)
+
+    transaction.subcategory = @subcategory
+
+    if transaction.errors.empty? && transaction.save
+      render json: transaction, status: :created, location: transaction
     else
-      render json: @transaction.errors, status: :unprocessable_entity
+      raise UnprocessableEntityError.new(transaction.errors)
     end
   end
 
   # PUT /transactions/1
   def update
-    @transaction.subcategory = @subcategory if @subcategory
-
-    if transaction_params.key?("subcategory_name") &&
-       @subcategory.nil?
-      @transaction.errors.add(:subcategory, "is invalid")
+    if transaction_write_params.key?('subcategory_name') && @subcategory.nil?
+      raise UnprocessableEntityError.new(subcategory_name: ['is invalid'])
     end
 
-    if @transaction.errors.empty? &&
-       @transaction.update(
-         transaction_params.except(
-           :subcategory_name
-         )
-       )
+    params_without_subcategory = transaction_write_params.except(:subcategory_name)
+    @transaction.update(params_without_subcategory)
+
+    @transaction.subcategory = @subcategory if @subcategory
+
+    if @transaction.errors.empty? && @transaction.save
       render json: @transaction
     else
-      render json: @transaction.errors, status: :unprocessable_entity
+      raise UnprocessableEntityError.new(@transaction.errors)
     end
   end
 
@@ -89,29 +59,31 @@ class TransactionsController < ApplicationController
 
   def set_subcategory
     @subcategory = Subcategory.find_by(
-      name: transaction_params[:subcategory_name],
+      name: transaction_write_params[:subcategory_name],
     )
   end
 
-  # Only allow a list of trusted parameters through.
-  wrap_parameters :transaction,
-    include: [
+  def transaction_read_params
+    params.permit(
+      :page_size,
+      :sort_by,
+      :sort_direction,
+      :starting_after,
+      :ending_before,
+      :search_string,
+      :accounts,
+      :users
+    )
+  end
+
+  def transaction_write_params
+    params.permit(
       :transaction_date,
       :amount,
       :description,
       :account_id,
-      :subcategory_name,
-    ]
-
-  def transaction_params
-    params.require(:transaction)
-      .permit(
-        :transaction_date,
-        :amount,
-        :description,
-        :account_id,
-        :statement_id,
-        :subcategory_name
-      )
+      :statement_id,
+      :subcategory_name
+    )
   end
 end
