@@ -1,23 +1,23 @@
 # Default Categories and Subcategories
 default_categories = {
-  "Food" => ["Alcohol & Bars", "Coffee Shops", "Fast Food", "Food Delivery", "Groceries", "Restaurants"],
-  "Gifts & Donations" => ["Parents", "Gift", "Donation"],
-  "Income" => ["Paycheck", "Dividend", "Interest Income", "Rebates"],
-  "Transfer" => ["Credit Card Payment", "Transfer"],
-  "Entertainment" => ["Music", "Newspapers & Magazines", "Music", "Games", "Arts", "Movies & DVDs", "Outdoors"],
-  "Home" => ["Rent & Mortgage", "Furnishings", "Home Improvement"],
-  "Auto & Transport" => ["Gas & Fuel", "Public Transportation", "Tolls", "Parking", "Ride Share", "Service & Auto Parts", "Auto Payment", "Auto Insurance"],
-  "Bills & Utilities" => ["Internet", "Mobile Phone", "Utilities", "Television"],
-  "Travel" => ["Rental Car & Taxi", "Vacation", "Air Travel", "Hotel", "Train Travel", "Ferry Travel"],
-  "Shopping" => ["Books", "Clothing", "Electronics & Software", "Pet Food & Supplies", "Shopping", "Sporting Goods"],
-  "Health & Fitness" => ["Dentist", "Doctor", "Gym", "Pharmacy", "Sports"],
-  "Miscellaneous" => ["Cash & ATM"],
-  "Fees & Charges" => ["ATM Fee", "Service Fee"],
-  "Personal Care" => ["Laundry", "Spa & Massage", "Hair"],
-  "Investments" => ["Buy", "Sell"],
-  "Taxes" => ["Federal Tax", "State Tax", "Tax Prep"],
-  "Business Services" => ["Shipping"],
-  "Uncategorized" => ["Uncategorized"],
+  'Food' => ['Alcohol & Bars', 'Coffee Shops', 'Fast Food', 'Food Delivery', 'Groceries', 'Restaurants'],
+  'Gifts & Donations' => ['Parents', 'Gift', 'Donation'],
+  'Income' => ['Paycheck', 'Dividend', 'Interest Income', 'Rebates'],
+  'Transfer' => ['Credit Card Payment', 'Transfer'],
+  'Entertainment' => ['Music', 'Newspapers & Magazines', 'Music', 'Games', 'Arts', 'Movies & DVDs', 'Outdoors'],
+  'Home' => ['Rent & Mortgage', 'Furnishings', 'Home Improvement'],
+  'Auto & Transport' => ['Gas & Fuel', 'Public Transportation', 'Tolls', 'Parking', 'Ride Share', 'Service & Auto Parts', 'Auto Payment', 'Auto Insurance'],
+  'Bills & Utilities' => ['Internet', 'Mobile Phone', 'Utilities', 'Television'],
+  'Travel' => ['Rental Car & Taxi', 'Vacation', 'Air Travel', 'Hotel', 'Train Travel', 'Ferry Travel'],
+  'Shopping' => ['Books', 'Clothing', 'Electronics & Software', 'Pet Food & Supplies', 'Shopping', 'Sporting Goods'],
+  'Health & Fitness' => ['Dentist', 'Doctor', 'Gym', 'Pharmacy', 'Sports'],
+  'Miscellaneous' => ['Cash & ATM'],
+  'Fees & Charges' => ['ATM Fee', 'Service Fee'],
+  'Personal Care' => ['Laundry', 'Spa & Massage', 'Hair'],
+  'Investments' => ['Buy', 'Sell'],
+  'Taxes' => ['Federal Tax', 'State Tax', 'Tax Prep'],
+  'Business Services' => ['Shipping'],
+  'Uncategorized' => ['Uncategorized'],
 }
 
 default_categories.each do |category, subcategories|
@@ -29,150 +29,107 @@ end
 
 if Rails.env.development?
   # Create Users
-  u1 = User.find_or_create_by(email: "philip245@gmail.com") do |u|
-    u.name = "Phil"
-    u.email = "philip245@gmail.com"
-    u.password = "test1234"
+  phil = User.find_or_create_by(email: 'philip245@gmail.com') do |u|
+    u.name = 'Phil'
+    u.email = 'philip245@gmail.com'
+    u.password = 'test1234'
   end
-  u2 = User.find_or_create_by(email: "krvani89@gmail.com") do |u|
-    u.name = "Kate"
-    u.email = "krvani89@gmail.com"
-    u.password = "test1234"
+
+  kate = User.find_or_create_by(email: 'krvani89@gmail.com') do |u|
+    u.name = 'Kate'
+    u.email = 'krvani89@gmail.com'
+    u.password = 'test1234'
   end
 
   # Create Accounts
-  a1 = u1.accounts
-    .find_or_create_by(bank_name: "Chase", name: "Freedom") do |a|
-    a.bank_name = "Chase"
-    a.name = "Freedom"
-    a.account_type = "credit card"
-  end
-  a2 = u1.accounts
-    .find_or_create_by(bank_name: "Chase", name: "Amazon") do |a|
-    a.bank_name = "Chase"
-    a.name = "Amazon"
-    a.account_type = "credit card"
-  end
-  a3 = u1.accounts
-    .find_or_create_by(bank_name: "Schwab", name: "Checking") do |a|
-    a.bank_name = "Schwab"
-    a.name = "Checking"
-    a.account_type = "checking"
-  end
-  u1.accounts
-    .find_or_create_by(bank_name: "Chase", name: "United") do |a|
-    a.bank_name = "Chase"
-    a.name = "United"
-    a.account_type = "credit card"
-  end
-  u1.accounts
-    .find_or_create_by(bank_name: "Capital One", name: "Quicksilver") do |a|
-    a.bank_name = "Capital One"
-    a.name = "Quicksilver"
-    a.account_type = "credit card"
-  end
-  a4 = u2.accounts
-    .find_or_create_by(bank_name: "Chase", name: "Freedom") do |a|
-    a.bank_name = "Chase"
-    a.name = "Freedom"
-    a.account_type = "credit card"
+  phil.accounts.find_or_create_by(bank_name: 'Chase', name: 'Freedom Credit Card') do |a|
+    a.bank_name = 'Chase'
+    a.name = 'Freedom Credit Card'
+    a.account_type = 'credit card'
+    a.statement_directory = 'Credit Cards/Chase Freedom'
+    a.parser_class = 'ChaseFreedomCreditCard'
   end
 
-  # Create Statements
-  a1.statements
-    .find_or_create_by(statement_date: Date.new(2024, 5, 1)) do |s|
-    s.statement_date = Date.new(2024, 5, 1)
-    s.statement_balance = 14.22
-  end
-  a1.statements
-    .find_or_create_by(statement_date: Date.new(2024, 6, 1)) do |s|
-    s.statement_date = Date.new(2024, 6, 1)
-    s.statement_balance = 11.22
-  end
-  a2.statements
-    .find_or_create_by(statement_date: Date.new(2024, 5, 1)) do |s|
-    s.statement_date = Date.new(2024, 5, 1)
-    s.statement_balance = 10.22
-  end
-  a2.statements
-    .find_or_create_by(statement_date: Date.new(2024, 6, 1)) do |s|
-    s.statement_date = Date.new(2024, 6, 1)
-    s.statement_balance = 16.22
-  end
-  a3.statements
-    .find_or_create_by(statement_date: Date.new(2024, 6, 1)) do |s|
-    s.statement_date = Date.new(2024, 6, 1)
-    s.statement_balance = nil
-  end
-  a4.statements
-    .find_or_create_by(statement_date: Date.new(2024,3,1)) do |s|
-      s.statement_date = Date.new(2024,3,1)
-      s.statement_balance = 433.03
-    end
-
-  # Create Transactions
-  a1.transactions
-    .find_or_create_by(
-      description: "Natalies Deli",
-      transaction_date: Date.new(2024, 5, 10),
-    ) do |t|
-    t.description = "Natalies Deli"
-    t.transaction_date = Date.new(2024, 5, 10)
-    t.amount = 59.82
-    t.statement = a1.statements.find_by(statement_date: Date.new(2024, 6, 1))
-    t.category = Category.find_by(name: "Food")
-    t.subcategory = Subcategory.find_by(name: "Restaurants")
+  phil.accounts.find_or_create_by(bank_name: 'Chase', name: 'Amazon Credit Card') do |a|
+    a.bank_name = 'Chase'
+    a.name = 'Amazon Credit Card'
+    a.account_type = 'credit card'
+    a.statement_directory = 'Credit Cards/Chase Amazon'
+    a.parser_class = 'ChaseAmazonCreditCard'
   end
 
-  a1.transactions
-    .find_or_create_by(
-      description: "The Wharf",
-      transaction_date: Date.new(2024, 5, 16),
-    ) do |t|
-    t.description = "The Wharf"
-    t.transaction_date = Date.new(2024, 5, 16)
-    t.amount = 59.82
-    t.statement = a1.statements.find_by(statement_date: Date.new(2024, 6, 1))
-    t.category = Category.find_by(name: "Food")
-    t.subcategory = Subcategory.find_by(name: "Restaurants")
+  phil.accounts.find_or_create_by(bank_name: 'Chase', name: 'United Credit Card') do |a|
+    a.bank_name = 'Chase'
+    a.name = 'United Credit Card'
+    a.account_type = 'credit card'
+    a.statement_directory = 'Credit Cards/Chase United'
   end
 
-  a3.transactions
-    .find_or_create_by(
-      description: "Cisco Paycheck",
-      transaction_date: Date.new(2024, 5, 2),
-    ) do |t|
-    t.description = "Cisco Paycheck"
-    t.transaction_date = Date.new(2024, 5, 2)
-    t.amount = 3479.82
-    t.statement = a3.statements.find_by(statement_date: Date.new(2024, 6, 1))
-    t.category = Category.find_by(name: "Income")
-    t.subcategory = Subcategory.find_by(name: "Paycheck")
+  phil.accounts.find_or_create_by(bank_name: 'Charles Schwab', name: 'Checking') do |a|
+    a.bank_name = 'Charles Schwab'
+    a.name = 'Checking'
+    a.account_type = 'checking'
+    a.statement_directory = 'Banks and Investments/Schwab Checking'
+    a.parser_class = 'CharlesSchwabChecking'
   end
 
-  a3.transactions
-    .find_or_create_by(
-      description: "ATM withdrawal",
-      transaction_date: Date.new(2024, 5, 16),
-    ) do |t|
-    t.description = "ATM withdrawal"
-    t.transaction_date = Date.new(2024, 5, 16)
-    t.amount = 200.00
-    t.statement = a3.statements.find_by(statement_date: Date.new(2024, 6, 1))
-    t.category = Category.find_by(name: "Miscellaneous")
-    t.subcategory = Subcategory.find_by(name: "Cash & ATM")
+  phil.accounts.find_or_create_by(bank_name: 'Barclays', name: 'View Credit Card') do |a|
+    a.bank_name = 'Barclays'
+    a.name = 'View Credit Card'
+    a.account_type = 'credit card'
+    a.statement_directory = 'Credit Cards/Barclays View'
+    a.parser_class = 'BarclaysViewCreditCard'
   end
 
-  a4.transactions
-    .find_or_create_by(
-      description: "Ralphs Italian Ices",
-      transaction_date: Date.new(2024, 2, 6),
-    ) do |t|
-    t.description = "Ralphs Italian Ices"
-    t.transaction_date = Date.new(2024, 2, 6)
-    t.amount = 13.42
-    t.statement = a4.statements.find_by(statement_date: Date.new(2024, 3, 1))
-    t.category = Category.find_by(name: "Food")
-    t.subcategory = Subcategory.find_by(name: "Fast Food")
+  phil.accounts.find_or_create_by(bank_name: 'Capital One', name: 'Quicksilver Credit Card') do |a|
+    a.bank_name = 'Capital One'
+    a.name = 'Quicksilver Credit Card'
+    a.account_type = 'credit card'
+    a.statement_directory = 'Credit Cards/Capital One Quicksilver'
+  end
+
+  kate.accounts.find_or_create_by(bank_name: 'Chase', name: 'Freedom Credit Card') do |a|
+    a.bank_name = 'Chase'
+    a.name = 'Freedom Credit Card'
+    a.account_type = 'credit card'
+    a.statement_directory = 'Kate/Credit Cards/Chase Freedom'
+    a.parser_class = 'ChaseFreedomCreditCard'
+  end
+
+  kate.accounts.find_or_create_by(bank_name: 'Chase', name: 'Amazon Credit Card') do |a|
+    a.bank_name = 'Chase'
+    a.name = 'Amazon Credit Card'
+    a.account_type = 'credit card'
+    a.statement_directory = 'Kate/Credit Cards/Chase Amazon'
+    a.parser_class = 'ChaseAmazonCreditCard'
+  end
+
+  kate.accounts.find_or_create_by(bank_name: 'Wells Fargo', name: 'Autograph Credit Card') do |a|
+    a.bank_name = 'Wells Fargo'
+    a.name = 'Autograph Credit Card'
+    a.account_type = 'credit card'
+    a.statement_directory = 'Kate/Credit Cards/Wells Fargo Autograph'
+    a.parser_class = 'ChaseFreedomCreditCard'
+  end
+
+  # Create categorization rules
+  atm_subcategory = Subcategory.find_by_name('Cash & ATM')
+  gym_subcategory = Subcategory.find_by_name('Gym')
+
+  r1 = CategorizationRule.find_or_create_by(subcategory_id: atm_subcategory.id)
+  r2 = CategorizationRule.find_or_create_by(subcategory_id: gym_subcategory.id)
+
+  r1.categorization_conditions.find_or_create_by(transaction_field: 'description') do |c|
+    c.match_type = 'starts_with'
+    c.match_value = 'ATM'
+  end
+  r1.categorization_conditions.find_or_create_by(transaction_field: 'amount') do |c|
+    c.match_type = 'greater_than'
+    c.match_value = '19.99'
+  end
+
+  r2.categorization_conditions.find_or_create_by(transaction_field: 'description') do |c|
+    c.match_type = 'exactly'
+    c.match_value = 'planet fitness'
   end
 end
