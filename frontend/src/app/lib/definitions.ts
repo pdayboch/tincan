@@ -86,6 +86,27 @@ export type Subcategory = {
   has_transactions: boolean
 }
 
+export type CategorizationRule = {
+  id: number,
+  categoryId: number,
+  subcategoryId: number
+}
+
+export type CategorizationCondition = {
+  id: number,
+  categorizationRuleId: number,
+  transactionField: string,
+  matchType: string,
+  matchValue: string
+}
+
+export type CategorizationConditionUpdate = Partial<{
+  categorizationRuleId: number,
+  transactionField: string,
+  matchType: string,
+  matchValue: string
+}>
+
 export type FilterItemType = {
   id: string,
   label: string,
