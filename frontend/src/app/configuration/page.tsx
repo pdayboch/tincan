@@ -7,17 +7,26 @@ export default function Page() {
       <nav>
         <ul className="flex flex-col items-center space-y-4">
           <li>
-            <Link href="/configuration/users" className="text-lg text-blue-500 border-2 border-blue-500 py-2 px-6 rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-300">
+            <Link
+              className="text-lg text-blue-500 border-2 border-blue-500 py-2 px-6 rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-300"
+              href="/configuration/users"
+            >
               Configure Users
             </Link>
           </li>
           <li>
-            <Link href="/configuration/categorization_rules" className="text-lg text-blue-500 border-2 border-blue-500 py-2 px-6 rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-300">
+            <Link
+              className="text-lg text-blue-500 border-2 border-blue-500 py-2 px-6 rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-300"
+              href="/configuration/categorization-rules"
+            >
               Configure Categorization Rules
             </Link>
           </li>
           <li>
-            <Link href="/configuration/categories" className="text-lg text-blue-500 border-2 border-blue-500 py-2 px-6 rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-300">
+            <Link
+              className="text-lg text-blue-500 border-2 border-blue-500 py-2 px-6 rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-300"
+              href="/configuration/categories"
+            >
               Configure Categories
             </Link>
           </li>
