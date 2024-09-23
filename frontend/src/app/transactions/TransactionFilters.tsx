@@ -1,9 +1,6 @@
 import { Account, FilterItemType, User } from "@/app/lib/definitions";
-import { Inter } from 'next/font/google';
-import clsx from "clsx";
 import FilterSelector from "@/app/ui/shared/filters/FilterSelector";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 type TransactionFiltersProps = {
   accounts: Account[];
@@ -103,7 +100,7 @@ export default function TransactionFilters({
 
   return (
     <div className="flex flex-col items-center h-full w-full">
-      <span className={clsx("text-2xl", font.className)}>Filters</span>
+      <span className="text-xl">Filters</span>
       <FilterSelector
         title="Users"
         items={userItems}

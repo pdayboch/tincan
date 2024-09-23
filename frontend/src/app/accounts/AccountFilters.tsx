@@ -1,9 +1,6 @@
 import { Account, FilterItemType, User } from "@/app/lib/definitions";
-import { Inter } from 'next/font/google';
-import clsx from "clsx";
 import FilterSelector from "@/app/ui/shared/filters/FilterSelector";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-const font = Inter({ weight:["400"], subsets:['latin'] });
 
 type AccountFiltersProps = {
   accounts: Account[];
@@ -27,7 +24,7 @@ export default function AccountFilters({
       params.delete('accountTypes[]');
     } else {
       // Add value to selected accounts.
-      if (!selectedAccountTypes.includes(type)){
+      if (!selectedAccountTypes.includes(type)) {
         params.append('accountTypes[]', type);
       } else {
         // Remove value from selected accounts.
@@ -53,7 +50,7 @@ export default function AccountFilters({
       params.delete('users[]');
     } else {
       // Add value to selected users.
-      if (!selectedUsers.includes(id)){
+      if (!selectedUsers.includes(id)) {
         params.append('users[]', id);
       } else {
         // Remove value from selected users.
@@ -74,7 +71,7 @@ export default function AccountFilters({
   // Get the selected items from the URL
   const selectedUsers = searchParams.getAll('users[]');
 
-  const accountTypeItems = ():FilterItemType[] => {
+  const accountTypeItems = (): FilterItemType[] => {
     const accountTypeMap: { [key: string]: number } = {};
     accounts.forEach(account => {
       if (accountTypeMap[account.accountType]) {
@@ -101,7 +98,7 @@ export default function AccountFilters({
 
   return (
     <div className="flex flex-col items-center h-full w-full">
-      <span className={clsx("text-xl", font.className)}>Filters</span>
+      <span className="text-xl">Filters</span>
       <FilterSelector
         title="Users"
         items={userItems}
