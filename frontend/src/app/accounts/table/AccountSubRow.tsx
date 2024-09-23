@@ -1,7 +1,7 @@
-import { useState } from "react";
-import clsx from "clsx";
-import { Account, AccountUpdate } from "@/app/lib/definitions";
-import AccountModal from "../AccountModal";
+import { useState } from 'react';
+import clsx from 'clsx';
+import { Account, AccountUpdate } from '@/app/lib/definitions';
+import AccountModal from '../update-account-modal/UpdateAccountModal';
 
 type AccountSubRowProps = {
   account: Account;
@@ -14,30 +14,33 @@ export default function AccountSubRow({
   onUpdateAccount,
   onDeleteAccount
 }: AccountSubRowProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   const handleButtonClick = () => {
-    setIsModalOpen(true);
+    setIsUpdateModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setIsUpdateModalOpen(false);
   };
 
   return (
-    <div className="flex items-center">
+    <div className='flex items-center'>
       <button
         onClick={handleButtonClick}
-        className={clsx("my-1 px-3 py-1 border rounded-full hover:bg-slate-100",
-          account.active ? "border-gray-300 text-gray-700" : "border-gray-400 text-gray-500 bg-gray-200"
+        className={clsx(
+          'my-1 px-3 py-1 border rounded-full hover:bg-slate-100',
+          account.active ?
+            'border-gray-300 text-gray-700' :
+            'border-gray-400 text-gray-500 bg-gray-200'
         )}
       >
         {account.name}
       </button>
       {!account.active && (
-        <span className="ml-2 text-gray-500">Inactive</span>
+        <span className='ml-2 text-gray-500'>Inactive</span>
       )}
-      {isModalOpen && (
+      {isUpdateModalOpen && (
         <AccountModal
           account={account}
           onClose={handleCloseModal}

@@ -1,7 +1,7 @@
-import { Account, AccountUpdate, SupportedAccount, User } from "@/app/lib/definitions";
-import AddAccount from "../AddAccount";
+import { Account, AccountUpdate, User } from "@/app/lib/definitions";
 import AccountSubRow from "./AccountSubRow";
-import { createAccount, deleteAccount, updateAccount } from "@/app/lib/data";
+import { deleteAccount, updateAccount } from "@/app/lib/data";
+import { useEffect, useState } from "react";
 
 type AccountsTableProps = {
   accounts: Account[];
@@ -20,6 +20,28 @@ export default function AccountsTable({
   users,
   setAccounts
 }: AccountsTableProps) {
+  const [groupedAccounts, setGroupedAccounts] = useState<GroupedAccounts[]>([]);
+
+  useEffect(() => {
+    const groupAndSortAccounts = (): GroupedAccounts[] => {
+      const filteredAccounts = accounts.filter(account => account.name !== "Cash");
+      const groupedAccounts = groupAccountsByBankAndUser(filteredAccounts);
+      const result = convertGroupedToArray(groupedAccounts);
+
+      // Sort the result array by bankName and then by userId
+      result.sort((a, b) => {
+        if (a.bankName < b.bankName) return -1;
+        if (a.bankName > b.bankName) return 1;
+        if (a.userId < b.userId) return -1;
+        if (a.userId > b.userId) return 1;
+        return 0;
+      });
+
+      return result;
+    };
+
+    setGroupedAccounts(groupAndSortAccounts());
+  }, [accounts])
 
   const updateAccountInState = (updatedAccount: Account) => {
     const updatedAccounts = accounts.map((account) => {
@@ -53,30 +75,6 @@ export default function AccountsTable({
     }
   };
 
-  const handleAddAccount = async (
-    accountProvider: SupportedAccount,
-    userId: number,
-    statementDirectory: string
-  ): Promise<boolean> => {
-    try {
-      const createdAccount = await createAccount(
-        accountProvider.accountProvider,
-        userId,
-        statementDirectory
-      );
-      const updatedAccounts = [...accounts, createdAccount];
-      setAccounts(updatedAccounts);
-      return true;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(`Error adding account ${error.message}`);
-      } else {
-        console.log('Error adding account: An unknown error occurred');
-      }
-      return false;
-    }
-  };
-
   const handleDeleteAccount = async (accountId: number): Promise<boolean> => {
     try {
       const success = await deleteAccount(accountId)
@@ -95,14 +93,16 @@ export default function AccountsTable({
     }
   };
 
-  const groupAndSortAccounts = (): GroupedAccounts[] => {
-    // Filter out cash accounts
-    const filteredAccounts = accounts.filter(account => account.name !== "Cash");
+  type GroupedAccountsMap = {
+    [bankName: string]: { [userId: number]: Account[] }
+  };
 
+  // Takes the accounts array and groups them by bankName and userId.
+  // example return { Chase: { 2: [Account1] } } }
+  const groupAccountsByBankAndUser = (accounts: Account[]): GroupedAccountsMap => {
     const grouped: { [bankName: string]: { [userId: number]: Account[] } } = {};
 
-    // Group accounts by bankName and userId
-    filteredAccounts.forEach(account => {
+    accounts.forEach(account => {
       if (!grouped[account.bankName]) {
         grouped[account.bankName] = {};
       }
@@ -111,98 +111,95 @@ export default function AccountsTable({
         grouped[account.bankName][account.userId] = [];
       }
       grouped[account.bankName][account.userId].push(account);
-    })
+    });
 
-    // Convert the grouped object to an array
+    return grouped;
+  };
+
+  // Sorts an array of accounts by their name property
+  const sortAccountsByName = (accounts: Account[]): Account[] => {
+    return accounts.sort((a, b) => a.name.localeCompare(b.name));
+  };
+
+  // Converts a grouped accounts object into an array of GroupedAccounts
+  // while also sorting the accounts within each group
+  const convertGroupedToArray = (
+    grouped: { [bankName: string]: { [userId: number]: Account[] } }
+  ): GroupedAccounts[] => {
     const result: GroupedAccounts[] = [];
+
     Object.keys(grouped).forEach(bankName => {
       Object.keys(grouped[bankName]).forEach(userId => {
-        const userIdInt = parseInt(userId, 10)
+        const userIdInt = parseInt(userId, 10);
+        // Sort the accounts by account name before pushing to result
+        const sortedAccounts = sortAccountsByName(grouped[bankName][userIdInt]);
+
         result.push({
           bankName,
           userId: userIdInt,
-          accounts: grouped[bankName][userIdInt]
+          accounts: sortedAccounts
         });
       });
     });
 
-    // Sort the result array by bankName and then by userId
-    result.sort((a, b) => {
-      if (a.bankName < b.bankName) return -1;
-      if (a.bankName > b.bankName) return 1;
-      if (a.userId < b.userId) return -1;
-      if (a.userId > b.userId) return 1;
-      return 0
-    });
-
     return result;
-  }
+  };
 
-  const groupedAccounts = groupAndSortAccounts();
   const shouldDisplayUser = users.length > 1;
 
   return (
-    <div className="w-full">
-      {/* Add account top section */}
-      <div className="flex justify-center my-4">
-        <AddAccount
-          users={users}
-          onAddAccount={handleAddAccount}
-        />
-      </div>
+    <div className="w-full overflow-x-auto rounded-lg bg-gray-50 p-2">
+      <table className="w-full text-gray-900">
+        <thead className="rounded-lg text-left text-md font-normal">
+          <tr>
+            <th className="px-4 py-2 text-left font-medium">Bank</th>
+            <th className="px-4 py-2 text-left font-medium">Accounts</th>
+          </tr>
+        </thead>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-lg bg-gray-50 p-2">
-        <table className="w-full text-gray-900">
-          <thead className="rounded-lg text-left text-md font-normal">
-            <tr>
-              <th className="px-4 py-2 text-left font-medium">Bank</th>
-              <th className="px-4 py-2 text-left font-medium">Accounts</th>
-            </tr>
-          </thead>
+        <tbody>
+          {groupedAccounts.map((bankAndUser) => {
+            const user = shouldDisplayUser ?
+              (users.find(user => user.id === bankAndUser.userId) || null) :
+              null;
 
-          <tbody>
-            {groupedAccounts.map((bankAndUser, index) => {
-              const user = shouldDisplayUser ? (users.find(user => user.id === bankAndUser.userId) || null) : null;
-
-              return (
-                <tr
-                  key={`${bankAndUser.bankName}${bankAndUser.userId}`}
-                  className="bg-white w-full border-b text-sm \
+            return (
+              <tr
+                key={`${bankAndUser.bankName}${bankAndUser.userId}`}
+                className="bg-white w-full border-b text-sm \
                     last-of-type:border-none \
                     [&:first-child>td:first-child]:rounded-tl-lg \
                     [&:first-child>td:last-child]:rounded-tr-lg \
                     [&:last-child>td:first-child]:rounded-bl-lg \
                     [&:last-child>td:last-child]:rounded-br-lg"
-                >
-                  <td className="px-4 py-2 border-b border-gray-300 align-top">
-                    <div>
-                      {bankAndUser.bankName}
-                      {user && (
-                        <div className="text-md text-gray-500">
-                          {user.name}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-2 border-b border-gray-300">
-                    <div className="text-md">
-                      {bankAndUser.accounts.map(account => (
-                        <AccountSubRow
-                          key={account.id}
-                          account={account}
-                          onUpdateAccount={handleUpdateAccount}
-                          onDeleteAccount={handleDeleteAccount}
-                        />
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+              >
+                <td className="px-4 py-2 border-b border-gray-300 align-top">
+                  <div>
+                    {bankAndUser.bankName}
+                    {user && (
+                      <div className="text-md text-gray-500">
+                        {user.name}
+                      </div>
+                    )}
+                  </div>
+                </td>
+                <td className="px-4 py-2 border-b border-gray-300">
+                  <div className="text-md">
+                    {bankAndUser.accounts.map(account => (
+                      <AccountSubRow
+                        key={account.id}
+                        account={account}
+                        onUpdateAccount={handleUpdateAccount}
+                        onDeleteAccount={handleDeleteAccount}
+                      />
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
