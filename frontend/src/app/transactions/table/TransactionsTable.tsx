@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Category, Transaction, TransactionMetaData } from "../../lib/definitions";
+import { Category, Transaction, TransactionMetaData, TransactionUpdate } from "../../lib/definitions";
 import { updateTransaction } from '@/app/lib/data';
 import TransactionsTableHeader from "./TransactionsTableHeader";
 import TransactionsTableRow from "./TransactionsTableRow";
@@ -62,62 +62,20 @@ export default function TransactionsTable({
     setTransactions(updatedTransactions);
   }
 
-  const handleUpdateTransactionDate = async (
-    transaction_id: number,
-    newDate: string
-  ): Promise<boolean> => {
-    try {
-      const updatedTransaction = await updateTransaction(
-        transaction_id,
-        { transactionDate: newDate }
-      )
-      updateTransactionInState(updatedTransaction);
-      return true;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(`Error updating transaction date: ${error.message}`);
-      } else {
-        console.log('Error updating transaction: An unknown error occurred');
-      }
-      return false;
-    }
-  };
-
-  const handleUpdateTransactionDescription = async (
-    transaction_id: number,
-    description: string
-  ): Promise<boolean> => {
-    try {
-      const updatedTransaction = await updateTransaction(
-        transaction_id,
-        { description: description }
-      )
-      updateTransactionInState(updatedTransaction);
-      return true;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(`Error updating transaction description: ${error.message}`);
-      } else {
-        console.log('Error updating transaction: An unknown error occurred');
-      }
-      return false;
-    }
-  };
-
-  const handleUpdateTransactionSubcategory = async (
+  const handleUpdateTransaction = async (
     transactionId: number,
-    newSubcategoryName: string
+    data: TransactionUpdate
   ): Promise<boolean> => {
     try {
       const updatedTransaction = await updateTransaction(
         transactionId,
-        { subcategoryName: newSubcategoryName }
+        data
       )
       updateTransactionInState(updatedTransaction);
       return true;
     } catch (error) {
       if (error instanceof Error) {
-        console.log(`Error updating transaction ${error.message}`)
+        console.error(`Error updating transaction: ${error.message}`);
       } else {
         console.log('Error updating transaction: An unknown error occurred');
       }
@@ -133,43 +91,37 @@ export default function TransactionsTable({
   }, [])
 
   return (
-    <div className="mt-6">
-      <div className="inline-block min-w-full align-middle">
-        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-          <table className="min-w-full text-gray-900 table-fixed">
-            <TransactionsTableHeader />
-            <tbody className="transactions-table bg-white">
-              {transactions.map((transaction) => {
-                if (transaction.id === expandedRowTransactionId) {
-                  return (
-                    <TransactionsTableRowExpanded
-                      key={transaction.id}
-                      transaction={transaction}
-                      categories={categories}
-                      setExpandedRowTransactionId={setExpandedRowTransactionId}
-                      onUpdateTransactionDate={handleUpdateTransactionDate}
-                      onUpdateTransactionDescription={handleUpdateTransactionDescription}
-                      onUpdateTransactionSubcategory={handleUpdateTransactionSubcategory}
-                    />
-                  );
-                } else {
-                  return (
-                    <TransactionsTableRow
-                      key={transaction.id}
-                      transaction={transaction}
-                      onClick={() => handleRowClick(transaction.id)}
-                    />
-                  );
-                }
-              })}
-            </tbody>
-          </table>
-          <PaginationBar
-            prevPage={transactionMetaData.prevPage}
-            nextPage={transactionMetaData.nextPage}
-          />
-        </div>
-      </div>
+    <div className="mt-6 inline-block min-w-full align-middle rounded-lg bg-gray-50 p-2">
+      <table className="min-w-full text-gray-900 table-fixed">
+        <TransactionsTableHeader />
+        <tbody className="transactions-table bg-white">
+          {transactions.map((transaction) => {
+            if (transaction.id === expandedRowTransactionId) {
+              return (
+                <TransactionsTableRowExpanded
+                  key={transaction.id}
+                  transaction={transaction}
+                  categories={categories}
+                  setExpandedRowTransactionId={setExpandedRowTransactionId}
+                  onUpdateTransaction={handleUpdateTransaction}
+                />
+              );
+            } else {
+              return (
+                <TransactionsTableRow
+                  key={transaction.id}
+                  transaction={transaction}
+                  onClick={() => handleRowClick(transaction.id)}
+                />
+              );
+            }
+          })}
+        </tbody>
+      </table>
+      <PaginationBar
+        prevPage={transactionMetaData.prevPage}
+        nextPage={transactionMetaData.nextPage}
+      />
     </div>
   );
 }

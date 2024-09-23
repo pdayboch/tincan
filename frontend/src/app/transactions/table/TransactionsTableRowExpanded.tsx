@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ThreeDots } from 'react-loader-spinner';
 import { parseISO, format } from 'date-fns';
 import { ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
-import { Category, Transaction } from "../../lib/definitions";
+import { Category, Transaction, TransactionUpdate } from "../../lib/definitions";
 import { formatCurrency } from '@/app/lib/helpers';
 import CategoryDropdown from "@/app/ui/shared/CategoryDropdown";
 
@@ -13,18 +13,14 @@ interface TransactionTableRowExpandedProps {
   transaction: Transaction;
   categories: Category[];
   setExpandedRowTransactionId: React.Dispatch<React.SetStateAction<number | null>>;
-  onUpdateTransactionDate: (transaction_id: number, newDate: string) => void;
-  onUpdateTransactionDescription: (transaction_id: number, description: string) => void;
-  onUpdateTransactionSubcategory: (transaction_id: number, newSubcategoryName: string) => void;
+  onUpdateTransaction: (transactionId: number, data: TransactionUpdate) => void;
 };
 
 export default function TransactionTableRowExpanded({
   transaction,
   categories,
   setExpandedRowTransactionId,
-  onUpdateTransactionDate,
-  onUpdateTransactionDescription,
-  onUpdateTransactionSubcategory
+  onUpdateTransaction
 }: TransactionTableRowExpandedProps) {
   const [description, setDescription] = useState(transaction.description);
   const [isDescriptionLoading, setIsDescriptionLoading] = useState(false);
@@ -48,7 +44,7 @@ export default function TransactionTableRowExpanded({
   // Event handler for when description is saved:
   const handleSaveDescription = async () => {
     setIsDescriptionLoading(true);
-    await onUpdateTransactionDescription(transaction.id, description);
+    await onUpdateTransaction(transaction.id, { description: description });
     setIsDescriptionLoading(false);
     setIsDescriptionSaved(true)
   }
@@ -57,7 +53,7 @@ export default function TransactionTableRowExpanded({
   const handleDateSelect = (date: Date | null) => {
     if (date) {
       const newDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-      onUpdateTransactionDate(transaction.id, newDate);
+      onUpdateTransaction(transaction.id, { transactionDate: newDate });
     }
   }
 
@@ -128,9 +124,9 @@ export default function TransactionTableRowExpanded({
           categories={categories}
           currentCategory={transaction.subcategory.name}
           onChange={
-            (subcategoryName) => onUpdateTransactionSubcategory(
+            (subcategoryName) => onUpdateTransaction(
               transaction.id,
-              subcategoryName
+              { subcategoryName: subcategoryName }
             )
           }
         />
