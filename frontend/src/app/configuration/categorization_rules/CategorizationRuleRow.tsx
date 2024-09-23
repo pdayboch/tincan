@@ -1,7 +1,8 @@
 import {
   CategorizationRule,
   CategorizationCondition,
-  Category
+  Category,
+  Subcategory
 } from "@/app/lib/definitions";
 import CategorizationConditionRow from "./CategorizationConditionRow";
 
@@ -20,16 +21,16 @@ export default function CategorizationRuleRow({
     condition => condition.categorizationRuleId === rule.id
   );
 
-  const category = categories.find(
+  const category: Category | undefined = categories.find(
     (c) => c.id === rule.categoryId
   );
 
-  const subcategory = category?.subcategories.find(
+  const subcategory: Subcategory | undefined = category?.subcategories.find(
     (s) => s.id === rule.subcategoryId
   );
 
   return (
-    <div className="border border-gray-300 rounded-3xl w-full max-w-3xl p-6 mb-6 shadow-lg bg-white">
+    <div className="border border-gray-300 rounded-3xl w-full p-6 mb-6 shadow-lg bg-white">
       <div className="space-y-4">
         {ruleConditions.map((condition, index) => (
           <div key={condition.id}>

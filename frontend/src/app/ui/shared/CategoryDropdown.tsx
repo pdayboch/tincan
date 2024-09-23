@@ -1,6 +1,5 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
-import clsx from 'clsx';
 import { Category } from '@/app/lib/definitions';
 import { ChevronDoubleDownIcon } from "@heroicons/react/24/outline";
 import CategoryDropdownItem from './CategoryDropdownItem';
