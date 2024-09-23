@@ -121,8 +121,7 @@ function TransactionsContent() {
 
   if (isLoadingCategories ||
     isLoadingUsers ||
-    isLoadingAccounts ||
-    isLoadingTransactions
+    isLoadingAccounts
   ) {
     return <div className={font.className}>Loading...</div>;
   }
