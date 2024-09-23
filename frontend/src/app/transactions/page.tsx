@@ -1,65 +1,57 @@
 "use client"
 import { useState, useEffect, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation';
-import Search from './Search';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import Search from '../../components/Search';
 import { CreateTransaction } from './buttons';
 import TransactionsTable from './table/TransactionsTable';
 import Filters from './TransactionFilters';
 import { Account, Category, Transaction, TransactionMetaData, User } from '../lib/definitions';
 import { fetchAccounts, fetchCategories, fetchTransactions, fetchUsers } from '../lib/data';
+import { Inter } from "next/font/google";
+import clsx from 'clsx';
+const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 function TransactionsContent() {
-  const [
-    isLoadingTransactions,
-    setLoadingTransactions
-  ] = useState<boolean>(true)
+  const [isLoadingTransactions, setLoadingTransactions] = useState<boolean>(true)
 
-  const [
-    transactions,
-    setTransactions
-  ] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  const [
-    transactionMetaData,
-    setTransactionMetaData
-  ] = useState<TransactionMetaData>({
-    totalCount: 0,
-    filteredCount: 0,
-    prevPage: null,
-    nextPage: null
-  })
+  const [transactionMetaData, setTransactionMetaData] =
+    useState<TransactionMetaData>({
+      totalCount: 0,
+      filteredCount: 0,
+      prevPage: null,
+      nextPage: null
+    })
 
-  const [
-    isLoadingCategories,
-    setLoadingCategories
-  ] = useState<boolean>(true)
+  const [isLoadingCategories, setLoadingCategories] = useState<boolean>(true)
 
-  const [
-    categories,
-    setCategories
-  ] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  const [
-    isLoadingAccounts,
-    setLoadingAccounts
-  ] = useState<boolean>(true);
+  const [isLoadingAccounts, setLoadingAccounts] = useState<boolean>(true);
 
-  const [
-    accounts,
-    setAccounts
-  ] = useState<Account[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
 
-  const [
-    isLoadingUsers,
-    setLoadingUsers
-  ] = useState<boolean>(true);
+  const [isLoadingUsers, setLoadingUsers] = useState<boolean>(true);
 
-  const [
-    users,
-    setUsers
-  ] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const handleSearch = (term: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.delete('startingAfter');
+    params.delete('endingBefore');
+
+    if (term) {
+      params.set('searchString', term);
+    } else {
+      params.delete('searchString');
+    }
+    replace(`${pathname}?${params.toString()}`)
+  }
 
   // fetch and store all users
   useEffect(() => {
@@ -127,8 +119,16 @@ function TransactionsContent() {
       });
   }, [searchParams]);
 
+  if (isLoadingCategories ||
+    isLoadingUsers ||
+    isLoadingAccounts ||
+    isLoadingTransactions
+  ) {
+    return <div className={font.className}>Loading...</div>;
+  }
+
   return (
-    <div className="flex">
+    <div className={clsx("flex", font.className)}>
       {/* Left panel */}
       <div className="block flex-none w-40 mr-3">
         <Filters accounts={accounts} users={users} />
@@ -137,7 +137,11 @@ function TransactionsContent() {
       {/* Content */}
       <div className="flex-grow flex flex-col w-full mx-auto">
         <div className="flex items-center justify-between gap-2 my-3 h-10">
-          <Search placeholder="Search transactions..." />
+          <Search
+            placeholder="Search transactions..."
+            value={searchParams.get('searchString')?.toString()}
+            onSearch={handleSearch}
+          />
           <CreateTransaction />
         </div>
         <TransactionsTable
