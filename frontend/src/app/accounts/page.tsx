@@ -56,7 +56,7 @@ function AccountsContent() {
       </div>
 
       {/* Content */}
-      <div className="flex-grow flex flex-col w-full mx-auto">
+      <div className="flex-grow flex flex-col items-center w-full mx-auto max-w-4xl">
         <AccountsTable
           accounts={accounts}
           users={users}

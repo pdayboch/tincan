@@ -32,7 +32,10 @@ export default function AccountsTable({
     setAccounts(updatedAccounts);
   }
 
-  const handleUpdateAccount = async (accountId: number, data: AccountUpdate): Promise<boolean> => {
+  const handleUpdateAccount = async (
+    accountId: number,
+    data: AccountUpdate
+  ): Promise<boolean> => {
     try {
       const updatedAccount = await updateAccount(
         accountId,
@@ -139,7 +142,7 @@ export default function AccountsTable({
   const shouldDisplayUser = users.length > 1;
 
   return (
-    <div className="w-3/4">
+    <div className="w-full">
       {/* Add account top section */}
       <div className="flex justify-center my-4">
         <AddAccount
@@ -149,12 +152,12 @@ export default function AccountsTable({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
+      <div className="overflow-x-auto rounded-lg bg-gray-50 p-2">
+        <table className="w-full text-gray-900">
+          <thead className="rounded-lg text-left text-md font-normal">
             <tr>
-              <th className="px-4 py-2 border-b border-gray-300 text-left text-xl">Bank</th>
-              <th className="px-4 py-2 border-b border-gray-300 text-left text-xl">Accounts</th>
+              <th className="px-4 py-2 text-left font-medium">Bank</th>
+              <th className="px-4 py-2 text-left font-medium">Accounts</th>
             </tr>
           </thead>
 
@@ -163,7 +166,15 @@ export default function AccountsTable({
               const user = shouldDisplayUser ? (users.find(user => user.id === bankAndUser.userId) || null) : null;
 
               return (
-                <tr key={`${bankAndUser.bankName}${bankAndUser.userId}`}>
+                <tr
+                  key={`${bankAndUser.bankName}${bankAndUser.userId}`}
+                  className="bg-white w-full border-b text-sm \
+                    last-of-type:border-none \
+                    [&:first-child>td:first-child]:rounded-tl-lg \
+                    [&:first-child>td:last-child]:rounded-tr-lg \
+                    [&:last-child>td:first-child]:rounded-bl-lg \
+                    [&:last-child>td:last-child]:rounded-br-lg"
+                >
                   <td className="px-4 py-2 border-b border-gray-300 align-top">
                     <div>
                       {bankAndUser.bankName}
