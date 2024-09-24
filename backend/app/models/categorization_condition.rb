@@ -22,19 +22,22 @@ class CategorizationCondition < ApplicationRecord
   }.freeze
 
   validates :transaction_field,
-    presence: true,
-    inclusion: { in: MATCH_TYPES_FOR_FIELDS.keys }
+            presence: true,
+            inclusion: { in: MATCH_TYPES_FOR_FIELDS.keys }
 
   validates :match_type, presence: true
   validates :match_value, presence: true
   validate :match_type_is_valid_for_transaction_field,
-    if: -> { MATCH_TYPES_FOR_FIELDS.keys.include?(transaction_field) }
+           if: -> { MATCH_TYPES_FOR_FIELDS.keys.include?(transaction_field) }
 
   def match_type_is_valid_for_transaction_field
     valid_match_types = MATCH_TYPES_FOR_FIELDS[transaction_field]
-    unless valid_match_types.include?(match_type)
-      errors.add(:match_type, "is not valid for the field '#{transaction_field}` Valid match types are: #{valid_match_types.join(', ')}")
-    end
+    return if valid_match_types.include?(match_type)
+
+    errors.add(
+      :match_type,
+      "is not valid for the field '#{transaction_field}` Valid match types are: #{valid_match_types.join(', ')}"
+    )
   end
 
   def matches?(transaction)
@@ -49,7 +52,7 @@ class CategorizationCondition < ApplicationRecord
       case match_type
       when 'greater_than' then transaction.amount > match_value.to_f
       when 'less_than' then transaction.amount < match_value.to_f
-      when 'exactly' then transaction.amount ==  match_value.to_f
+      when 'exactly' then (transaction.amount * 100.to_i) == (match_value.to_f * 100).to_i
       end
     when 'date'
       transaction_date = transaction.transaction_date
