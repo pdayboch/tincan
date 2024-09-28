@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TransactionsController < ApplicationController
   before_action :set_transaction, only: %i[update destroy]
   before_action :set_subcategory, only: %i[create update]
@@ -20,11 +22,9 @@ class TransactionsController < ApplicationController
 
     transaction.subcategory = @subcategory
 
-    if transaction.errors.empty? && transaction.save
-      render json: transaction, status: :created, location: transaction
-    else
-      raise UnprocessableEntityError.new(transaction.errors)
-    end
+    raise UnprocessableEntityError, transaction.errors unless transaction.errors.empty? && transaction.save
+
+    render json: transaction, status: :created, location: transaction
   end
 
   # PUT /transactions/1
@@ -38,11 +38,9 @@ class TransactionsController < ApplicationController
 
     @transaction.subcategory = @subcategory if @subcategory
 
-    if @transaction.errors.empty? && @transaction.save
-      render json: @transaction
-    else
-      raise UnprocessableEntityError.new(@transaction.errors)
-    end
+    raise UnprocessableEntityError, @transaction.errors unless @transaction.errors.empty? && @transaction.save
+
+    render json: @transaction
   end
 
   # DELETE /transactions/1
@@ -59,7 +57,7 @@ class TransactionsController < ApplicationController
 
   def set_subcategory
     @subcategory = Subcategory.find_by(
-      name: transaction_write_params[:subcategory_name],
+      name: transaction_write_params[:subcategory_name]
     )
   end
 
