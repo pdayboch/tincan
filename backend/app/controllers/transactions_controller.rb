@@ -71,8 +71,8 @@ class TransactionsController < ApplicationController
       :starting_after,
       :ending_before,
       :search_string,
-      :accounts,
-      :users
+      accounts: [],
+      users: []
     )
   end
 
