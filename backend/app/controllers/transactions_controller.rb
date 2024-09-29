@@ -6,7 +6,7 @@ class TransactionsController < ApplicationController
 
   # GET /transactions
   def index
-    data = TransactionDataEntity.new(transaction_read_params).get_data
+    data = TransactionDataEntity.new(transaction_read_params).data
 
     render json: data
   end
