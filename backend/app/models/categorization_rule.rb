@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: categorization_rules
@@ -16,6 +18,8 @@ class CategorizationRule < ApplicationRecord
   before_validation :sync_category_with_subcategory
 
   def match?(transaction)
+    return false if categorization_conditions.none?
+
     categorization_conditions.all? do |condition|
       condition.matches?(transaction)
     end
