@@ -1,57 +1,92 @@
-class Categorization::RulesController < ApplicationController
-  before_action :set_rule, only: %i[ update destroy ]
+# frozen_string_literal: true
 
-  # GET /categorization/rules
-  def index
-    data = CategorizationRule.all
-      .select(
-        :id,
-        :category_id,
-        :subcategory_id
-      )
+module Categorization
+  class RulesController < ApplicationController
+    before_action :set_rule, only: %i[update destroy]
 
-    render json: data
-  end
+    # GET /categorization/rules
+    def index
+      render json: CategorizationRuleDataEntity.new.data
+    end
 
-  # POST /categorization/rules
-  def create
-    rule = CategorizationRule.new(rule_params)
+    # POST /categorization/rules
+    def create
+      rule = nil
+      CategorizationRule.transaction do
+        rule = create_rule
+        create_conditions!(rule, rule_params[:conditions]) if rule_params.key?(:conditions)
+      end
 
-    if rule.errors.empty? && rule.save
       render json: rule, status: :created, location: rule
-    else
-      raise UnprocessableEntityError.new(rule.errors)
+    rescue ActiveRecord::RecordInvalid => e
+      raise UnprocessableEntityError, e.record.errors
     end
-  end
 
-  # PUT categorization/rules/1
-  def update
-    if @rule.update(rule_params)
+    # PUT categorization/rules/1
+    def update
+      CategorizationRule.transaction do
+        update_rule_attributes
+
+        handle_conditions if rule_params.key?(:conditions)
+      end
+
       render json: @rule
-    else
-      raise UnprocessableEntityError.new(@rule.errors)
+    rescue ActiveRecord::RecordInvalid => e
+      raise UnprocessableEntityError, e.record.errors
     end
-  end
 
-  # DELETE categorization/rules/1
-  def destroy
-    @rule.destroy!
-  end
+    # DELETE categorization/rules/1
+    def destroy
+      @rule.destroy!
+    end
 
-  private
+    private
 
-  def set_rule
-    @rule = CategorizationRule.find(params[:id])
-  end
+    def set_rule
+      @rule = CategorizationRule.find(params[:id])
+    end
 
-  def rule_params
-    if params[:category_id].present?
+    def rule_params
+      check_for_category_id!
+
+      params.permit(
+        :subcategory_id,
+        conditions: %i[transaction_field match_type match_value]
+      )
+    end
+
+    def check_for_category_id!
+      return if params[:category_id].blank?
+
+      message = 'parameter is not accepted. Please set the subcategoryId, ' \
+                'and the category will be inferred automatically.'
       error = {
-        category_id: ['parameter is not accepted. Please set the subcategoryId, and the category will be inferred automatically.']
+        category_id: [message]
       }
-      raise UnprocessableEntityError.new(error)
+      raise UnprocessableEntityError, error
     end
 
-    params.permit(:subcategory_id)
+    def create_rule
+      rule = CategorizationRule.new(rule_params.except(:conditions))
+      raise UnprocessableEntityError, rule.errors unless rule.save
+
+      rule
+    end
+
+    def update_rule_attributes
+      update_params = rule_params.except(:conditions)
+      raise UnprocessableEntityError, @rule.errors unless @rule.update(update_params)
+    end
+
+    def handle_conditions
+      @rule.categorization_conditions.destroy_all
+      create_conditions!(@rule, rule_params[:conditions]) if rule_params[:conditions].present?
+    end
+
+    def create_conditions!(rule, conditions)
+      conditions.each do |condition_params|
+        rule.categorization_conditions.create!(condition_params)
+      end
+    end
   end
 end

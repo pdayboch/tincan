@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: categorization_conditions
@@ -21,50 +23,77 @@ class CategorizationCondition < ApplicationRecord
     'account' => %w[exactly]
   }.freeze
 
-  validates :transaction_field,
-            presence: true,
-            inclusion: { in: MATCH_TYPES_FOR_FIELDS.keys }
+  validate :transaction_field_valid
+  validate :match_type_valid
 
-  validates :match_type, presence: true
   validates :match_value, presence: true
-  validate :match_type_is_valid_for_transaction_field,
-           if: -> { MATCH_TYPES_FOR_FIELDS.keys.include?(transaction_field) }
+
+  def matches?(transaction)
+    case transaction_field
+    when 'description' then match_description?(transaction.description)
+    when 'amount' then match_amount?(transaction.amount)
+    when 'date' then match_date?(transaction.transaction_date)
+    when 'account' then match_account?(transaction.account_id)
+    end
+  end
+
+  private
+
+  def match_description?(description)
+    case match_type
+    when 'starts_with' then description.starts_with?(match_value)
+    when 'ends_with' then description.ends_with?(match_value)
+    when 'exactly' then description == match_value
+    end
+  end
+
+  def match_amount?(amount)
+    case match_type
+    when 'greater_than' then amount > match_value.to_f
+    when 'less_than' then amount < match_value.to_f
+    when 'exactly' then (amount * 100.to_i) == (match_value.to_f * 100).to_i
+    end
+  end
+
+  def match_date?(date)
+    case match_type
+    when 'greater_than' then date > Date.parse(match_value)
+    when 'less_than' then date < Date.parse(match_value)
+    when 'exactly' then date == Date.parse(match_value)
+    end
+  end
+
+  def match_account?(account_id)
+    case match_type
+    when 'exactly' then account_id == match_value.to_i
+    end
+  end
+
+  def transaction_field_valid
+    if transaction_field.blank?
+      errors.add(:transaction_field, "can't be blank")
+    elsif MATCH_TYPES_FOR_FIELDS.keys.exclude?(transaction_field)
+      error_message = "#{transaction_field} is invalid. " \
+                      "The options are: #{MATCH_TYPES_FOR_FIELDS.keys.join(', ')}"
+      errors.add(:transaction_field, error_message)
+    end
+  end
+
+  def match_type_valid
+    if match_type.blank?
+      errors.add(:match_type, "can't be blank")
+    elsif MATCH_TYPES_FOR_FIELDS.keys.include?(transaction_field)
+      # only check this is transaction_field is valid
+      match_type_is_valid_for_transaction_field
+    end
+  end
 
   def match_type_is_valid_for_transaction_field
     valid_match_types = MATCH_TYPES_FOR_FIELDS[transaction_field]
     return if valid_match_types.include?(match_type)
 
-    errors.add(
-      :match_type,
-      "is not valid for the field '#{transaction_field}` Valid match types are: #{valid_match_types.join(', ')}"
-    )
-  end
-
-  def matches?(transaction)
-    case transaction_field
-    when 'description'
-      case match_type
-      when 'starts_with' then transaction.description.starts_with?(match_value)
-      when 'ends_with' then transaction.description.ends_with?(match_value)
-      when 'exactly' then transaction.description == match_value
-      end
-    when 'amount'
-      case match_type
-      when 'greater_than' then transaction.amount > match_value.to_f
-      when 'less_than' then transaction.amount < match_value.to_f
-      when 'exactly' then (transaction.amount * 100.to_i) == (match_value.to_f * 100).to_i
-      end
-    when 'date'
-      transaction_date = transaction.transaction_date
-      case match_type
-      when 'greater_than' then transaction_date > Date.parse(match_value)
-      when 'less_than' then transaction_date < Date.parse(match_value)
-      when 'exactly' then transaction_date == Date.parse(match_value)
-      end
-    when 'account'
-      case match_type
-      when 'exactly' then transaction.account_id == match_value.to_i
-      end
-    end
+    error_message = "is not valid for the field '#{transaction_field}'. " \
+                    "Valid match types are: #{valid_match_types.join(', ')}"
+    errors.add(:match_type, error_message)
   end
 end
