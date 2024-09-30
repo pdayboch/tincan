@@ -2,6 +2,6 @@
 
 class SupportedAccountsController < ApplicationController
   def index
-    render json: SupportedAccountsEntity.new.get_data
+    render json: SupportedAccountsEntity.new.data
   end
 end

@@ -1,51 +1,44 @@
-require "test_helper"
+# frozen_string_literal: true
 
-class StatementParser::DummyParser < StatementParser::Base
-  BANK_NAME = "Dummy Bank"
-  ACCOUNT_NAME = "Dummy Account"
-  ACCOUNT_TYPE = "dummy type"
-
-  def statement_end_date; end
-  def statement_start_date; end
-  def statement_balance; end
-  def transactions; end
-end
+require 'test_helper'
+require 'support/mock_statement_parser'
 
 class SupportedAccountsEntityTest < ActiveSupport::TestCase
-  def setup
+  setup do
     @entity = SupportedAccountsEntity.new
     # Temporarily redefine descendants method to isolate test environment
     StatementParser::Base.singleton_class.class_eval do
       alias_method :original_descendants, :descendants
-      define_method(:descendants) { [StatementParser::DummyParser] }
+      define_method(:descendants) { [StatementParser::MockStatementParser] }
     end
   end
 
-  def test_get_data
+  test 'test data returns correct values' do
     expected_data = [
       {
-        accountProvider: "DummyParser",
-        bankName: "Dummy Bank",
-        accountName: "Dummy Account",
-        accountType: "dummy type",
-      },
+        accountProvider: 'MockStatementParser',
+        bankName: 'Dummy Bank',
+        accountName: 'Dummy Account',
+        accountType: 'dummy type'
+      }
     ]
 
-    assert_equal expected_data, @entity.get_data
+    assert_equal expected_data, @entity.data
   end
 
-  def test_provider_from_class
-    assert_equal "DummyParser",
-      SupportedAccountsEntity.provider_from_class(StatementParser::DummyParser)
+  test 'test provider_from_class returns correct provider' do
+    assert_equal 'MockStatementParser',
+                 SupportedAccountsEntity.provider_from_class(StatementParser::MockStatementParser)
   end
 
-  def test_class_from_provider_valid
-    assert_equal StatementParser::DummyParser, SupportedAccountsEntity.class_from_provider("DummyParser")
+  test 'test class_from_provider returns correct class' do
+    assert_equal StatementParser::MockStatementParser,
+                 SupportedAccountsEntity.class_from_provider('MockStatementParser')
   end
 
-  def test_class_from_provider_invalid
+  test 'test invalid class_from_provider raises invalid parser error' do
     assert_raises(InvalidParser) do
-      SupportedAccountsEntity.class_from_provider("NonExistentProvider")
+      SupportedAccountsEntity.class_from_provider('NonExistentProvider')
     end
   end
 end
