@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class SubcategoriesController < ApplicationController
-  before_action :set_subcategory, only: %i[ update destroy ]
+  before_action :set_subcategory, only: %i[update destroy]
 
   # POST /subcategories
   def create
@@ -27,13 +29,12 @@ class SubcategoriesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_subcategory
-      @subcategory = Subcategory.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def subcategory_params
-      params.require(:subcategory).permit(:name, :category_id)
-    end
+  def set_subcategory
+    @subcategory = Subcategory.find(params[:id])
+  end
+
+  def subcategory_params
+    params.require(:subcategory).permit(:name, :category_id)
+  end
 end

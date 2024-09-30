@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class AccountsController < ApplicationController
-  before_action :set_account, only: %i[ update destroy ]
+  before_action :set_account, only: %i[update destroy]
 
   # GET /accounts
   def index
@@ -7,8 +9,8 @@ class AccountsController < ApplicationController
     account_types = params[:accountTypes]
 
     data = AccountDataEntity
-      .new(user_ids: user_ids, account_types: account_types)
-      .get_data
+           .new(user_ids: user_ids, account_types: account_types)
+           .get_data
 
     render json: data
   end
@@ -21,11 +23,9 @@ class AccountsController < ApplicationController
 
   # PATCH/PUT /accounts/1
   def update
-    if @account.update(account_update_params)
-      render json: @account
-    else
-      raise UnprocessableEntityError.new(@account.errors)
-    end
+    raise UnprocessableEntityError, @account.errors unless @account.update(account_update_params)
+
+    render json: @account
   end
 
   # DELETE /accounts/1
@@ -51,7 +51,7 @@ class AccountsController < ApplicationController
       error = {
         account_provider: ['cannot be updated after account creation.']
       }
-      raise UnprocessableEntityError.new(error)
+      raise UnprocessableEntityError, error
     end
 
     params.permit(:active, :user_id, :statement_directory)
