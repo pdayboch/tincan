@@ -1,14 +1,14 @@
+# frozen_string_literal: true
+
 class ParseStatementsJob < ApplicationJob
   queue_as :default
 
-  ROOT_DOC_DIR = ENV["ROOT_DOC_DIR"]
-
-  def perform(*args)
+  def perform(root_doc_dir, *args)
     Account.active.find_each do |account|
       # Skip account if statement_directory or parser_class is blank
       next if account.statement_directory.blank? || account.parser_class.blank?
 
-      dir = ROOT_DOC_DIR.chomp('/')
+      dir = root_doc_dir.chomp('/')
       account_statements_directory = "#{dir}/#{account.statement_directory}"
 
       # Skip if the statement directory is missing
@@ -20,11 +20,9 @@ class ParseStatementsJob < ApplicationJob
 
       # Iterate through all subdirectories that match "202x"
       Dir.glob("#{account_statements_directory}/202*")
-        .select { |path| File.directory?(path) }
-        .each do |year_directory|
-
-        # Get all PDF files in the year directory, make sure there are
-        # no duplicates.
+         .select { |path| File.directory?(path) }
+         .each do |year_directory|
+        # Get all PDF files in the year directory, make sure there are no duplicates.
         file_paths = Dir.glob("#{year_directory}/*.{pdf,PDF}")
         file_paths = Set.new(file_paths).to_a
 
@@ -40,7 +38,7 @@ class ParseStatementsJob < ApplicationJob
           statement = account.statements.create!(
             statement_date: parser.statement_end_date,
             statement_balance: parser.statement_balance,
-            pdf_file_path: file_path,
+            pdf_file_path: file_path
           )
 
           # Create transactions associated with the statement
@@ -51,7 +49,7 @@ class ParseStatementsJob < ApplicationJob
               amount: transaction_data[:amount],
               description: transaction_data[:description],
               statement_description: transaction_data[:description],
-              statement: statement,
+              statement: statement
             )
           end
         end

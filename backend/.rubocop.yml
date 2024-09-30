@@ -3,6 +3,9 @@ require: rubocop-rails
 AllCops:
   NewCops: enable
 
+Metrics/ClassLength:
+  Max: 120
+
 Style/Documentation:
   Enabled: false
 
