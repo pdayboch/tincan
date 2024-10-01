@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: categories
@@ -7,7 +9,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-require "test_helper"
+require 'test_helper'
 
 class CategoryTest < ActiveSupport::TestCase
   test 'should not save duplicate category names' do
@@ -22,8 +24,10 @@ class CategoryTest < ActiveSupport::TestCase
     category = categories(:one)
     assert_not category.transactions.empty?, 'Category should have transactions for this test'
 
-    assert_no_difference 'Category.count' do
-      assert_not category.destroy, 'Category was destroyed despite having associated transactions'
+    assert_raises ActiveRecord::DeleteRestrictionError do
+      category.destroy
     end
+
+    assert Category.exists?(category.id), 'Category should still exist after attempting to delete'
   end
 end

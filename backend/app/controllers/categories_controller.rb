@@ -5,35 +5,33 @@ class CategoriesController < ApplicationController
 
   # GET /categories
   def index
-    query = ''
-    data = CategoryDataEntity.new(query).get_data
+    data = CategoryDataEntity.new.data
 
     render json: data
   end
 
   # POST /categories
   def create
-    @category = Category.new(category_params)
+    category = Category.new(category_params)
 
-    if @category.save
-      render json: @category, status: :created, location: @category
-    else
-      render json: @category.errors, status: :unprocessable_entity
-    end
+    raise UnprocessableEntityError, category.errors unless category.save
+
+    render json: category, status: :created, location: category
   end
 
   # PUT /categories/1
   def update
-    if @category.update(category_params)
-      render json: @category
-    else
-      render json: @category.errors, status: :unprocessable_entity
-    end
+    raise UnprocessableEntityError, @category.errors unless @category.update(category_params)
+
+    render json: @category
   end
 
   # DELETE /categories/1
   def destroy
     @category.destroy!
+  rescue ActiveRecord::DeleteRestrictionError
+    message = 'Cannot delete a category that has transactions associated with it'
+    raise BadRequestError.new({ category: [message] })
   end
 
   private
@@ -43,6 +41,6 @@ class CategoriesController < ApplicationController
   end
 
   def category_params
-    params.require(:category).permit(:name)
+    params.permit(:name)
   end
 end

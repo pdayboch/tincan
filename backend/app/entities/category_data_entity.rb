@@ -1,9 +1,7 @@
-class CategoryDataEntity
-  def initialize(query=nil)
-    @query = query
-  end
+# frozen_string_literal: true
 
-  def get_data
+class CategoryDataEntity
+  def data
     @categories = Category.all
     {
       total_items: 10,
