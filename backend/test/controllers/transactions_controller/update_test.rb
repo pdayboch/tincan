@@ -12,7 +12,7 @@ class TransactionsControllerUpdateTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :success
-    transaction.reload # Reload the transaction from database to get the updated values
+    transaction.reload
 
     assert_equal new_subcategory.category.id, transaction.category_id, 'Category was not updated'
     assert_equal new_subcategory.id, transaction.subcategory_id, 'Subcategory was not updated'
@@ -20,14 +20,13 @@ class TransactionsControllerUpdateTest < ActionDispatch::IntegrationTest
 
   test 'should error update with invalid subcategory' do
     transaction = transactions(:one)
-    assert_no_difference('Transaction.count') do
-      patch transaction_url(transaction), params: {
-        subcategory_name: 'invalid subcategory'
-      }
-    end
+    patch transaction_url(transaction), params: {
+      subcategory_name: 'invalid subcategory'
+    }
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
+
+    json_response = response.parsed_body
     expected_error = {
       'field' => 'subcategoryName',
       'message' => 'subcategoryName is invalid'
@@ -42,7 +41,7 @@ class TransactionsControllerUpdateTest < ActionDispatch::IntegrationTest
     patch transaction_url(transaction), params: { account_id: 0 }
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
+    json_response = response.parsed_body
     expected_error = {
       'field' => 'account',
       'message' => 'account must exist'
@@ -65,7 +64,7 @@ class TransactionsControllerUpdateTest < ActionDispatch::IntegrationTest
     }
 
     assert_response :success
-    transaction.reload # Reload the transaction from database to get the updated values
+    transaction.reload
 
     assert_equal new_amount, transaction.amount, 'Amount not updated'
     assert_equal new_description, transaction.description, 'Description not updated'

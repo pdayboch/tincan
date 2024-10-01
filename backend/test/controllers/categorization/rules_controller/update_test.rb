@@ -82,10 +82,10 @@ module Categorization
 
     test 'should render update errors when rule model is invalid' do
       rule = categorization_rules(:one)
-      assert_no_difference('CategorizationRule.count') do
-        patch categorization_rule_url(rule), params: { subcategoryId: 0 }
-      end
+      patch categorization_rule_url(rule), params: { subcategoryId: 0 }
+
       assert_response :unprocessable_entity
+
       json_response = response.parsed_body
       expected_error = {
         'field' => 'subcategory',

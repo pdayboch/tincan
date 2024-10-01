@@ -20,8 +20,10 @@ class TransactionsControllerCreateTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    category_name = JSON.parse(response.body)['category']['name']
-    subcategory_name = JSON.parse(response.body)['subcategory']['name']
+
+    json_response = response.parsed_body
+    category_name = json_response['category']['name']
+    subcategory_name = json_response['subcategory']['name']
 
     assert_equal subcategory.category.name, category_name
     assert_equal subcategory.name, subcategory_name
@@ -41,7 +43,7 @@ class TransactionsControllerCreateTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
+    json_response = response.parsed_body
     expected_error = {
       'field' => 'subcategoryName',
       'message' => 'subcategoryName is invalid'
@@ -66,7 +68,7 @@ class TransactionsControllerCreateTest < ActionDispatch::IntegrationTest
     post transactions_url, params: { subcategory_name: subcategory.name }
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
+    json_response = response.parsed_body
     expected_error = {
       'field' => 'account',
       'message' => 'account must exist'
