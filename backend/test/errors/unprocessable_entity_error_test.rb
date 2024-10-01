@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class UnprocessableEntityErrorTest < ActiveSupport::TestCase
-  def test_initialize_with_hash_errors
+  test 'initialize with hash errors' do
     hash_errors = {
       name: ['cannot be blank'],
       email: ['is invalid']
@@ -16,7 +18,7 @@ class UnprocessableEntityErrorTest < ActiveSupport::TestCase
     assert_equal expected_errors, exception.errors
   end
 
-  def test_initialize_with_active_model_errors
+  test 'initialize with active_model errors' do
     model = User.new
     model.errors.add(:name, 'cannot be blank')
     model.errors.add(:email, 'is invalid')

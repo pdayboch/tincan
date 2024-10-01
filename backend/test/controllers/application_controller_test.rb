@@ -1,66 +1,68 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
-class ApplicationControllerTest < ActionController::TestCase
+class ApplicationControllerTest < ActionDispatch::IntegrationTest
   # Dummy controller for testing rescue behavior
   class TestController < ApplicationController
-    def unprocessable_entity_action
+    def unprocessable_entity
       raise UnprocessableEntityError.new(subcategoryId: ["can't be blank"])
     end
 
-    def bad_request_action
+    def bad_request
       raise BadRequestError.new(perPage: ['perPage must be less than or equal to 500'])
     end
   end
 
-  # Set up a dummy controller for testing
-  tests TestController
+  test 'rescues unprocessable_entity error' do
+    with_routing do |set|
+      set.draw do
+        get 'unprocessable_entity',
+            to: 'application_controller_test/test#unprocessable_entity'
+      end
 
-  # Override the @routes to define custom routes for the test controller
-  setup do
-    @routes = ActionDispatch::Routing::RouteSet.new
-    @routes.draw do
-      get 'unprocessable_entity_action',
-          to: 'application_controller_test/test#unprocessable_entity_action'
-      get 'bad_request_action',
-          to: 'application_controller_test/test#bad_request_action'
+      # Simulate a request that raises UnprocessableEntityError
+      get '/unprocessable_entity'
+
+      # Ensure the response is 422 Unprocessable Entity
+      assert_response :unprocessable_entity
+
+      # Check the JSON response contains the correct error format
+      expected_response = {
+        'errors' => [
+          {
+            'field' => 'subcategoryId',
+            'message' => "subcategoryId can't be blank"
+          }
+        ]
+      }
+      assert_equal expected_response, response.parsed_body
     end
   end
 
-  def test_rescues_unprocessable_entity_error
-    # Simulate a request that raises UnprocessableEntityError
-    get :unprocessable_entity_action
+  test 'rescues bad_request error' do
+    with_routing do |set|
+      set.draw do
+        get 'bad_request',
+            to: 'application_controller_test/test#bad_request'
+      end
 
-    # Ensure the response is 422 Unprocessable Entity
-    assert_response :unprocessable_entity
+      # Simulate a request that raises BadRequestError
+      get '/bad_request'
 
-    # Check the JSON response contains the correct error format
-    expected_response = {
-      'errors' => [
-        {
-          'field' => 'subcategoryId',
-          'message' => "subcategoryId can't be blank"
-        }
-      ]
-    }
-    assert_equal expected_response, JSON.parse(response.body)
-  end
+      # Ensure the response is 400 Bad Request
+      assert_response :bad_request
 
-  def test_rescues_bad_request_error
-    # Simulate a request that raises BadRequestError
-    get :bad_request_action
-
-    # Ensure the response is 400 Bad Request
-    assert_response :bad_request
-
-    # Check the JSON response contains the correct error format
-    expected_response = {
-      'errors' => [
-        {
-          'field' => 'perPage',
-          'message' => 'perPage must be less than or equal to 500'
-        }
-      ]
-    }
-    assert_equal expected_response, JSON.parse(response.body)
+      # Check the JSON response contains the correct error format
+      expected_response = {
+        'errors' => [
+          {
+            'field' => 'perPage',
+            'message' => 'perPage must be less than or equal to 500'
+          }
+        ]
+      }
+      assert_equal expected_response, response.parsed_body
+    end
   end
 end

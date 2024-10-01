@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class BadRequestErrorTest < ActiveSupport::TestCase
-  def test_initialize_with_errors
+  test 'initialize with errors' do
     errors = {
       per_page: ['perPage must be less than or equal to 1000'],
       unknown_param: ['unknownParam is not recognized']
