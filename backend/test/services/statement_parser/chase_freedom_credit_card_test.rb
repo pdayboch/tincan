@@ -1,42 +1,44 @@
-require "test_helper"
-require "timecop"
+# frozen_string_literal: true
+
+require 'test_helper'
+require 'timecop'
 
 module StatementParser
   class ChaseFreedomCreditCardTest < ActiveSupport::TestCase
-    def setup
-      @file_path = "path/to/statement.pdf"
+    setup do
+      @file_path = 'path/to/statement.pdf'
     end
 
-    def test_statement_end_date
+    test 'statement_end_date' do
       mock_text = <<~TEXT
-      ACCOUNT  SUMMARY
-      Account Number: 1234 5678 1234 5678
-      Previous Balance                                   $0.00
-      Payment, Credits                                   $0.00
-      Purchases                                       +$426.73
-      Cash Advances                                      $0.00
-      Balance Transfers                                  $0.00
-      Fees Charged                                       $0.00
-      Interest Charged                                   $0.00
-      New Balance                                      $426.73
-      Opening/Closing Date                    12/02/22 - 01/01/23
-      Credit Access Line                                $20,400
-      Available Credit                                  $20,293
-      Cash Access Line                                    $420
-      Available for Cash                                  $420
-      Past Due Amount                                  $0.00
-      Balance over the Credit Access Line              $0.00
-      YOUR ACCOUNT MESSAGES
+        ACCOUNT  SUMMARY
+        Account Number: 1234 5678 1234 5678
+        Previous Balance                                   $0.00
+        Payment, Credits                                   $0.00
+        Purchases                                       +$426.73
+        Cash Advances                                      $0.00
+        Balance Transfers                                  $0.00
+        Fees Charged                                       $0.00
+        Interest Charged                                   $0.00
+        New Balance                                      $426.73
+        Opening/Closing Date                    12/02/22 - 01/01/23
+        Credit Access Line                                $20,400
+        Available Credit                                  $20,293
+        Cash Access Line                                    $420
+        Available for Cash                                  $420
+        Past Due Amount                                  $0.00
+        Balance over the Credit Access Line              $0.00
+        YOUR ACCOUNT MESSAGES
       TEXT
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       assert_equal Date.new(2023, 1, 1), parser.statement_end_date
     end
 
-    def test_statement_end_date_raises_error
-      mock_text = "Invalid text"
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+    test 'raises error when statement_end_date not detected' do
+      mock_text = 'Invalid text'
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       assert_raises(RuntimeError, "Could not extract statement end date for #{@file_path}") do
@@ -44,36 +46,36 @@ module StatementParser
       end
     end
 
-    def test_statement_start_date
+    test 'statement_start_date' do
       mock_text = <<~TEXT
-      ACCOUNT  SUMMARY
-      Account Number: 1234 5678 1234 5678
-      Previous Balance                                   $0.00
-      Payment, Credits                                   $0.00
-      Purchases                                       +$426.23
-      Cash Advances                                      $0.00
-      Balance Transfers                                  $0.00
-      Fees Charged                                       $0.00
-      Interest Charged                                   $0.00
-      New Balance                                      $106.19
-      Opening/Closing Date                    12/02/22 - 01/01/23
-      Credit Access Line                                $20,400
-      Available Credit                                  $20,293
-      Cash Access Line                                    $420
-      Available for Cash                                  $420
-      Past Due Amount                                  $0.00
-      Balance over the Credit Access Line              $0.00
-      YOUR ACCOUNT MESSAGES
+        ACCOUNT  SUMMARY
+        Account Number: 1234 5678 1234 5678
+        Previous Balance                                   $0.00
+        Payment, Credits                                   $0.00
+        Purchases                                       +$426.23
+        Cash Advances                                      $0.00
+        Balance Transfers                                  $0.00
+        Fees Charged                                       $0.00
+        Interest Charged                                   $0.00
+        New Balance                                      $106.19
+        Opening/Closing Date                    12/02/22 - 01/01/23
+        Credit Access Line                                $20,400
+        Available Credit                                  $20,293
+        Cash Access Line                                    $420
+        Available for Cash                                  $420
+        Past Due Amount                                  $0.00
+        Balance over the Credit Access Line              $0.00
+        YOUR ACCOUNT MESSAGES
       TEXT
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       assert_equal Date.new(2022, 12, 2), parser.statement_start_date
     end
 
-    def test_statement_start_date_raises_error
-      mock_text = "Invalid text"
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+    test 'raises error when statement_start_date not detected' do
+      mock_text = 'Invalid text'
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       assert_raises(RuntimeError, "Could not extract statement start date for #{@file_path}") do
@@ -81,7 +83,7 @@ module StatementParser
       end
     end
 
-    def test_statement_balance
+    test 'statement_balance' do
       mock_text = <<~TEXT
         Manageyour accountonlinat:    CustomerService:      Mobile:Downloadthe
         www.chase.com/cardhelp        1-800-524-3880        ChaseMobileapp today
@@ -91,16 +93,16 @@ module StatementParser
         $406.19
         S   M   T   W    T   F    S           REWARDS®         SUMMARY
         Minimum Payment Due
-        31   1    2   3    4   5    6                                 Previous points balance                             8,115
+        31   1    2   3    4   5    6                    Previous points balance                             8,115
         $40.00                      + 1% (1 Pt)/$1 earned on all purchases                94
       TEXT
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       assert_equal 406.19, parser.statement_balance
     end
 
-    def test_negative_statement_balance
+    test 'negative statement_balance' do
       mock_text = <<~TEXT
         Manageyour accountonlinat:    CustomerService:      Mobile:Downloadthe
         www.chase.com/cardhelp        1-800-524-3880        ChaseMobileapp today
@@ -110,16 +112,16 @@ module StatementParser
         -$406.19
         S   M   T   W    T   F    S           REWARDS®         SUMMARY
         Minimum Payment Due
-        31   1    2   3    4   5    6                                 Previous points balance                             8,115
+        31   1    2   3    4   5    6                    Previous points balance                             8,115
         $40.00                      + 1% (1 Pt)/$1 earned on all purchases                94
       TEXT
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       assert_equal(-406.19, parser.statement_balance)
     end
 
-    def test_statement_balance_second_format
+    test 'statement_balance second format' do
       mock_text = <<~TEXT
         Manage youraccount onlinat:          CustomerService:       Mobile:Downloadthe
         www.chase.com/cardhelp               1-800-524-3880                   ®
@@ -134,13 +136,13 @@ module StatementParser
         Previous points balance                               71
         $40.00
       TEXT
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       assert_equal 406.19, parser.statement_balance
     end
 
-    def test_negative_statement_balance_second_format
+    test 'negative statement_balance second format' do
       mock_text = <<~TEXT
         Manage youraccount onlinat:          CustomerService:       Mobile:Downloadthe
         www.chase.com/cardhelp               1-800-524-3880                   ®
@@ -155,15 +157,15 @@ module StatementParser
         Previous points balance                               71
         $40.00
       TEXT
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       assert_equal(-406.19, parser.statement_balance)
     end
 
-    def test_statement_balance_raises_error
-      mock_text = "Invalid text"
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+    test 'raises error when statement_balance not detected' do
+      mock_text = 'Invalid text'
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       assert_raises(RuntimeError, "Could not extract statement balance for #{@file_path}") do
@@ -171,7 +173,7 @@ module StatementParser
       end
     end
 
-    def test_transactions
+    test 'transactions' do
       mock_text = <<~TEXT
         Opening/Closing Date                    01/02/23 - 01/31/23
         TabSummary
@@ -191,7 +193,7 @@ module StatementParser
         yo may ave received.
       TEXT
 
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       transactions = parser.transactions
@@ -199,30 +201,30 @@ module StatementParser
 
       assert_includes transactions, {
         date: Date.new(2023, 1, 26),
-        description: "AUTOMATIC PAYMENT - THANK YOU",
-        amount: 406.29,
+        description: 'AUTOMATIC PAYMENT - THANK YOU',
+        amount: 406.29
       }
 
       assert_includes transactions, {
         date: Date.new(2023, 1, 20),
-        description: "CLIPPER SERVICES CONCORD CA",
-        amount: -20.00,
+        description: 'CLIPPER SERVICES CONCORD CA',
+        amount: -20.00
       }
 
       assert_includes transactions, {
         date: Date.new(2023, 1, 26),
-        description: "PG&E WEBRECURRING 800-743-5000 CA",
-        amount: -73.31,
+        description: 'PG&E WEBRECURRING 800-743-5000 CA',
+        amount: -73.31
       }
 
       assert_includes transactions, {
         date: Date.new(2023, 1, 28),
-        description: "NOE VALLEY PET COMPANY SAN FRANCISCO CA",
-        amount: -5.42,
+        description: 'NOE VALLEY PET COMPANY SAN FRANCISCO CA',
+        amount: -5.42
       }
     end
 
-    def test_multi_month_statement_transactions
+    test 'multi month statement transactions' do
       mock_text = <<~TEXT
         Opening/Closing Date                    03/20/23 - 04/19/23
         TabSummary
@@ -241,7 +243,7 @@ module StatementParser
         yo may ave received.
       TEXT
 
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       transactions = parser.transactions
@@ -249,24 +251,24 @@ module StatementParser
 
       assert_includes transactions, {
         date: Date.new(2023, 3, 26),
-        description: "AUTOMATIC PAYMENT - THANK YOU",
-        amount: 406.29,
+        description: 'AUTOMATIC PAYMENT - THANK YOU',
+        amount: 406.29
       }
 
       assert_includes transactions, {
         date: Date.new(2023, 3, 20),
-        description: "CLIPPER SERVICES CONCORD CA",
-        amount: -20.00,
+        description: 'CLIPPER SERVICES CONCORD CA',
+        amount: -20.00
       }
 
       assert_includes transactions, {
         date: Date.new(2023, 4, 18),
-        description: "NOE VALLEY PET COMPANY SAN FRANCISCO CA",
-        amount: -5.42,
+        description: 'NOE VALLEY PET COMPANY SAN FRANCISCO CA',
+        amount: -5.42
       }
     end
 
-    def test_multi_year_statement_transactions
+    test 'multi year statement transactions' do
       mock_text = <<~TEXT
         Opening/Closing Date                    12/20/22 - 01/19/23
         TabSummary
@@ -286,7 +288,7 @@ module StatementParser
         yo may ave received.
       TEXT
 
-      ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = ChaseFreedomCreditCard.new(@file_path)
 
       transactions = parser.transactions
@@ -294,30 +296,30 @@ module StatementParser
 
       assert_includes transactions, {
         date: Date.new(2022, 12, 26),
-        description: "AUTOMATIC PAYMENT - THANK YOU",
-        amount: 406.29,
+        description: 'AUTOMATIC PAYMENT - THANK YOU',
+        amount: 406.29
       }
 
       assert_includes transactions, {
         date: Date.new(2022, 12, 21),
-        description: "CLIPPER SERVICES CONCORD CA",
-        amount: -20.00,
+        description: 'CLIPPER SERVICES CONCORD CA',
+        amount: -20.00
       }
 
       assert_includes transactions, {
         date: Date.new(2023, 1, 2),
-        description: "PG&E WEBRECURRING 800-743-5000 CA",
-        amount: -73.31,
+        description: 'PG&E WEBRECURRING 800-743-5000 CA',
+        amount: -73.31
       }
 
       assert_includes transactions, {
         date: Date.new(2023, 1, 15),
-        description: "NOE VALLEY PET COMPANY SAN FRANCISCO CA",
-        amount: -5.42,
+        description: 'NOE VALLEY PET COMPANY SAN FRANCISCO CA',
+        amount: -5.42
       }
     end
 
-    def test_leap_day_transaction
+    test 'leap day transaction' do
       mock_text = <<~TEXT
         Opening/Closing Date                    02/20/24 - 03/19/24
         TabSummary
@@ -336,23 +338,23 @@ module StatementParser
       TEXT
 
       Timecop.travel(Date.new(2025, 10, 1)) do
-        ChaseFreedomCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+        ChaseFreedomCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
         parser = ChaseFreedomCreditCard.new(@file_path)
 
         transactions = parser.transactions
         assert_equal 2, transactions.size
 
         assert_includes transactions, {
-                          date: Date.new(2024, 2, 25),
-                          description: "AUTOMATIC PAYMENT - THANK YOU",
-                          amount: 406.29,
-                        }
+          date: Date.new(2024, 2, 25),
+          description: 'AUTOMATIC PAYMENT - THANK YOU',
+          amount: 406.29
+        }
 
         assert_includes transactions, {
-                          date: Date.new(2024, 2, 29),
-                          description: "CLIPPER SERVICES CONCORD CA",
-                          amount: -20.00,
-                        }
+          date: Date.new(2024, 2, 29),
+          description: 'CLIPPER SERVICES CONCORD CA',
+          amount: -20.00
+        }
       end
     end
   end

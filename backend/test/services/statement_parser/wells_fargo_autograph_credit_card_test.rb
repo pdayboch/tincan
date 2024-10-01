@@ -1,13 +1,15 @@
-require "test_helper"
-require "timecop"
+# frozen_string_literal: true
+
+require 'test_helper'
+require 'timecop'
 
 module StatementParser
   class WellsFargoAutographCreditCardTest < ActiveSupport::TestCase
-    def setup
-      @file_path = "path/to/statement.pdf"
+    setup do
+      @file_path = 'path/to/statement.pdf'
     end
 
-    def test_statement_end_date
+    test 'statement_end_date' do
       mock_text = <<~TEXT
         WELLS FARGO AUTOGRAPH VISA SIGNATURE CARD
         Account ending in 1234
@@ -18,15 +20,15 @@ module StatementParser
         Payment Due Date                                          03/21/2024
         We accept all relay calls, including 711              Minimum Payment                     $25.00
       TEXT
-      WellsFargoAutographCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      WellsFargoAutographCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = WellsFargoAutographCreditCard.new(@file_path)
 
       assert_equal Date.new(2024, 2, 25), parser.statement_end_date
     end
 
-    def test_statement_end_date_raises_error
-      mock_text = "Invalid text"
-      WellsFargoAutographCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+    test 'raises error when statement_end_date not detected' do
+      mock_text = 'Invalid text'
+      WellsFargoAutographCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = WellsFargoAutographCreditCard.new(@file_path)
 
       assert_raises(RuntimeError, "Could not extract statement end date for #{@file_path}") do
@@ -34,7 +36,7 @@ module StatementParser
       end
     end
 
-    def test_statement_start_date
+    test 'statement_start_date' do
       mock_text = <<~TEXT
         WELLS FARGO AUTOGRAPH VISA SIGNATURE CARD
         Account ending in 1234
@@ -45,15 +47,15 @@ module StatementParser
         Payment Due Date                                          03/21/2024
         We accept all relay calls, including 711           Minimum Payment                               $25.00
       TEXT
-      WellsFargoAutographCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      WellsFargoAutographCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = WellsFargoAutographCreditCard.new(@file_path)
 
       assert_equal Date.new(2024, 1, 27), parser.statement_start_date
     end
 
-    def test_statement_start_date_raises_error
-      mock_text = "Invalid text"
-      WellsFargoAutographCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+    test 'raises error when statement_start_date not detected' do
+      mock_text = 'Invalid text'
+      WellsFargoAutographCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = WellsFargoAutographCreditCard.new(@file_path)
 
       assert_raises(RuntimeError, "Could not extract statement start date for #{@file_path}") do
@@ -61,7 +63,7 @@ module StatementParser
       end
     end
 
-    def test_statement_balance
+    test 'statement_balance' do
       mock_text = <<~TEXT
         Payment Due Date                                          03/21/2024
         We accept all relay calls, including 711                Minimum Payment                       $25.00
@@ -70,15 +72,15 @@ module StatementParser
         Send general inquiries to:
         Wells Fargo, PO Box 10347, Des Moines IA 50306-0347
       TEXT
-      WellsFargoAutographCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      WellsFargoAutographCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = WellsFargoAutographCreditCard.new(@file_path)
 
       assert_equal 123.45, parser.statement_balance
     end
 
-    def test_statement_balance_raises_error
-      mock_text = "Invalid text"
-      WellsFargoAutographCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+    test 'raises error when statement_balance not detected' do
+      mock_text = 'Invalid text'
+      WellsFargoAutographCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = WellsFargoAutographCreditCard.new(@file_path)
 
       assert_raises(RuntimeError, "Could not extract statement balance for #{@file_path}") do
@@ -86,7 +88,7 @@ module StatementParser
       end
     end
 
-    def test_transactions
+    test 'transactions' do
       mock_text = <<~TEXT
         Account ending in 1234
         Statement Period 01/01/2024 to 01/31/2024
@@ -107,38 +109,38 @@ module StatementParser
         NOTICE: SEE REVERSE SIDE FOR IMPORTANT INFORMATION ABOUT YOUR ACCOUNT                         Continued
         Detach and mail with check payable to Wells Fargo. For faster processing, include your account number on your check.
       TEXT
-      WellsFargoAutographCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      WellsFargoAutographCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = WellsFargoAutographCreditCard.new(@file_path)
 
       transactions = parser.transactions
       assert_equal 4, transactions.size
 
       assert_includes transactions, {
-        date: Date.new(2024, 1, 03),
-        description: "PAYMENT - THANK YOU",
-        amount: 200.00,
+        date: Date.new(2024, 1, 3),
+        description: 'PAYMENT - THANK YOU',
+        amount: 200.00
       }
 
       assert_includes transactions, {
         date: Date.new(2024, 1, 30),
-        description: "PAYMENT - THANK YOU",
-        amount: 835.55,
+        description: 'PAYMENT - THANK YOU',
+        amount: 835.55
       }
 
       assert_includes transactions, {
         date: Date.new(2024, 1, 26),
-        description: "CVS/PHARMACY #12345",
-        amount: -6.39,
+        description: 'CVS/PHARMACY #12345',
+        amount: -6.39
       }
 
       assert_includes transactions, {
         date: Date.new(2024, 1, 26),
-        description: "SOME CHARGE # 1800",
-        amount: -51.13,
+        description: 'SOME CHARGE # 1800',
+        amount: -51.13
       }
     end
 
-    def test_multi_month_statement_transactions
+    test 'multi month statement transactions' do
       mock_text = <<~TEXT
         Account ending in 1234
         Statement Period 01/20/2024 to 02/19/2024
@@ -159,7 +161,7 @@ module StatementParser
         NOTICE: SEE REVERSE SIDE FOR IMPORTANT INFORMATION ABOUT YOUR ACCOUNT                         Continued
         Detach and mail with check payable to Wells Fargo. For faster processing, include your account number on your check.
       TEXT
-      WellsFargoAutographCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      WellsFargoAutographCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = WellsFargoAutographCreditCard.new(@file_path)
 
       transactions = parser.transactions
@@ -167,30 +169,30 @@ module StatementParser
 
       assert_includes transactions, {
         date: Date.new(2024, 1, 22),
-        description: "PAYMENT - THANK YOU",
-        amount: 200.00,
+        description: 'PAYMENT - THANK YOU',
+        amount: 200.00
       }
 
       assert_includes transactions, {
         date: Date.new(2024, 2, 2),
-        description: "PAYMENT - THANK YOU",
-        amount: 835.55,
+        description: 'PAYMENT - THANK YOU',
+        amount: 835.55
       }
 
       assert_includes transactions, {
         date: Date.new(2024, 1, 26),
-        description: "CVS/PHARMACY #12345",
-        amount: -6.39,
+        description: 'CVS/PHARMACY #12345',
+        amount: -6.39
       }
 
       assert_includes transactions, {
         date: Date.new(2024, 2, 13),
-        description: "SOME CHARGE # 1800",
-        amount: -51.13,
+        description: 'SOME CHARGE # 1800',
+        amount: -51.13
       }
     end
 
-    def test_multi_year_statement_transactions
+    test 'multi year statement transactions' do
       mock_text = <<~TEXT
         Account ending in 1234
         Statement Period 12/20/2023 to 01/19/2024
@@ -211,7 +213,7 @@ module StatementParser
         NOTICE: SEE REVERSE SIDE FOR IMPORTANT INFORMATION ABOUT YOUR ACCOUNT                         Continued
         Detach and mail with check payable to Wells Fargo. For faster processing, include your account number on your check.
       TEXT
-      WellsFargoAutographCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+      WellsFargoAutographCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
       parser = WellsFargoAutographCreditCard.new(@file_path)
 
       transactions = parser.transactions
@@ -219,30 +221,30 @@ module StatementParser
 
       assert_includes transactions, {
         date: Date.new(2023, 12, 22),
-        description: "PAYMENT - THANK YOU",
-        amount: 200.00,
+        description: 'PAYMENT - THANK YOU',
+        amount: 200.00
       }
 
       assert_includes transactions, {
         date: Date.new(2024, 1, 2),
-        description: "PAYMENT - THANK YOU",
-        amount: 835.55,
+        description: 'PAYMENT - THANK YOU',
+        amount: 835.55
       }
 
       assert_includes transactions, {
         date: Date.new(2023, 12, 28),
-        description: "CVS/PHARMACY #12345",
-        amount: -6.39,
+        description: 'CVS/PHARMACY #12345',
+        amount: -6.39
       }
 
       assert_includes transactions, {
         date: Date.new(2024, 1, 13),
-        description: "SOME CHARGE # 1800",
-        amount: -51.13,
+        description: 'SOME CHARGE # 1800',
+        amount: -51.13
       }
     end
 
-    def test_leap_day_transaction
+    test 'leap day transaction' do
       mock_text = <<~TEXT
         Account ending in 1234
         Statement Period 02/20/2024 to 03/19/2024
@@ -263,7 +265,7 @@ module StatementParser
       TEXT
 
       Timecop.travel(Date.new(2025, 10, 1)) do
-        WellsFargoAutographCreditCard.any_instance.stubs(:get_statement_text).returns(mock_text)
+        WellsFargoAutographCreditCard.any_instance.stubs(:statement_text).returns(mock_text)
         parser = WellsFargoAutographCreditCard.new(@file_path)
         transactions = parser.transactions
 
@@ -271,14 +273,14 @@ module StatementParser
 
         assert_includes transactions, {
           date: Date.new(2024, 2, 23),
-          description: "PAYMENT - THANK YOU",
-          amount: 200.00,
+          description: 'PAYMENT - THANK YOU',
+          amount: 200.00
         }
 
         assert_includes transactions, {
           date: Date.new(2024, 2, 29),
-          description: "CVS/PHARMACY #12345",
-          amount: -6.39,
+          description: 'CVS/PHARMACY #12345',
+          amount: -6.39
         }
       end
     end

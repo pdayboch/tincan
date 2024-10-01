@@ -4,7 +4,15 @@ AllCops:
   NewCops: enable
 
 Metrics/ClassLength:
-  Max: 120
+  Max: 200
+  CountAsOne: ["heredoc", "array", "hash"]
+
+Metrics/MethodLength:
+  CountAsOne: ["heredoc", "array", "hash"]
+
+Metrics/BlockLength:
+  Max: 30
+  CountAsOne: ["heredoc", "array", "hash"]
 
 Style/Documentation:
   Enabled: false
