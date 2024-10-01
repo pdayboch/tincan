@@ -5,27 +5,26 @@ class SubcategoriesController < ApplicationController
 
   # POST /subcategories
   def create
-    @subcategory = Subcategory.new(subcategory_params)
+    subcategory = Subcategory.new(subcategory_params)
 
-    if @subcategory.save
-      render json: @subcategory, status: :created, location: @subcategory
-    else
-      render json: @subcategory.errors, status: :unprocessable_entity
-    end
+    raise UnprocessableEntityError, subcategory.errors unless subcategory.save
+
+    render json: subcategory, status: :created, location: subcategory
   end
 
   # PATCH/PUT /subcategories/1
   def update
-    if @subcategory.update(subcategory_params)
-      render json: @subcategory
-    else
-      render json: @subcategory.errors, status: :unprocessable_entity
-    end
+    raise UnprocessableEntityError, @subcategory.errors unless @subcategory.update(subcategory_params)
+
+    render json: @subcategory
   end
 
   # DELETE /subcategories/1
   def destroy
     @subcategory.destroy!
+  rescue ActiveRecord::DeleteRestrictionError
+    message = 'Cannot delete a subcategory that has transactions associated with it'
+    raise BadRequestError.new({ subcategory: [message] })
   end
 
   private
@@ -35,6 +34,6 @@ class SubcategoriesController < ApplicationController
   end
 
   def subcategory_params
-    params.require(:subcategory).permit(:name, :category_id)
+    params.permit(:name, :category_id)
   end
 end

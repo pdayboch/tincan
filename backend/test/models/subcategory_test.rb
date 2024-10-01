@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: subcategories
@@ -8,7 +10,7 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
-require "test_helper"
+require 'test_helper'
 
 class SubcategoryTest < ActiveSupport::TestCase
   test 'should not save duplicate subcategory names' do
@@ -23,8 +25,10 @@ class SubcategoryTest < ActiveSupport::TestCase
     subcategory = subcategories(:one)
     assert_not subcategory.transactions.empty?, 'Subcategory should have transactions for this test'
 
-    assert_no_difference 'Subcategory.count' do
-      assert_not subcategory.destroy, 'Subcategory was destroyed despite having associated transactions'
+    assert_raises ActiveRecord::DeleteRestrictionError do
+      subcategory.destroy
     end
+
+    assert Subcategory.exists?(subcategory.id), 'Subcategory should still exist after attempting to delete'
   end
 end

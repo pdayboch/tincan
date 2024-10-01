@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: subcategories
@@ -10,19 +12,8 @@
 #
 class Subcategory < ApplicationRecord
   belongs_to :category
-  has_many :transactions
+  has_many :transactions, dependent: :restrict_with_exception
 
   # Validates that the name is unique
   validates :name, uniqueness: { message: 'already exists' }
-
-  before_destroy :check_transactions
-
-  private
-
-  def check_transactions
-    if transactions.any?
-      errors.add(:base, 'Cannot delete subcategory with transactions')
-      throw(:abort)
-    end
-  end
 end
