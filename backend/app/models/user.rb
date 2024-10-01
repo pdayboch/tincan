@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: users
@@ -14,27 +16,31 @@ class User < ApplicationRecord
   has_many :accounts, dependent: :destroy
 
   after_create :create_cash_account
+
+  # Ensure this executes before trying to destroy anthing.
   before_destroy :make_accounts_deletable,
-    prepend: true # Ensures this executes before trying to destroy anthing.
+                 prepend: true
 
   validates :email,
-  presence: true,
-  uniqueness: {
-    case_sensitive: false,
-    message: 'already exists'
-  }
+            presence: true,
+            uniqueness: {
+              case_sensitive: false,
+              message: 'already exists'
+            }
 
   private
 
   def create_cash_account
     accounts.create!(
       name: 'Cash',
-      account_type: "cash",
+      account_type: 'cash',
       deletable: false
     )
   end
 
   def make_accounts_deletable
-    accounts.update_all(deletable: true)
+    accounts.each do |account|
+      account.update(deletable: true)
+    end
   end
 end
