@@ -1,4 +1,6 @@
-require "test_helper"
+# frozen_string_literal: true
+
+require 'test_helper'
 
 class AccountDataEntityTest < ActiveSupport::TestCase
   setup do
@@ -11,46 +13,46 @@ class AccountDataEntityTest < ActiveSupport::TestCase
     @inactive_account = accounts(:inactive_account)
   end
 
-  test "returns all accounts when no filters are applied" do
+  test 'returns all accounts when no filters are applied' do
     entity = AccountDataEntity.new
     result = entity.get_data
 
     assert_equal 5, result.size
-    assert_includes result.map { |a| a[:id] }, @account1.id
-    assert_includes result.map { |a| a[:id] }, @account2.id
-    assert_includes result.map { |a| a[:id] }, @account3.id
-    assert_includes result.map { |a| a[:id] }, @non_deletable_account.id
-    assert_includes result.map { |a| a[:id] }, @inactive_account.id
+    assert_includes result.pluck(:id), @account1.id
+    assert_includes result.pluck(:id), @account2.id
+    assert_includes result.pluck(:id), @account3.id
+    assert_includes result.pluck(:id), @non_deletable_account.id
+    assert_includes result.pluck(:id), @inactive_account.id
   end
 
-  test "returns accounts for the specified users" do
+  test 'returns accounts for the specified users' do
     entity = AccountDataEntity.new(user_ids: [@user1.id])
     result = entity.get_data
 
     assert_equal 4, result.size
-    assert_includes result.map { |a| a[:id] }, @account1.id
-    assert_includes result.map { |a| a[:id] }, @account3.id
-    assert_includes result.map { |a| a[:id] }, @non_deletable_account.id
+    assert_includes result.pluck(:id), @account1.id
+    assert_includes result.pluck(:id), @account3.id
+    assert_includes result.pluck(:id), @non_deletable_account.id
   end
 
-  test "returns accounts of the specified types" do
-    entity = AccountDataEntity.new(account_types: ["credit card"])
+  test 'returns accounts of the specified types' do
+    entity = AccountDataEntity.new(account_types: ['credit card'])
     result = entity.get_data
 
     assert_equal 4, result.size
-    assert_includes result.map { |a| a[:id] }, @account1.id
-    assert_includes result.map { |a| a[:id] }, @account2.id
-    assert_includes result.map { |a| a[:id] }, @account3.id
-    assert_includes result.map { |a| a[:id] }, @inactive_account.id
+    assert_includes result.pluck(:id), @account1.id
+    assert_includes result.pluck(:id), @account2.id
+    assert_includes result.pluck(:id), @account3.id
+    assert_includes result.pluck(:id), @inactive_account.id
   end
 
-  test "returns accounts that match both filters" do
-    entity = AccountDataEntity.new(user_ids: [@user1.id], account_types: ["credit card"])
+  test 'returns accounts that match both filters' do
+    entity = AccountDataEntity.new(user_ids: [@user1.id], account_types: ['credit card'])
     result = entity.get_data
 
     assert_equal 3, result.size
-    assert_includes result.map { |a| a[:id] }, @account1.id
-    assert_includes result.map { |a| a[:id] }, @account3.id
-    assert_includes result.map { |a| a[:id] }, @inactive_account.id
+    assert_includes result.pluck(:id), @account1.id
+    assert_includes result.pluck(:id), @account3.id
+    assert_includes result.pluck(:id), @inactive_account.id
   end
 end

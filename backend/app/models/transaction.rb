@@ -30,18 +30,15 @@ class Transaction < ApplicationRecord
 
   private
 
-  # This method searches through all categorization rules and applies the first matching rule
+  # This searches through all categorization rules and applies the first matching rule
   def apply_categorization_rule
     matched_rule = CategorizationRule.all.find { |rule| rule.match?(self) }
 
-    if matched_rule
-      # If a match is found, set the category and subcategory based on the rule
-      self.category = matched_rule.category
-      self.subcategory = matched_rule.subcategory
-    else
-      # If no rule matches, set to uncategorized
-      set_default_category_and_subcategory
-    end
+    # If no rule matches, set to uncategorized
+    return set_default_category_and_subcategory unless matched_rule
+
+    self.category = matched_rule.category
+    self.subcategory = matched_rule.subcategory
   end
 
   def set_default_category_and_subcategory

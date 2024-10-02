@@ -2,6 +2,8 @@ require: rubocop-rails
 
 AllCops:
   NewCops: enable
+  Exclude:
+    - "db/**/*"
 
 Metrics/ClassLength:
   Max: 200
