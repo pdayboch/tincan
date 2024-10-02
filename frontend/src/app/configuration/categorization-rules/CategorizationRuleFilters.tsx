@@ -1,6 +1,7 @@
-import { Account, Category, FilterItemType, Subcategory, User } from "@/app/lib/definitions";
-import FilterSelector from "@/app/ui/shared/filters/FilterSelector";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Account, Category, Subcategory, User } from "@/app/lib/definitions";
+import FilterSelector from "@/app/ui/shared/filters/FilterSelector";
+import { FilterItemType } from "@/app/ui/shared/filters/FilterItem";
 
 type CategorizationRuleFiltersProps = {
   categories: Category[];

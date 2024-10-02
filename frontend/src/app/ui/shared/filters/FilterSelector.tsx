@@ -1,20 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
-import FilterItem from './FilterItem';
-import { FilterItemType } from '@/app/lib/definitions';
+import FilterItem, { FilterItemType } from './FilterItem';
 
-type UserSelectorProps = {
+type FilterSelectorProps = {
   title: string;
   items: FilterItemType[];
   selectedItems: string[];
   onItemClick: (itemId: string) => void;
 };
 
-export default function UserSelector({
+export default function FilterSelector({
   title,
   items,
   selectedItems,
   onItemClick
-}: UserSelectorProps) {
+}: FilterSelectorProps) {
   // State to control the visibility of the dropdown
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -27,7 +26,7 @@ export default function UserSelector({
   // Event handler for closing the dropdown if clicked outside
   const handleClickOutside = (event: MouseEvent) => {
     if (selectorRef.current &&
-        !selectorRef.current.contains(event.target as Node)) {
+      !selectorRef.current.contains(event.target as Node)) {
       setIsDropdownOpen(false);
     }
   }
@@ -56,7 +55,7 @@ export default function UserSelector({
 
       {isDropdownOpen && (
         <div className="w-full h-auto mt-1 max-h-96 overflow-y-auto rounded-md bg-white shadow-lg">
-          <hr className="my-1"/>
+          <hr className="my-1" />
           <FilterItem
             key={0}
             title="All"
@@ -64,9 +63,9 @@ export default function UserSelector({
             isSelected={selectedItems.length === 0}
             onClick={() => onItemClick("0")}
           />
-          <hr className="my-1"/>
+          <hr className="my-1" />
           {items.map((item) => {
-            return(
+            return (
               <FilterItem
                 key={item.id}
                 title={item.label}

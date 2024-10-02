@@ -1,6 +1,12 @@
 import clsx from 'clsx';
 import React from 'react';
 
+export type FilterItemType = {
+  id: string,
+  label: string,
+  sublabel: string | null
+}
+
 type DropdownItemProps = {
   title: string,
   subtitle: string,

@@ -1,6 +1,7 @@
-import { Account, FilterItemType, User } from "@/app/lib/definitions";
-import FilterSelector from "@/app/ui/shared/filters/FilterSelector";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Account, User } from "@/app/lib/definitions";
+import FilterSelector from "@/app/ui/shared/filters/FilterSelector";
+import { FilterItemType } from "../ui/shared/filters/FilterItem";
 
 type AccountFiltersProps = {
   accounts: Account[];
