@@ -15,8 +15,8 @@ class CategoriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     json_response = response.parsed_body
-    assert json_response['total_items'].present?
-    assert json_response['filtered_items'].present?
+    assert json_response['totalItems'].present?
+    assert json_response['filteredItems'].present?
     assert json_response['categories'].present?
   end
 

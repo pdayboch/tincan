@@ -2,38 +2,36 @@
 
 class CategoryDataEntity
   def data
-    @categories = Category.all
+    categories = base_query
     {
-      total_items: 10,
-      filtered_items: 5,
-      categories: @categories.map { |c| single_category_data(c) }
+      totalItems: categories.count,
+      filteredItems: categories.count, # TODO: add filter support
+      categories: categories.map { |c| single_category_data(c) }
     }
+  end
+
+  private
+
+  def base_query
+    Category.includes(:subcategories)
   end
 
   def single_category_data(category)
     {
       id: category.id,
       name: category.name,
-      has_transactions: category_has_transactions_associated?(category),
+      hasTransactions: category_has_transactions_associated?(category),
       subcategories: subcategory_data(category)
     }
   end
 
   def subcategory_data(category)
     category.subcategories.map do |subcategory|
-      {
-        id: subcategory.id,
-        name: subcategory.name,
-        has_transactions: subcategory_has_transactions_associated?(subcategory)
-      }
+      SubcategorySerializer.new(subcategory).as_json
     end
   end
 
   def category_has_transactions_associated?(category)
     category.transactions.any?
-  end
-
-  def subcategory_has_transactions_associated?(subcategory)
-    subcategory.transactions.any?
   end
 end

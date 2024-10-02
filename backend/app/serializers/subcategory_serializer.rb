@@ -16,4 +16,8 @@ class SubcategorySerializer < ActiveModel::Serializer
   attribute :categoryId do
     object.category_id
   end
+
+  attribute :hasTransactions do
+    object.transactions.any?
+  end
 end

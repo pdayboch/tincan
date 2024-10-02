@@ -1,3 +1,75 @@
+export type Account = {
+  id: number,
+  bankName: string,
+  name: string,
+  accountType: string,
+  active: boolean,
+  deletable: boolean,
+  userId: number,
+  statementDirectory: string,
+  nickname: string
+}
+
+export type AccountUpdate = Partial<{
+  // Include only the fields that can be updated
+  active: boolean;
+  statementDirectory: string;
+  nickname: string;
+}>;
+
+export type CategorizationRule = {
+  id: number,
+  category: { id: number, name: string },
+  subcategory: { id: number, name: string },
+  conditions: CategorizationCondition[]
+}
+
+export type CategorizationRuleUpdate = Partial<{
+  subcategoryId: number,
+  conditions: CategorizationConditionUpdate[]
+}>
+
+export type CategorizationCondition = {
+  id: number,
+  categorizationRuleId: number,
+  transactionField: string,
+  matchType: string,
+  matchValue: string
+}
+
+export type CategorizationConditionUpdate = Partial<{
+  transactionField: string,
+  matchType: string,
+  matchValue: string
+}>
+
+export type Category = {
+  id: number,
+  name: string,
+  hasTransactions: boolean,
+  subcategories: Subcategory[]
+}
+
+export type CategoryResponse = {
+  totalItems: number,
+  filteredItems: number,
+  categories: Category[]
+}
+
+export type Subcategory = {
+  id: number,
+  name: string,
+  categoryId: number,
+  hasTransactions: boolean
+}
+
+export type SupportedAccount = {
+  accountProvider: string,
+  bankName: string,
+  accountName: string,
+  accountType: string
+}
+
 export type Transaction = {
   id: number,
   transactionDate: string,
@@ -35,80 +107,8 @@ export type TransactionUpdate = Partial<{
   subcategoryName: string;
 }>;
 
-export type Account = {
-  id: number,
-  bankName: string,
-  name: string,
-  accountType: string,
-  active: boolean,
-  deletable: boolean,
-  userId: number,
-  statementDirectory: string,
-  nickname: string
-}
-
-export type AccountUpdate = Partial<{
-  // Include only the fields that can be updated
-  active: boolean;
-  statementDirectory: string;
-  nickname: string;
-}>;
-
-export type SupportedAccount = {
-  accountProvider: string,
-  bankName: string,
-  accountName: string,
-  accountType: string
-}
-
 export type User = {
   id: number,
   name: string,
   email: string
-}
-
-export type Category = {
-  id: number,
-  name: string,
-  has_transactions: boolean,
-  subcategories: Subcategory[]
-}
-
-export type CategoryResponse = {
-  total_items: number,
-  filtered_items: number,
-  categories: Category[]
-}
-
-export type Subcategory = {
-  id: number,
-  name: string,
-  has_transactions: boolean
-}
-
-export type CategorizationRule = {
-  id: number,
-  categoryId: number,
-  subcategoryId: number
-}
-
-export type CategorizationCondition = {
-  id: number,
-  categorizationRuleId: number,
-  transactionField: string,
-  matchType: string,
-  matchValue: string
-}
-
-export type CategorizationConditionUpdate = Partial<{
-  categorizationRuleId: number,
-  transactionField: string,
-  matchType: string,
-  matchValue: string
-}>
-
-export type FilterItemType = {
-  id: string,
-  label: string,
-  sublabel: string | null
 }

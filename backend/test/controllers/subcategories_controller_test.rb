@@ -13,9 +13,12 @@ class SubcategoriesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :created
+
     json_response = response.parsed_body
-    assert_equal json_response['name'], 'New subcategory'
-    assert_equal json_response['categoryId'], category.id
+    assert json_response['id'].present?
+    assert_equal 'New subcategory', json_response['name']
+    assert_equal category.id, json_response['categoryId']
+    assert_equal false, json_response['hasTransactions']
   end
 
   test 'should raise error on create with duplicate name' do
