@@ -17,7 +17,7 @@ class AccountsController < ApplicationController
 
   # POST /accounts
   def create
-    account = Account::CreateAccountService.new(account_create_params).call
+    account = AccountServices::Create.new(account_create_params).call
     render json: account, status: :created, location: account
   end
 
