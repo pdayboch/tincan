@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: transactions
@@ -16,7 +18,7 @@
 #  statement_description      :text
 #  statement_transaction_date :date
 #
-require "test_helper"
+require 'test_helper'
 
 class TransactionTest < ActiveSupport::TestCase
   test 'create transaction applies categorization rule' do
@@ -31,15 +33,15 @@ class TransactionTest < ActiveSupport::TestCase
 
     CategorizationCondition.create!(
       categorization_rule_id: rule.id,
-      transaction_field: "description",
-      match_type: "exactly",
-      match_value: "Venda"
+      transaction_field: 'description',
+      match_type: 'exactly',
+      match_value: 'Venda'
     )
 
     t = Transaction.create!(
-      transaction_date: Date.new(2024,9,10),
+      transaction_date: Date.new(2024, 9, 10),
       amount: 10.00,
-      description: "Venda",
+      description: 'Venda',
       account_id: account.id
     )
 
@@ -53,9 +55,9 @@ class TransactionTest < ActiveSupport::TestCase
     category = subcategory.category
 
     t = Transaction.create!(
-      transaction_date: Date.new(2024,7,2),
+      transaction_date: Date.new(2024, 7, 2),
       amount: 9.99,
-      description: "CVS",
+      description: 'CVS',
       account_id: account.id
     )
 

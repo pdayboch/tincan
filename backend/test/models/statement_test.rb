@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: statements
@@ -10,10 +12,7 @@
 #  updated_at        :datetime         not null
 #  pdf_file_path     :text
 #
-require "test_helper"
+require 'test_helper'
 
 class StatementTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
 end

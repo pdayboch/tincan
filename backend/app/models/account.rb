@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: accounts
@@ -30,9 +32,9 @@ class Account < ApplicationRecord
   private
 
   def check_deletable
-    if !deletable
-      errors.add(:base, "The #{name} account cannot be deleted.")
-      throw(:abort) # Stop the destroy action from proceeding
-    end
+    return if deletable
+
+    errors.add(:base, "The #{name} account cannot be deleted.")
+    throw(:abort)
   end
 end
