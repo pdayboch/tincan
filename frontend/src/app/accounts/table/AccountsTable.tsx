@@ -1,7 +1,7 @@
-import { Account, AccountUpdate, User } from "@/app/lib/definitions";
+import { Account, AccountUpdate, User } from "@/lib/definitions";
 import AccountSubRow from "./AccountSubRow";
-import { deleteAccount, updateAccount } from "@/app/lib/data";
 import { useEffect, useState } from "react";
+import { deleteAccount, updateAccount } from "@/lib/api/account-api";
 
 type AccountsTableProps = {
   accounts: Account[];

@@ -5,9 +5,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ThreeDots } from 'react-loader-spinner';
 import { parseISO, format } from 'date-fns';
 import { ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
-import { Category, Transaction, TransactionUpdate } from "../../lib/definitions";
-import { formatCurrency } from '@/app/lib/helpers';
-import CategoryDropdown from "@/app/ui/shared/CategoryDropdown";
+import { Category, Transaction, TransactionUpdate } from "../../../lib/definitions";
+import { formatCurrency } from '@/lib/helpers';
+import CategoryDropdown from "@/components/category/CategoryDropdown";
 
 interface TransactionTableRowExpandedProps {
   transaction: Transaction;

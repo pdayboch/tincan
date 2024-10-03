@@ -1,13 +1,14 @@
 "use client"
 import { Suspense, useEffect, useState } from 'react';
 import { PlusIcon } from "@heroicons/react/24/solid";
-import { Account, SupportedAccount, User } from '../lib/definitions';
-import { createAccount, fetchAccounts, fetchUsers } from '../lib/data';
+import { Account, SupportedAccount, User } from '../../lib/definitions';
 import Filters from './AccountFilters';
 import AccountsTable from './table/AccountsTable';
 import { Inter } from "next/font/google";
 import clsx from 'clsx';
 import AddAccountModal from './add-account-modal/AddAccountModal';
+import { fetchUsers } from '@/lib/api/user-api';
+import { createAccount, fetchAccounts } from '@/lib/api/account-api';
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 function AccountsContent() {

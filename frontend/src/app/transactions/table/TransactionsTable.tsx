@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Category, Transaction, TransactionMetaData, TransactionUpdate } from "../../lib/definitions";
-import { updateTransaction } from '@/app/lib/data';
+import { Category, Transaction, TransactionMetaData, TransactionUpdate } from "../../../lib/definitions";
 import TransactionsTableHeader from "./TransactionsTableHeader";
 import TransactionsTableRow from "./TransactionsTableRow";
 import TransactionsTableRowExpanded from "./TransactionsTableRowExpanded";
-import PaginationBar from '../../ui/shared/pagination-bar/PaginationBar';
+import PaginationBar from '../../../components/pagination-bar/PaginationBar';
+import { updateTransaction } from '@/lib/api/transaction-api';
 
 interface TransactionsTableProps {
   transactions: Transaction[];

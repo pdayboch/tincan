@@ -1,4 +1,4 @@
-import { Category } from '@/app/lib/definitions';
+import { Category } from '@/lib/definitions';
 
 interface CategoryDropdownItemProps {
   category: Category;

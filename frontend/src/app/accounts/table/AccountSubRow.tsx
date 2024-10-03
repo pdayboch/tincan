@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import clsx from 'clsx';
-import { Account, AccountUpdate } from '@/app/lib/definitions';
+import { Account, AccountUpdate } from '@/lib/definitions';
 import AccountModal from '../update-account-modal/UpdateAccountModal';
 
 type AccountSubRowProps = {

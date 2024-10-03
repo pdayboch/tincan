@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { SupportedAccount } from '@/app/lib/definitions';
+import { SupportedAccount } from '@/lib/definitions';
 import Search from '@/components/Search';
 
 interface AccountPickerScreenProps {
@@ -82,5 +82,5 @@ export default function AccountPickerScreen({
         </div>
       </div>
     </>
-  )
+  );
 }

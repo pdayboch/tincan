@@ -1,6 +1,6 @@
 import './globals.css'
 import { lusitana } from '@/app/fonts';
-import TopNav from './ui/nav/TopNav';
+import TopNav from '../components/nav/TopNav';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

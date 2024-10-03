@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { SupportedAccount, User } from '../../lib/definitions';
-import { fetchSupportedAccounts } from '../../lib/data';
+import { SupportedAccount, User } from '../../../lib/definitions';
 import AccountPickerScreen from './screens/AccountPickerScreen';
 import AccountDetailsScreen from './screens/AccountDetailsScreen';
+import { fetchSupportedAccounts } from '@/lib/api/account-api';
 
 interface AddAccountModalProps {
   users: User[];

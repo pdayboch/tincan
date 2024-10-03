@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
-import { Category } from '@/app/lib/definitions';
+import { Category } from '@/lib/definitions';
 import { ChevronDoubleDownIcon } from "@heroicons/react/24/outline";
 import CategoryDropdownItem from './CategoryDropdownItem';
 

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeftIcon, PlusCircleIcon } from '@heroicons/react/16/solid';
 import clsx from 'clsx';
-import { SupportedAccount, User } from '@/app/lib/definitions';
+import { SupportedAccount, User } from '@/lib/definitions';
 
 interface AccountDetailsScreenProps {
   users: User[];

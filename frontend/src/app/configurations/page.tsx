@@ -9,7 +9,7 @@ export default function Page() {
           <li>
             <Link
               className="text-lg text-blue-500 border-2 border-blue-500 py-2 px-6 rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-300"
-              href="/configuration/users"
+              href="/configurations/users"
             >
               Configure Users
             </Link>
@@ -17,7 +17,7 @@ export default function Page() {
           <li>
             <Link
               className="text-lg text-blue-500 border-2 border-blue-500 py-2 px-6 rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-300"
-              href="/configuration/categorization-rules"
+              href="/configurations/categorization-rules"
             >
               Configure Categorization Rules
             </Link>
@@ -25,7 +25,7 @@ export default function Page() {
           <li>
             <Link
               className="text-lg text-blue-500 border-2 border-blue-500 py-2 px-6 rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-300"
-              href="/configuration/categories"
+              href="/configurations/categories"
             >
               Configure Categories
             </Link>

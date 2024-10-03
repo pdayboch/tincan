@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import clsx from 'clsx';
 import { QuestionMarkCircleIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
-import { Account, AccountUpdate } from '@/app/lib/definitions';
+import { Account, AccountUpdate } from '@/lib/definitions';
 
 type AccountModalProps = {
   account: Account;

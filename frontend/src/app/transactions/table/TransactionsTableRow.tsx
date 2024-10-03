@@ -1,6 +1,6 @@
 import { BarsArrowDownIcon } from "@heroicons/react/24/outline";
-import { Transaction } from "../../lib/definitions";
-import { formatCurrency, formatDate } from '@/app/lib/helpers';
+import { Transaction } from "../../../lib/definitions";
+import { formatCurrency, formatDate } from '@/lib/helpers';
 import clsx from "clsx";
 
 interface TransactionTableRowProps {

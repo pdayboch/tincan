@@ -5,10 +5,13 @@ import Search from '../../components/Search';
 import { CreateTransaction } from './buttons';
 import TransactionsTable from './table/TransactionsTable';
 import Filters from './TransactionFilters';
-import { Account, Category, Transaction, TransactionMetaData, User } from '../lib/definitions';
-import { fetchAccounts, fetchCategories, fetchTransactions, fetchUsers } from '../lib/data';
+import { Account, Category, Transaction, TransactionMetaData, User } from '../../lib/definitions';
 import { Inter } from "next/font/google";
 import clsx from 'clsx';
+import { fetchUsers } from '@/lib/api/user-api';
+import { fetchAccounts } from '@/lib/api/account-api';
+import { fetchCategories } from '@/lib/api/category-api';
+import { fetchTransactions } from '@/lib/api/transaction-api';
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 function TransactionsContent() {
