@@ -6,33 +6,27 @@ import { PlusIcon, PlayIcon } from "@heroicons/react/16/solid";
 import clsx from 'clsx';
 import {
   Account,
-  CategorizationCondition,
   CategorizationRule,
   Category,
   User
-} from '@/app/lib/definitions';
-import {
-  fetchAccounts,
-  fetchCategories,
-  fetchCategorizationConditions,
-  fetchCategorizationRules,
-  fetchUsers
-} from '@/app/lib/data';
+} from '@/lib/definitions';
 import Filters from './CategorizationRuleFilters';
 import NoRulesComponent from './NoRulesComponent';
 import CategorizationRuleRow from './CategorizationRuleRow';
 import About from './About';
 import Search from '@/components/Search';
+import { fetchCategories } from '@/lib/api/category-api';
+import { fetchUsers } from '@/lib/api/user-api';
+import { fetchAccounts } from '@/lib/api/account-api';
+import { fetchCategorizationRules } from '@/lib/api/categorization-rule-api';
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 function CategorizationRulesContent() {
   const [isLoadingRules, setIsLoadingRules] = useState<boolean>(true)
-  const [isLoadingConditions, setIsLoadingConditions] = useState<boolean>(true)
   const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(true)
   const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(true)
   const [isLoadingAccounts, setIsLoadingAccounts] = useState<boolean>(true)
   const [rules, setRules] = useState<CategorizationRule[]>([]);
-  const [conditions, setConditions] = useState<CategorizationCondition[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -52,20 +46,9 @@ function CategorizationRulesContent() {
     replace(`${pathname}?${params.toString()}`)
   }
 
-  // fetch and store all conditions
-  useEffect(() => {
-    setIsLoadingConditions(true);
-    fetchCategorizationConditions()
-      .then(data => {
-        setConditions(data);
-        setIsLoadingConditions(false);
-      })
-      .catch(error => {
-        console.error(error);
-        setConditions([]);
-        setIsLoadingConditions(false);
-      });
-  }, []);
+  const handleAddConditionToEmptyRule = (ruleId: number) => {
+    console.log("adding condition to empty rule " + ruleId);
+  }
 
   // fetch and store all rules
   useEffect(() => {
@@ -131,9 +114,8 @@ function CategorizationRulesContent() {
       });
   }, []);
 
-
-  if (isLoadingRules ||
-    isLoadingConditions ||
+  if (
+    isLoadingRules ||
     isLoadingCategories ||
     isLoadingUsers ||
     isLoadingAccounts
@@ -164,9 +146,13 @@ function CategorizationRulesContent() {
       </div>
 
       {/* Content */}
-      <div className="flex-grow flex flex-col items-center w-full mx-auto max-w-4xl">
+      <div className="flex-grow flex flex-col items-center \
+                      w-full mx-auto max-w-3xl"
+      >
         <About />
-        <div className="flex items-center justify-between w-full gap-2 mt-2 mb-5 h-10">
+        <div className="flex items-center justify-between \
+                        w-full gap-2 mt-2 mb-5 h-10"
+        >
           <Search
             placeholder='Search rules...'
             value={searchParams.get('searchString')?.toString()}
@@ -202,8 +188,8 @@ function CategorizationRulesContent() {
             <CategorizationRuleRow
               key={rule.id}
               rule={rule}
-              conditions={conditions}
-              categories={categories}
+              accounts={accounts}
+              onAddCondition={() => handleAddConditionToEmptyRule(rule.id)}
             />
           ))}
         </div>
