@@ -19,14 +19,21 @@ import { fetchCategories } from '@/lib/api/category-api';
 import { fetchUsers } from '@/lib/api/user-api';
 import { fetchAccounts } from '@/lib/api/account-api';
 import { fetchCategorizationRules } from '@/lib/api/categorization-rule-api';
+import {
+  filterByAccounts,
+  filterBySearchString,
+  filterBySubcategories
+} from './utils/filter-helpers';
+
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 function CategorizationRulesContent() {
-  const [isLoadingRules, setIsLoadingRules] = useState<boolean>(true)
-  const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(true)
-  const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(true)
-  const [isLoadingAccounts, setIsLoadingAccounts] = useState<boolean>(true)
+  const [isLoadingRules, setIsLoadingRules] = useState<boolean>(true);
+  const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(true);
+  const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(true);
+  const [isLoadingAccounts, setIsLoadingAccounts] = useState<boolean>(true);
   const [rules, setRules] = useState<CategorizationRule[]>([]);
+  const [filteredRules, setFilteredRules] = useState<CategorizationRule[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -64,6 +71,20 @@ function CategorizationRulesContent() {
         setIsLoadingRules(false);
       });
   }, []);
+
+  // filter rules when search updated
+  useEffect(() => {
+    const searchString = searchParams.get('searchString') || '';
+    const accounts = searchParams.getAll('accounts[]');
+    const subcategories = searchParams.getAll('subcategories[]');
+
+    // Apply all the filters using the helper functions
+    let filtered = rules;
+    filtered = filterBySearchString(filtered, searchString);
+    filtered = filterByAccounts(filtered, accounts);
+    filtered = filterBySubcategories(filtered, subcategories);
+    setFilteredRules(filtered);
+  }, [searchParams, rules])
 
   // fetch and store all categories
   useEffect(() => {
@@ -182,9 +203,8 @@ function CategorizationRulesContent() {
             </button>
           </div>
         </div>
-
         <div className="w-full">
-          {rules.map((rule) => (
+          {filteredRules.map((rule) => (
             <CategorizationRuleRow
               key={rule.id}
               rule={rule}
