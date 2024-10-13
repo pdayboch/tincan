@@ -252,7 +252,7 @@ class CategorizationConditionTest < ActiveSupport::TestCase
       categorization_rule_id: rule.id,
       transaction_field: 'date',
       match_type: 'starts_with',
-      match_value: '100'
+      match_value: '2024-10-13'
     )
 
     assert_not condition.valid?,
@@ -290,5 +290,39 @@ class CategorizationConditionTest < ActiveSupport::TestCase
     assert_not condition.valid?,
                'Condition should be invalid when match_value is blank'
     assert_equal({ match_value: ["can't be blank"] }, condition.errors.messages)
+  end
+
+  test 'should not allow invalid date format for match_value when transaction_field is date' do
+    rule = categorization_rules(:one)
+    condition = CategorizationCondition.new(
+      categorization_rule_id: rule.id,
+      transaction_field: 'date',
+      match_type: 'exactly',
+      match_value: '01-02-2024'
+    )
+
+    assert_not condition.valid?,
+               'Condition should not allow invalid date when transaction_field is date'
+    assert_equal(
+      { match_value: ["must be in the format 'YYYY-MM-DD' when the transaction_field is 'date'"] },
+      condition.errors.messages
+    )
+  end
+
+  test 'should not allow invalid date for match_value when transaction_field is date' do
+    rule = categorization_rules(:one)
+    condition = CategorizationCondition.new(
+      categorization_rule_id: rule.id,
+      transaction_field: 'date',
+      match_type: 'exactly',
+      match_value: '2024-13-33'
+    )
+
+    assert_not condition.valid?,
+               'Condition should not allow invalid date when transaction_field is date'
+    assert_equal(
+      { match_value: ['invalid date'] },
+      condition.errors.messages
+    )
   end
 end

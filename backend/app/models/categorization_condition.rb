@@ -25,8 +25,10 @@ class CategorizationCondition < ApplicationRecord
 
   validate :transaction_field_valid
   validate :match_type_valid
-
   validates :match_value, presence: true
+  validate :match_value_valid_for_date_field
+
+  DATE_REGEX = /\A\d{4}-\d{2}-\d{2}\z/
 
   def matches?(transaction)
     case transaction_field
@@ -95,5 +97,20 @@ class CategorizationCondition < ApplicationRecord
     error_message = "is not valid for the field '#{transaction_field}'. " \
                     "Valid match types are: #{valid_match_types.join(', ')}"
     errors.add(:match_type, error_message)
+  end
+
+  def match_value_valid_for_date_field
+    return unless transaction_field == 'date'
+
+    unless match_value =~ DATE_REGEX
+      errors.add(:match_value, "must be in the format 'YYYY-MM-DD' when the transaction_field is 'date'")
+      return
+    end
+
+    begin
+      Date.parse(match_value)
+    rescue Date::Error => e
+      errors.add(:match_value, e.message)
+    end
   end
 end
