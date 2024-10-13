@@ -113,11 +113,15 @@ if Rails.env.development?
   end
 
   # Create categorization rules
-  atm_subcategory = Subcategory.find_by_name('Cash & ATM')
-  gym_subcategory = Subcategory.find_by_name('Gym')
+  atm_subcategory = Subcategory.find_by(name: 'Cash & ATM')
+  gym_subcategory = Subcategory.find_by(name: 'Gym')
+  parents_subcategory = Subcategory.find_by(name: 'Parents')
+  dividend_subcategory = Subcategory.find_by(name: 'Dividend')
 
   r1 = CategorizationRule.find_or_create_by(subcategory_id: atm_subcategory.id)
   r2 = CategorizationRule.find_or_create_by(subcategory_id: gym_subcategory.id)
+  r3 = CategorizationRule.find_or_create_by(subcategory_id: parents_subcategory.id)
+  CategorizationRule.find_or_create_by(subcategory_id: dividend_subcategory.id)
 
   r1.categorization_conditions.find_or_create_by(transaction_field: 'description') do |c|
     c.match_type = 'starts_with'
@@ -131,5 +135,15 @@ if Rails.env.development?
   r2.categorization_conditions.find_or_create_by(transaction_field: 'description') do |c|
     c.match_type = 'exactly'
     c.match_value = 'planet fitness'
+  end
+
+  r3.categorization_conditions.find_or_create_by(transaction_field: 'description') do |c|
+    c.match_type = 'exactly'
+    c.match_value = 'Venmo'
+  end
+
+  r3.categorization_conditions.find_or_create_by(transaction_field: 'amount') do |c|
+    c.match_type = 'exactly'
+    c.match_value = '250.00'
   end
 end
