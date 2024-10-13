@@ -1,40 +1,30 @@
 import { Account, CategorizationCondition } from "@/lib/definitions";
 
-export const getFormattedMatchType = (
-  condition: CategorizationCondition
-): string => {
-  if (condition.transactionField === 'account') return 'is ';
-  if (condition.transactionField === 'amount') return amountFormattedMatchType(condition);
-
-  switch (condition.matchType) {
-    case 'starts_with':
-      return 'starts with ';
-    case 'ends_with':
-      return 'ends with ';
-    case 'exactly':
-      return 'is exactly ';
-    case 'greater_than':
-      return 'is greater than ';
-    case 'less_than':
-      return 'is less than ';
-    default:
-      return '<unknown match_type> ';
-  }
+export const MATCH_TYPES_FOR_FIELDS: { [key: string]: { [key: string]: string } } = {
+  description: {
+    exactly: "is exactly",
+    starts_with: "starts with",
+    ends_with: "ends with",
+  },
+  amount: {
+    exactly: "is exactly",
+    greater_than: "is greater than",
+    less_than: "is less than",
+  },
+  date: {
+    exactly: "is on",
+    greater_than: "is after",
+    less_than: "is before",
+  },
+  account: {
+    exactly: "is",
+  },
 };
 
-const amountFormattedMatchType = (
-  condition: CategorizationCondition
-): string => {
-  switch (condition.matchType) {
-    case 'exactly':
-      return 'is exactly $';
-    case 'greater_than':
-      return 'is greater than $';
-    case 'less_than':
-      return 'is less than $';
-    default:
-      return '<unknown match_type> ';
-  }
+export const formatAccountLabel = (account: Account): string => {
+  return account.nickname ?
+    account.nickname :
+    `${account.bankName} ${account.name}`;
 };
 
 export const getFormattedMatchValue = (
@@ -42,10 +32,11 @@ export const getFormattedMatchValue = (
   accounts: Account[]
 ): string => {
   if (condition.transactionField === 'account') {
-    // Find the account with the matching id
-    const account = accounts.find(acc => acc.id === Number(condition.matchValue));
-    // If account is found, return the nickname or the bankName and name
-    if (account) return account.nickname || `${account.bankName} ${account.name}`;
+    const account = accounts.find(acc =>
+      acc.id === Number(condition.matchValue)
+    );
+
+    if (account) return formatAccountLabel(account);
   }
 
   // For non-account matchTypes, return the matchValue as is

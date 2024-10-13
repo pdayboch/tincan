@@ -2,11 +2,11 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { Inter } from "next/font/google";
-import { PlusIcon, PlayIcon } from "@heroicons/react/16/solid";
 import clsx from 'clsx';
 import {
   Account,
   CategorizationRule,
+  CategorizationRuleUpdate,
   Category,
   User
 } from '@/lib/definitions';
@@ -18,59 +18,48 @@ import Search from '@/components/Search';
 import { fetchCategories } from '@/lib/api/category-api';
 import { fetchUsers } from '@/lib/api/user-api';
 import { fetchAccounts } from '@/lib/api/account-api';
-import { fetchCategorizationRules } from '@/lib/api/categorization-rule-api';
+import {
+  fetchCategorizationRules,
+  createCategorizationRule,
+  updateCategorizationRule
+} from '@/lib/api/categorization-rule-api';
 import {
   filterByAccounts,
   filterBySearchString,
   filterBySubcategories
 } from './utils/filter-helpers';
+import EditableCategorizationRule from './EditableCategorizationRule';
+import AddRuleButton from './components/AddRuleButton';
+import ApplyRulesButton from './components/ApplyRulesButton';
+import { EMPTY_CONDITION, NEW_RULE } from './utils/rule-helpers';
 
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 function CategorizationRulesContent() {
-  const [isLoadingRules, setIsLoadingRules] = useState<boolean>(true);
-  const [isLoadingCategories, setIsLoadingCategories] = useState<boolean>(true);
-  const [isLoadingUsers, setIsLoadingUsers] = useState<boolean>(true);
-  const [isLoadingAccounts, setIsLoadingAccounts] = useState<boolean>(true);
   const [rules, setRules] = useState<CategorizationRule[]>([]);
   const [filteredRules, setFilteredRules] = useState<CategorizationRule[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [isAddingNewRule, setIsAddingNewRule] = useState(false);
+  const [editingRule, setEditingRule] = useState<CategorizationRule | null>(null);
 
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
-
-  const handleSearch = (term: string) => {
-    const params = new URLSearchParams(searchParams);
-
-    if (term) {
-      params.set('searchString', term);
-    } else {
-      params.delete('searchString');
-    }
-    replace(`${pathname}?${params.toString()}`)
-  }
-
-  const handleAddConditionToEmptyRule = (ruleId: number) => {
-    console.log("adding condition to empty rule " + ruleId);
-  }
 
   // fetch and store all rules
   useEffect(() => {
-    setIsLoadingRules(true);
     fetchCategorizationRules()
       .then(data => {
         setRules(data);
-        setIsLoadingRules(false);
       })
       .catch(error => {
         console.error(error);
         setRules([]);
-        setIsLoadingRules(false);
       });
   }, []);
+
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
 
   // filter rules when search updated
   useEffect(() => {
@@ -88,37 +77,30 @@ function CategorizationRulesContent() {
 
   // fetch and store all categories
   useEffect(() => {
-    setIsLoadingCategories(true);
     fetchCategories()
       .then(data => {
         setCategories(data['categories']);
-        setIsLoadingCategories(false);
       })
       .catch(error => {
         console.error(error);
         setCategories([]);
-        setIsLoadingCategories(false);
       });
   }, []);
 
   // fetch and store all users
   useEffect(() => {
-    setIsLoadingUsers(true);
     fetchUsers()
       .then(data => {
         setUsers(data);
-        setIsLoadingUsers(false);
       })
       .catch(error => {
         console.error(error);
         setUsers([]);
-        setIsLoadingUsers(false);
       });
   }, []);
 
   // fetch and store all accounts
   useEffect(() => {
-    setIsLoadingAccounts(true);
     fetchAccounts()
       .then(data => {
         // Filter out accounts named "Cash" or without an accountType
@@ -126,35 +108,93 @@ function CategorizationRulesContent() {
           (account: Account) => account.name !== "Cash" && account.accountType
         );
         setAccounts(filteredAccounts);
-        setIsLoadingAccounts(false);
       })
       .catch(error => {
         console.error(error);
         setAccounts([]);
-        setIsLoadingAccounts(false);
       });
   }, []);
 
-  if (
-    isLoadingRules ||
-    isLoadingCategories ||
-    isLoadingUsers ||
-    isLoadingAccounts
-  ) {
-    return <div className={font.className}>Loading...</div>;
+  const handleSearch = (term: string) => {
+    const params = new URLSearchParams(searchParams);
+
+    if (term) {
+      params.set('searchString', term);
+    } else {
+      params.delete('searchString');
+    }
+    replace(`${pathname}?${params.toString()}`)
   }
 
-  // No categorization rules configured
+  const handleAddConditionToEmptyRule = (emptyRule: CategorizationRule) => {
+    const ruleWithNewCondition = {
+      ...emptyRule,
+      conditions: [EMPTY_CONDITION]
+    }
+    setEditingRule(ruleWithNewCondition);
+  }
+
+  const handleAddNewRule = () => {
+    setIsAddingNewRule(true);
+  }
+
+  const handleCreateRule = async (
+    newRule: CategorizationRuleUpdate
+  ) => {
+    try {
+      const createdRule = await createCategorizationRule(newRule);
+      setRules((prevRules) => [createdRule, ...prevRules]);
+      setIsAddingNewRule(false);
+    } catch (error) {
+      console.error("Error saving rule:", error);
+    }
+  };
+
+  const handleUpdateRule = async (updatedRule: CategorizationRule) => {
+    setRules((prevRules) =>
+      prevRules.map((rule) =>
+        rule.id === updatedRule.id ? updatedRule : rule
+      )
+    );
+    setEditingRule(null);
+  };
+
+  const handleDeleteRule = async (id: number) => {
+    const updatedRules = rules.filter(rule => rule.id != id)
+    setRules(updatedRules);
+    setEditingRule(null);
+  }
+
+  const handleApplyRules = () => {
+    // TODO - Implement later
+  };
+
+  // No categorization rules yet
   if (rules.length === 0) {
     return (
       <div className={font.className}>
         <About />
-        <NoRulesComponent />
+        {isAddingNewRule ? (
+          <div className="flex items-center justify-center max-w-3xl">
+            {/* <EditableCategorizationRule
+              rule={NEW_RULE}
+              categories={categories}
+              accounts={accounts}
+              onSave={handleCreateRule}
+              onCancel={() => setIsAddingNewRule(false)}
+              onDelete={() => setIsAddingNewRule(false)}
+            /> */}
+          </div>
+        ) : (
+          <NoRulesComponent
+            onAddNewRule={handleAddNewRule}
+          />
+        )}
       </div>
     );
   }
 
-  // Categorization rules exist.
+  // Categorization rules exist
   return (
     <div className={clsx("flex", font.className)}>
       {/* Left panel */}
@@ -168,7 +208,7 @@ function CategorizationRulesContent() {
 
       {/* Content */}
       <div className="flex-grow flex flex-col items-center \
-                      w-full mx-auto max-w-3xl"
+                      w-full mx-auto max-w-4xl"
       >
         <About />
         <div className="flex items-center justify-between \
@@ -181,36 +221,50 @@ function CategorizationRulesContent() {
           />
 
           <div className="flex gap-2">
-            <button
-              className="inline-flex flex-none items-center justify-center \
-                    h-10 max-w-s px-4 py-2 border rounded-lg \
-                    bg-theme-lgt-green hover:bg-theme-drk-green \
-                    active:bg-theme-pressed-green active:scale-95 \
-                    active:shadow-inner cursor-pointer"
-            >
-              <PlusIcon className="h-5 w-5" />
-              <span className="hidden md:inline text-m">Add new rule</span>
-            </button>
-            <button
-              className="inline-flex flex-none items-center justify-center \
-                    h-10 max-w-s px-4 py-2 border rounded-lg \
-                    bg-theme-lgt-green hover:bg-theme-drk-green \
-                    active:bg-theme-pressed-green active:scale-95 \
-                    active:shadow-inner cursor-pointer"
-            >
-              <PlayIcon className="h-5 w-5" />
-              <span className="hidden md:inline text-m">Apply rules to uncategorized</span>
-            </button>
+            <AddRuleButton
+              label={"Add new rule"}
+              onClick={handleAddNewRule}
+              disabled={isAddingNewRule}
+            />
+            <ApplyRulesButton
+              onClick={handleApplyRules}
+            />
           </div>
         </div>
         <div className="w-full">
+          {isAddingNewRule && (
+            <div>
+            </div>
+            // New rule if adding a new rule
+            // <NewCategorizationRule
+            //   rule={NEW_RULE}
+            //   categories={categories}
+            //   accounts={accounts}
+            //   onSave={handleCreateRule}
+            //   onCancel={() => setIsAddingNewRule(false)}
+            // />
+          )}
+
           {filteredRules.map((rule) => (
-            <CategorizationRuleRow
-              key={rule.id}
-              rule={rule}
-              accounts={accounts}
-              onAddCondition={() => handleAddConditionToEmptyRule(rule.id)}
-            />
+            editingRule?.id === rule.id ? (
+              <EditableCategorizationRule
+                key={rule.id}
+                rule={rule}
+                categories={categories}
+                accounts={accounts}
+                onCancel={() => setEditingRule(null)}
+                onSave={(updatedRule) => handleUpdateRule(updatedRule)}
+                onDelete={() => handleDeleteRule(rule.id)}
+              />
+            ) : (
+              < CategorizationRuleRow
+                key={rule.id}
+                rule={rule}
+                accounts={accounts}
+                onAddCondition={() => handleAddConditionToEmptyRule(rule)}
+                onClick={() => setEditingRule(rule)}
+              />
+            )
           ))}
         </div>
       </div>
