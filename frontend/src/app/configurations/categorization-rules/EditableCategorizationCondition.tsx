@@ -27,9 +27,8 @@ export default function EditableCategorizationCondition({
     onUpdate({
       ...condition,
       transactionField: newTransactionField,
-      matchType: MATCH_TYPES_FOR_FIELDS[newTransactionField]
-        ? Object.keys(MATCH_TYPES_FOR_FIELDS[newTransactionField])[0]
-        : condition.matchType
+      matchType: "",
+      matchValue: ""
     });
   };
 
@@ -40,6 +39,10 @@ export default function EditableCategorizationCondition({
   const handleMatchValueChange = (newValue: string) => {
     onUpdate({ ...condition, matchValue: newValue });
   };
+
+  // Validation: check if matchType or matchValue is empty
+  const isMatchTypeInvalid = condition.matchType === "";
+  const isMatchValueInvalid = condition.matchValue === "";
 
   return (
     <div
@@ -70,7 +73,7 @@ export default function EditableCategorizationCondition({
 
         {/* Transaction Field dropdown */}
         <select
-          className="w-full md:w-48 border border-gray-300 rounded p-2 \
+          className="w-full md:w-48 border border-gray-300 rounded p-2 h-[40px] \
                       bg-white text-gray-700"
           value={condition.transactionField}
           onChange={handleFieldChange}
@@ -87,12 +90,16 @@ export default function EditableCategorizationCondition({
       <div className="flex flex-wrap justify-start items-center gap-2">
         {/* Match Type dropdown */}
         <select
-          className="w-full md:w-48 border border-gray-300 rounded p-2 \
-                      bg-white text-gray-700"
+          className={clsx(
+            "w-full md:w-48 border rounded border-gray-300 p-2 h-[40px]",
+            "bg-white text-gray-700",
+            isMatchTypeInvalid && "border-red-500"
+          )}
           value={condition.matchType}
           onChange={handleMatchTypeChange}
           disabled={setToDelete}
         >
+          <option value="" disabled>Select a match type</option>
           {Object.entries(matchTypeOptions).map(([value, label]) => (
             <option key={value} value={value}>
               {label}
@@ -106,7 +113,8 @@ export default function EditableCategorizationCondition({
           transactionField={condition.transactionField}
           accounts={accounts}
           onChange={handleMatchValueChange}
-          disabled={setToDelete}
+          isDisabled={setToDelete}
+          isInvalid={isMatchValueInvalid}
         />
       </div>
     </div>

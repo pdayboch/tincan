@@ -1,18 +1,23 @@
 import { useState } from 'react';
 import { TrashIcon, ArrowUturnLeftIcon, CheckIcon } from '@heroicons/react/24/solid';
+import EditableCategorizationCondition from './EditableCategorizationCondition';
+import CategoryDropdown from '@/components/category/CategoryDropdown';
+import { AddConditionButton } from './components/AddConditionButton';
+import ErrorNotification from '@/components/errors/ErrorNotification';
+import { findSubcategoryId, findSubcategoryNameById } from '@/lib/helpers';
 import {
   CategorizationRule,
   CategorizationCondition,
-  CategorizationConditionUpdate,
   Category,
   Account,
   CategorizationRuleUpdate
 } from '@/lib/definitions';
-import EditableCategorizationCondition from './EditableCategorizationCondition';
-import CategoryDropdown from '@/components/category/CategoryDropdown';
-import { AddConditionButton } from './components/AddConditionButton';
-import { findSubcategoryId, findSubcategoryNameById } from '@/lib/helpers';
-import { areConditionsEqual, EMPTY_CONDITION } from './utils/rule-helpers';
+import {
+  areConditionsEqual,
+  convertConditionToConditionUpdateObject,
+  emptyConditionWithId,
+  validateCondition
+} from './utils/rule-helpers';
 import {
   deleteCategorizationRule,
   updateCategorizationRule
@@ -45,8 +50,15 @@ export default function EditableCategorizationRule({
   const [deletedConditionIds, setDeletedConditionIds] = useState<number[]>([]);
   const [updatedConditions, setUpdatedConditions] = useState<CategorizationCondition[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const doBulkUpdate = async (): Promise<CategorizationRule> => {
+  const nonDeletedConditions = (): CategorizationCondition[] => {
+    return rule.conditions.filter(
+      (condition) => !deletedConditionIds.includes(condition.id)
+    );
+  }
+
+  const allCurrentConditions = (): CategorizationCondition[] => {
     // Merge in updated conditions
     const mergedConditions = nonDeletedConditions().map((condition) => {
       const updatedCondition = updatedConditions.find(
@@ -56,13 +68,23 @@ export default function EditableCategorizationRule({
     });
 
     // Add new conditions
-    const allConditions = [...mergedConditions, ...newConditions];
+    return [...mergedConditions, ...newConditions];
+  };
 
-    const conditionsForUpdate = allConditions.map((condition) => ({
-      transactionField: condition.transactionField,
-      matchType: condition.matchType,
-      matchValue: condition.matchValue
-    }));
+  const validateConditions = () => {
+    for (const condition of allCurrentConditions()) {
+      const error = validateCondition(condition);
+      if (error) {
+        setError(error);
+        return false;
+      }
+    }
+    return true; // All conditions are valid
+  };
+
+  const doBulkUpdate = async (): Promise<CategorizationRule> => {
+    const conditionsForUpdate = allCurrentConditions()
+      .map(convertConditionToConditionUpdateObject);
 
     const updateData: CategorizationRuleUpdate = {
       subcategoryId: subcategoryId !== rule.subcategory.id ? subcategoryId : undefined,
@@ -72,28 +94,16 @@ export default function EditableCategorizationRule({
     return await updateCategorizationRule(rule.id, updateData);
   };
 
-  const nonDeletedConditions = (): CategorizationCondition[] => {
-    return rule.conditions.filter(
-      (condition) => !deletedConditionIds.includes(condition.id)
-    );
-  }
+  const doCreateNewConditions = async (): Promise<CategorizationCondition[]> => {
+    const createdConditions: CategorizationCondition[] = [];
 
-  const convertConditionToConditionUpdateObject = (
-    condition: CategorizationCondition
-  ): CategorizationConditionUpdate => {
-    const { transactionField, matchType, matchValue } = condition;
-    return {
-      transactionField,
-      matchType,
-      matchValue
-    };
-  };
-
-  const doCreateConditions = async () => {
     for (const condition of newConditions) {
       const conditionData = convertConditionToConditionUpdateObject(condition);
-      await createCategorizationCondition(rule.id, conditionData);
+      const newCondition = await createCategorizationCondition(rule.id, conditionData);
+      createdConditions.push(newCondition);
     }
+
+    return createdConditions;
   };
 
   const doDeleteConditions = async () => {
@@ -103,6 +113,10 @@ export default function EditableCategorizationRule({
   }
 
   const handleRuleSave = async () => {
+    if (!validateConditions()) {
+      return;
+    }
+
     try {
       // Check if subcategory or any conditions were updated
       // and if so, do everything in bulk update
@@ -112,26 +126,36 @@ export default function EditableCategorizationRule({
       ) {
         const updatedRule = await doBulkUpdate();
         onSave(updatedRule);
+        // Clear all modified condition states
+        setNewConditions([]);
+        setUpdatedConditions([]);
+        setDeletedConditionIds([]);
         return;
       }
 
       let finalUpdatedRule = { ...rule };
       // No bulk update performed so:
+
       // Handle new conditions (if any)
       if (newConditions.length > 0) {
-        await doCreateConditions();
-        finalUpdatedRule.conditions = [...finalUpdatedRule.conditions, ...newConditions];
+        const createdConditions = await doCreateNewConditions();
+        finalUpdatedRule.conditions = [
+          ...finalUpdatedRule.conditions,
+          ...createdConditions
+        ];
+        setNewConditions([]);
       }
 
-      // Gandle deleted conditions (if any)
+      // Handle deleted conditions (if any)
       if (deletedConditionIds.length > 0) {
         await doDeleteConditions();
         finalUpdatedRule.conditions = finalUpdatedRule.conditions.filter(
           (condition) => !deletedConditionIds.includes(condition.id)
         );
+        setDeletedConditionIds([]);
       }
 
-      // create the most up to date rule to pass up to the parent.
+      // Send the most up to date rule to the parent.
       onSave(finalUpdatedRule);
     } catch (error) {
       console.error("Error saving rule: ", error);
@@ -154,17 +178,12 @@ export default function EditableCategorizationRule({
     if (id) setSubcategoryId(id);
   };
 
-  const emptyConditionWithId = (id: number): CategorizationCondition => {
-    return { ...EMPTY_CONDITION, id: id };
-  };
-
   const handleAddNewCondition = () => {
     setNewConditions([...newConditions, emptyConditionWithId(newConditionIndex)]);
     setNewConditionIndex((index) => index + 1)
   };
 
   const syncNewCondition = (updatedNewCondition: CategorizationCondition) => {
-    console.log("syncing new condition:", updatedNewCondition);
     setNewConditions((conditions) => {
       // lookup condition from newConditions array
       const index = conditions.findIndex(
@@ -211,7 +230,7 @@ export default function EditableCategorizationRule({
     });
   };
 
-  const handleConditionUpdate = (updatedCondition: CategorizationCondition): void => {
+  const handleConditionUpdate = (updatedCondition: CategorizationCondition) => {
     const originalCondition = findOriginalCondition(updatedCondition.id);
     if (
       originalCondition &&
@@ -360,6 +379,13 @@ export default function EditableCategorizationRule({
           </div>
         </div>
       )
+      }
+
+      {error &&
+        <ErrorNotification
+          message={error}
+          onClose={() => setError(null)}
+        />
       }
     </div >
   );
