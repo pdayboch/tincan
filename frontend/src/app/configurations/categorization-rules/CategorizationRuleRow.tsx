@@ -1,6 +1,7 @@
 import { Account, CategorizationRule } from "@/lib/definitions";
 import CategorizationConditionRow from "./CategorizationConditionRow";
 import { AddConditionButton } from "./components/AddConditionButton";
+import { ExclamationTriangleIcon } from "@heroicons/react/16/solid";
 
 interface CategorizationRuleRowProps {
   rule: CategorizationRule,
@@ -15,11 +16,26 @@ export default function CategorizationRuleRow({
   onAddCondition,
   onClick
 }: CategorizationRuleRowProps) {
+  // We need to wrap the outer div's onClick handler in this function
+  // to differentiate whether the whitespace was clicked on the AddConditionButton
+  const handleRowClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    const addButton = target.closest('button');
+    // This checks whether the element that was clicked (or one of its ancestors)
+    // is a <button> element. If target is a button or inside a button
+    // (like a <span> inside the button), closest('button') will return the
+    // button element.
+    // If the click wasn't on or inside a button, it returns null.
+    if (!addButton) {
+      onClick();
+    }
+  };
+
   return (
     <div
       className="border border-gray-300 rounded-3xl w-full p-6 mb-6 \
-                  shadow-lg bg-white"
-      onClick={onClick}
+                  shadow-lg bg-white cursor-pointer"
+      onClick={handleRowClick}
     >
       <div className="space-y-4">
         {rule.conditions.length > 0 ? (
@@ -40,10 +56,14 @@ export default function CategorizationRuleRow({
           ))
         ) : (
           // The rule has no conditions
-          <div className="flex justify-center py-6">
-            <AddConditionButton
-              onClick={onAddCondition}
-            />
+          <div className="flex flex-col items-center justify-center py-3">
+            <div className="flex items-center text-yellow-600">
+              <ExclamationTriangleIcon className="w-6 h-6 mr-2" />
+              <span className="text-base font-medium">This rule is missing conditions</span>
+            </div>
+            <div className="mt-4">
+              <AddConditionButton onClick={onAddCondition} />
+            </div>
           </div>
         )}
       </div>

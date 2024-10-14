@@ -21,7 +21,6 @@ import { fetchAccounts } from '@/lib/api/account-api';
 import {
   fetchCategorizationRules,
   createCategorizationRule,
-  updateCategorizationRule
 } from '@/lib/api/categorization-rule-api';
 import {
   filterByAccounts,
@@ -31,7 +30,7 @@ import {
 import EditableCategorizationRule from './EditableCategorizationRule';
 import AddRuleButton from './components/AddRuleButton';
 import ApplyRulesButton from './components/ApplyRulesButton';
-import { EMPTY_CONDITION, NEW_RULE } from './utils/rule-helpers';
+import { EMPTY_CONDITION } from './utils/rule-helpers';
 
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
@@ -130,7 +129,7 @@ function CategorizationRulesContent() {
     const ruleWithNewCondition = {
       ...emptyRule,
       conditions: [EMPTY_CONDITION]
-    }
+    };
     setEditingRule(ruleWithNewCondition);
   }
 
@@ -249,7 +248,7 @@ function CategorizationRulesContent() {
             editingRule?.id === rule.id ? (
               <EditableCategorizationRule
                 key={rule.id}
-                rule={rule}
+                rule={editingRule}
                 categories={categories}
                 accounts={accounts}
                 onCancel={() => setEditingRule(null)}
