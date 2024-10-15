@@ -19,6 +19,7 @@ import {
   validateCondition
 } from './utils/rule-helpers';
 import {
+  createCategorizationRule,
   deleteCategorizationRule,
   updateCategorizationRule
 } from '@/lib/api/categorization-rule-api';
@@ -26,6 +27,7 @@ import {
   createCategorizationCondition,
   deleteCategorizationCondition
 } from '@/lib/api/categorization-condition-api';
+import clsx from 'clsx';
 
 interface EditableCategorizationRuleProps {
   rule: CategorizationRule;
@@ -34,6 +36,7 @@ interface EditableCategorizationRuleProps {
   onCancel: () => void;
   onSave: (updatedRule: CategorizationRule) => void;
   onDelete: () => void;
+  isNewRule: boolean;
 }
 
 export default function EditableCategorizationRule({
@@ -42,7 +45,8 @@ export default function EditableCategorizationRule({
   accounts,
   onCancel,
   onSave,
-  onDelete
+  onDelete,
+  isNewRule
 }: EditableCategorizationRuleProps) {
   const [subcategoryId, setSubcategoryId] = useState<number>(rule.subcategory.id);
   const [newConditions, setNewConditions] = useState<CategorizationCondition[]>([]);
@@ -82,7 +86,7 @@ export default function EditableCategorizationRule({
     return true; // All conditions are valid
   };
 
-  const doBulkUpdate = async (): Promise<CategorizationRule> => {
+  const doBulkUpdate = async () => {
     const conditionsForUpdate = allCurrentConditions()
       .map(convertConditionToConditionUpdateObject);
 
@@ -90,79 +94,102 @@ export default function EditableCategorizationRule({
       subcategoryId: subcategoryId !== rule.subcategory.id ? subcategoryId : undefined,
       conditions: conditionsForUpdate.length > 0 ? conditionsForUpdate : undefined
     };
-
-    return await updateCategorizationRule(rule.id, updateData);
+    try {
+      const updatedRule = await updateCategorizationRule(rule.id, updateData);
+      onSave(updatedRule);
+    } catch (error) {
+      console.error("Error bulk updating rule: ", error);
+    }
   };
 
   const doCreateNewConditions = async (): Promise<CategorizationCondition[]> => {
     const createdConditions: CategorizationCondition[] = [];
 
-    for (const condition of newConditions) {
-      const conditionData = convertConditionToConditionUpdateObject(condition);
-      const newCondition = await createCategorizationCondition(rule.id, conditionData);
-      createdConditions.push(newCondition);
+    try {
+      for (const condition of newConditions) {
+        const conditionData = convertConditionToConditionUpdateObject(condition);
+        const newCondition = await createCategorizationCondition(rule.id, conditionData);
+        createdConditions.push(newCondition);
+      }
+    } catch (error) {
+      console.error("Error creating conditions: ", error);
     }
 
     return createdConditions;
   };
 
   const doDeleteConditions = async () => {
-    for (const id of deletedConditionIds) {
-      await deleteCategorizationCondition(id);
+    try {
+      for (const id of deletedConditionIds) {
+        await deleteCategorizationCondition(id);
+      }
+    } catch (error) {
+      console.error("Error deleting conditions: ", error);
     }
   }
 
-  const handleRuleSave = async () => {
-    if (!validateConditions()) {
-      return;
+  const doCreateAndDeleteConditions = async () => {
+    let finalUpdatedRule = { ...rule };
+
+    // Handle new conditions (if any)
+    if (newConditions.length > 0) {
+      const createdConditions = await doCreateNewConditions();
+      finalUpdatedRule.conditions = [
+        ...finalUpdatedRule.conditions,
+        ...createdConditions
+      ];
     }
 
+    // Handle deleted conditions (if any)
+    if (deletedConditionIds.length > 0) {
+      await doDeleteConditions();
+      finalUpdatedRule.conditions = finalUpdatedRule.conditions.filter(
+        (condition) => !deletedConditionIds.includes(condition.id)
+      );
+    }
+
+    onSave(finalUpdatedRule);
+  };
+
+  const doCreateRule = async () => {
+    const conditionsForUpdate = allCurrentConditions()
+      .map(convertConditionToConditionUpdateObject);
+
     try {
-      // Check if subcategory or any conditions were updated
-      // and if so, do everything in bulk update
-      if (
-        rule.subcategory.id !== subcategoryId ||
-        updatedConditions.length > 0
-      ) {
-        const updatedRule = await doBulkUpdate();
-        onSave(updatedRule);
-        // Clear all modified condition states
-        setNewConditions([]);
-        setUpdatedConditions([]);
-        setDeletedConditionIds([]);
-        return;
-      }
+      const createdRule = await createCategorizationRule({
+        subcategoryId: subcategoryId,
+        conditions: conditionsForUpdate
+      });
 
-      let finalUpdatedRule = { ...rule };
-      // No bulk update performed so:
-
-      // Handle new conditions (if any)
-      if (newConditions.length > 0) {
-        const createdConditions = await doCreateNewConditions();
-        finalUpdatedRule.conditions = [
-          ...finalUpdatedRule.conditions,
-          ...createdConditions
-        ];
-        setNewConditions([]);
-      }
-
-      // Handle deleted conditions (if any)
-      if (deletedConditionIds.length > 0) {
-        await doDeleteConditions();
-        finalUpdatedRule.conditions = finalUpdatedRule.conditions.filter(
-          (condition) => !deletedConditionIds.includes(condition.id)
-        );
-        setDeletedConditionIds([]);
-      }
-
-      // Send the most up to date rule to the parent.
-      onSave(finalUpdatedRule);
+      onSave(createdRule);
     } catch (error) {
-      console.error("Error saving rule: ", error);
+      console.error("Error creating conditions: ", error);
     }
   };
 
+  const handleRuleSave = async () => {
+    // Step 1: validate the rule:
+    if (!validateConditions()) return;
+
+    // If this is a new rule, create it
+    if (isNewRule) return await doCreateRule();
+
+    // Existing rule:
+    // Use bulk update if subcategory or conditions were updated
+    if (
+      rule.subcategory.id !== subcategoryId ||
+      updatedConditions.length > 0
+    ) {
+      return doBulkUpdate();
+    }
+
+    // No bulk update performed, create and delete conditions if necessary
+    doCreateAndDeleteConditions();
+  };
+
   const handleDeleteRule = async () => {
+    if (isNewRule) return onDelete();
+
     try {
       await deleteCategorizationRule(rule.id);
       onDelete();
@@ -254,13 +281,26 @@ export default function EditableCategorizationRule({
   };
 
   return (
-    <div className='border border-gray-300 rounded-3xl w-full p-6 mb-6 shadow-lg bg-white'>
+    <div
+      className={clsx(
+        'border rounded-3xl w-full p-6 mb-6 shadow-lg bg-white',
+        isNewRule ? 'border-green-500' : 'border-gray-300'
+      )}
+    >
       <div className='space-y-4'>
+
+        {/* New Rule Badge */}
+        {isNewRule && (
+          <div className="flex justify-start mb-2">
+            <span className="bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full">
+              New Rule
+            </span>
+          </div>
+        )}
 
         {/* Render existing conditions */}
         {rule.conditions.map((condition, index) => {
           const latestCondition = getLatestCondition(condition);
-
           return (
             <div key={condition.id}>
               <EditableCategorizationCondition
@@ -284,6 +324,10 @@ export default function EditableCategorizationRule({
         {/* Render new conditions */}
         {newConditions.map((condition, index) => (
           <div key={condition.id}>
+            <div className="relative flex items-center justify-center my-4">
+              <hr className="w-full border-gray-300" />
+              <span className="absolute px-2 text-sm text-gray-500 bg-white">AND</span>
+            </div>
             <EditableCategorizationCondition
               key={condition.id}
               condition={condition}
@@ -292,19 +336,8 @@ export default function EditableCategorizationRule({
               onDelete={() => handleDeleteNewCondition(condition.id)}
               setToDelete={false}
             />
-            {index < newConditions.length - 1 && (
-              <div className="relative flex items-center justify-center my-4">
-                <hr className="w-full border-gray-300" />
-                <span className="absolute px-2 text-sm text-gray-500 bg-white">AND</span>
-              </div>
-            )}
           </div>
         ))}
-
-        {/* Add extra horizontal line and the AddConditionButton below last condition */}
-        <div className="relative flex items-center justify-center my-4">
-          <hr className="w-full border-gray-300" />
-        </div>
 
         <div className="w-full flex justify-center">
           <AddConditionButton
@@ -325,16 +358,21 @@ export default function EditableCategorizationRule({
         </div>
       </div>
 
-      {/* Action buttons (Save, Cancel) */}
+      {/* Action buttons (Delete, Cancel, Save) */}
       < div className="mt-6 flex justify-between" >
         {/* Delete Button: Separated on the left */}
-        < button
-          onClick={() => setShowDeleteConfirm(true)}
-          className="flex items-center bg-red-400 text-white px-3 py-2 rounded-md hover:bg-red-500"
-        >
-          <TrashIcon className="w-5 h-5 mr-1" />
-          Delete
-        </button>
+        {isNewRule ? (<div></div>) : (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className={clsx(
+              "flex items-center bg-red-400 text-white px-3 py-2",
+              "rounded-md hover:bg-red-500"
+            )}
+          >
+            <TrashIcon className="w-5 h-5 mr-1" />
+            Delete
+          </button>
+        )}
 
         {/* Cancel and Save Buttons: Grouped on the right */}
         <div className="flex space-x-4">

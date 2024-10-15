@@ -6,7 +6,6 @@ import clsx from 'clsx';
 import {
   Account,
   CategorizationRule,
-  CategorizationRuleUpdate,
   Category,
   User
 } from '@/lib/definitions';
@@ -18,10 +17,7 @@ import Search from '@/components/Search';
 import { fetchCategories } from '@/lib/api/category-api';
 import { fetchUsers } from '@/lib/api/user-api';
 import { fetchAccounts } from '@/lib/api/account-api';
-import {
-  fetchCategorizationRules,
-  createCategorizationRule,
-} from '@/lib/api/categorization-rule-api';
+import { fetchCategorizationRules } from '@/lib/api/categorization-rule-api';
 import {
   filterByAccounts,
   filterBySearchString,
@@ -30,7 +26,7 @@ import {
 import EditableCategorizationRule from './EditableCategorizationRule';
 import AddRuleButton from './components/AddRuleButton';
 import ApplyRulesButton from './components/ApplyRulesButton';
-import { EMPTY_CONDITION } from './utils/rule-helpers';
+import { EMPTY_CONDITION, NEW_RULE } from './utils/rule-helpers';
 
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
@@ -48,6 +44,7 @@ function CategorizationRulesContent() {
   useEffect(() => {
     fetchCategorizationRules()
       .then(data => {
+        const sortedData = data.sort((a, b) => b.id - a.id);
         setRules(data);
       })
       .catch(error => {
@@ -137,16 +134,9 @@ function CategorizationRulesContent() {
     setIsAddingNewRule(true);
   }
 
-  const handleCreateRule = async (
-    newRule: CategorizationRuleUpdate
-  ) => {
-    try {
-      const createdRule = await createCategorizationRule(newRule);
-      setRules((prevRules) => [createdRule, ...prevRules]);
-      setIsAddingNewRule(false);
-    } catch (error) {
-      console.error("Error saving rule:", error);
-    }
+  const handleCreateRule = (newRule: CategorizationRule) => {
+    setRules((prevRules) => [newRule, ...prevRules]);
+    setIsAddingNewRule(false);
   };
 
   const handleUpdateRule = async (updatedRule: CategorizationRule) => {
@@ -169,26 +159,13 @@ function CategorizationRulesContent() {
   };
 
   // No categorization rules yet
-  if (rules.length === 0) {
+  if (rules.length === 0 && !isAddingNewRule) {
     return (
       <div className={font.className}>
         <About />
-        {isAddingNewRule ? (
-          <div className="flex items-center justify-center max-w-3xl">
-            {/* <EditableCategorizationRule
-              rule={NEW_RULE}
-              categories={categories}
-              accounts={accounts}
-              onSave={handleCreateRule}
-              onCancel={() => setIsAddingNewRule(false)}
-              onDelete={() => setIsAddingNewRule(false)}
-            /> */}
-          </div>
-        ) : (
-          <NoRulesComponent
-            onAddNewRule={handleAddNewRule}
-          />
-        )}
+        <NoRulesComponent
+          onAddNewRule={handleAddNewRule}
+        />
       </div>
     );
   }
@@ -232,16 +209,15 @@ function CategorizationRulesContent() {
         </div>
         <div className="w-full">
           {isAddingNewRule && (
-            <div>
-            </div>
-            // New rule if adding a new rule
-            // <NewCategorizationRule
-            //   rule={NEW_RULE}
-            //   categories={categories}
-            //   accounts={accounts}
-            //   onSave={handleCreateRule}
-            //   onCancel={() => setIsAddingNewRule(false)}
-            // />
+            <EditableCategorizationRule
+              rule={NEW_RULE}
+              categories={categories}
+              accounts={accounts}
+              onSave={handleCreateRule}
+              onCancel={() => setIsAddingNewRule(false)}
+              onDelete={() => setIsAddingNewRule(false)}
+              isNewRule
+            />
           )}
 
           {filteredRules.map((rule) => (
@@ -254,6 +230,7 @@ function CategorizationRulesContent() {
                 onCancel={() => setEditingRule(null)}
                 onSave={(updatedRule) => handleUpdateRule(updatedRule)}
                 onDelete={() => handleDeleteRule(rule.id)}
+                isNewRule={false}
               />
             ) : (
               < CategorizationRuleRow
