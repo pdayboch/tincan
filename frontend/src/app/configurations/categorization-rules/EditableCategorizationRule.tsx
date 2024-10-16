@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TrashIcon, ArrowUturnLeftIcon, CheckIcon } from '@heroicons/react/24/solid';
 import EditableCategorizationCondition from './EditableCategorizationCondition';
 import CategoryDropdown from '@/components/category/CategoryDropdown';
@@ -49,12 +49,36 @@ export default function EditableCategorizationRule({
   isNewRule
 }: EditableCategorizationRuleProps) {
   const [subcategoryId, setSubcategoryId] = useState<number>(rule.subcategory.id);
+  const [isSubcategoryValid, setIsSubcategoryValid] = useState<boolean>(true);
   const [newConditions, setNewConditions] = useState<CategorizationCondition[]>([]);
   const [newConditionIndex, setNewConditionIndex] = useState<number>(1);
   const [deletedConditionIds, setDeletedConditionIds] = useState<number[]>([]);
   const [updatedConditions, setUpdatedConditions] = useState<CategorizationCondition[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIsSubcategoryValid(checkSubcategoryValid());
+  }, [subcategoryId]);
+
+  const checkSubcategoryValid = (): boolean => {
+    return categories.some(category =>
+      category.subcategories.some(subcategory =>
+        subcategory.id === subcategoryId
+      )
+    );
+  };
+
+  // Validate subcategory with error setting (for save action)
+  const validateSubcategoryOnSave = () => {
+    const isValid = checkSubcategoryValid();
+
+    if (!isValid) {
+      setError("Subcategory is required");
+    }
+
+    return isValid;
+  };
 
   const nonDeletedConditions = (): CategorizationCondition[] => {
     return rule.conditions.filter(
@@ -169,17 +193,14 @@ export default function EditableCategorizationRule({
 
   const handleRuleSave = async () => {
     // Step 1: validate the rule:
-    if (!validateConditions()) return;
+    if (!validateConditions() || !validateSubcategoryOnSave()) return;
 
     // If this is a new rule, create it
     if (isNewRule) return await doCreateRule();
 
     // Existing rule:
     // Use bulk update if subcategory or conditions were updated
-    if (
-      rule.subcategory.id !== subcategoryId ||
-      updatedConditions.length > 0
-    ) {
+    if (rule.subcategory.id !== subcategoryId || updatedConditions.length > 0) {
       return doBulkUpdate();
     }
 
@@ -346,14 +367,30 @@ export default function EditableCategorizationRule({
         </div>
 
         {/* Subcategory selector */}
-        <div className="flex items-center mt-6 p-4 bg-blue-50 text-blue-900 rounded-lg">
-          <span className="font-medium">Then assign subcategory: </span>
-          <div className="ml-2 flex-grow">
-            <CategoryDropdown
-              categories={categories}
-              currentCategory={findSubcategoryNameById(categories, subcategoryId)}
-              onChange={handleSubcategoryUpdate}
-            />
+        <div
+          className={clsx(
+            "flex flex-col items-start mt-6 p-4 bg-blue-50 text-blue-900 rounded-lg",
+            !isSubcategoryValid && "border border-red-500"
+          )}
+        >
+          {/* "Required" badge */}
+          {!isSubcategoryValid && (
+            <span
+              className="bg-red-500 text-white text-xs font-semibold px-2 py-1 \
+              mt-2 rounded"
+            >
+              Required
+            </span>
+          )}
+          <div className="flex items-center">
+            <span className="font-medium">Then assign subcategory: </span>
+            <div className="ml-2 flex-grow">
+              <CategoryDropdown
+                categories={categories}
+                currentCategory={findSubcategoryNameById(categories, subcategoryId)}
+                onChange={handleSubcategoryUpdate}
+              />
+            </div>
           </div>
         </div>
       </div>

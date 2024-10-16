@@ -14,7 +14,7 @@ export const EMPTY_CONDITION = {
 export const NEW_RULE = {
   id: 0,
   category: { id: 0, name: "" },
-  subcategory: { id: 0, name: "Uncategorized" },
+  subcategory: { id: 0, name: "" },
   conditions: [EMPTY_CONDITION]
 }
 
