@@ -2,7 +2,7 @@ import { Category } from '@/lib/definitions';
 
 interface CategoryDropdownItemProps {
   category: Category;
-  onClick: (subcategoryName: string) => void;
+  onClick: (subcategory: { id: number, name: string }) => void;
 };
 
 export default function CategoryDropdownItem({
@@ -17,7 +17,8 @@ export default function CategoryDropdownItem({
         <div
           key={subcategory.id}
           className="p-2 rounded-md hover:bg-slate-100 cursor-pointer"
-          onClick={() => onClick(subcategory.name)}>
+          onClick={() => onClick(subcategory)}
+        >
           {subcategory.name}
         </div>
       ))}

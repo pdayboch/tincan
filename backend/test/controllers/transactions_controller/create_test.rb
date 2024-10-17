@@ -14,7 +14,7 @@ class TransactionsControllerCreateTest < ActionDispatch::IntegrationTest
         amount: 15.00,
         description: 'coffee bar',
         statementId: statement.id,
-        subcategoryName: subcategory.name,
+        subcategoryId: subcategory.id,
         transactionDate: '2024-09-14'
       }
     end
@@ -34,19 +34,19 @@ class TransactionsControllerCreateTest < ActionDispatch::IntegrationTest
 
     assert_no_difference('Transaction.count') do
       post transactions_url, params: {
-        account_id: account.id,
+        accountId: account.id,
         amount: 30.00,
         description: 'the store',
-        subcategory_name: 'invalid subcategory',
-        transaction_date: '2024-09-14'
+        subcategoryId: 0,
+        transactionDate: '2024-09-14'
       }
     end
 
     assert_response :unprocessable_entity
     json_response = response.parsed_body
     expected_error = {
-      'field' => 'subcategoryName',
-      'message' => 'subcategoryName is invalid'
+      'field' => 'subcategoryId',
+      'message' => 'subcategoryId is invalid'
     }
 
     assert_includes json_response['errors'], expected_error

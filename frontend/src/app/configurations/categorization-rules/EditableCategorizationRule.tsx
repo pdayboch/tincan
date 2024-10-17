@@ -4,7 +4,6 @@ import EditableCategorizationCondition from './EditableCategorizationCondition';
 import CategoryDropdown from '@/components/category/CategoryDropdown';
 import { AddConditionButton } from './components/AddConditionButton';
 import ErrorNotification from '@/components/errors/ErrorNotification';
-import { findSubcategoryId, findSubcategoryNameById } from '@/lib/helpers';
 import {
   CategorizationRule,
   CategorizationCondition,
@@ -48,7 +47,7 @@ export default function EditableCategorizationRule({
   onDelete,
   isNewRule
 }: EditableCategorizationRuleProps) {
-  const [subcategoryId, setSubcategoryId] = useState<number>(rule.subcategory.id);
+  const [localSubcategory, setLocalSubcategory] = useState<{ id: number, name: string }>(rule.subcategory);
   const [isSubcategoryValid, setIsSubcategoryValid] = useState<boolean>(true);
   const [newConditions, setNewConditions] = useState<CategorizationCondition[]>([]);
   const [newConditionIndex, setNewConditionIndex] = useState<number>(1);
@@ -59,12 +58,12 @@ export default function EditableCategorizationRule({
 
   useEffect(() => {
     setIsSubcategoryValid(checkSubcategoryValid());
-  }, [subcategoryId]);
+  }, [localSubcategory]);
 
   const checkSubcategoryValid = (): boolean => {
     return categories.some(category =>
       category.subcategories.some(subcategory =>
-        subcategory.id === subcategoryId
+        subcategory.id === localSubcategory.id
       )
     );
   };
@@ -115,8 +114,10 @@ export default function EditableCategorizationRule({
       .map(convertConditionToConditionUpdateObject);
 
     const updateData: CategorizationRuleUpdate = {
-      subcategoryId: subcategoryId !== rule.subcategory.id ? subcategoryId : undefined,
-      conditions: conditionsForUpdate.length > 0 ? conditionsForUpdate : undefined
+      subcategoryId: localSubcategory.id !== rule.subcategory.id ?
+        localSubcategory.id : undefined,
+      conditions: conditionsForUpdate.length > 0 ?
+        conditionsForUpdate : undefined
     };
     try {
       const updatedRule = await updateCategorizationRule(rule.id, updateData);
@@ -181,7 +182,7 @@ export default function EditableCategorizationRule({
 
     try {
       const createdRule = await createCategorizationRule({
-        subcategoryId: subcategoryId,
+        subcategoryId: localSubcategory.id,
         conditions: conditionsForUpdate
       });
 
@@ -200,7 +201,10 @@ export default function EditableCategorizationRule({
 
     // Existing rule:
     // Use bulk update if subcategory or conditions were updated
-    if (rule.subcategory.id !== subcategoryId || updatedConditions.length > 0) {
+    if (
+      rule.subcategory.id !== localSubcategory.id ||
+      updatedConditions.length > 0
+    ) {
       return doBulkUpdate();
     }
 
@@ -217,13 +221,6 @@ export default function EditableCategorizationRule({
     } catch (error) {
       console.error("Error deleting rule: " + error);
     }
-  };
-
-  // when we update the subcategory selector to return ids instead
-  // of names, we can remove this and set the state id directly.
-  const handleSubcategoryUpdate = (newSubcategoryName: string) => {
-    const id = findSubcategoryId(categories, newSubcategoryName)
-    if (id) setSubcategoryId(id);
   };
 
   const handleAddNewCondition = () => {
@@ -387,8 +384,14 @@ export default function EditableCategorizationRule({
             <div className="ml-2 flex-grow">
               <CategoryDropdown
                 categories={categories}
-                currentCategory={findSubcategoryNameById(categories, subcategoryId)}
-                onChange={handleSubcategoryUpdate}
+                currentSubcategory={{
+                  id: localSubcategory.id,
+                  name: localSubcategory.name
+                }}
+                onChange={(subcategory) => setLocalSubcategory({
+                  id: subcategory.id,
+                  name: subcategory.name
+                })}
               />
             </div>
           </div>

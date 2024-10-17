@@ -6,13 +6,13 @@ import CategoryDropdownItem from './CategoryDropdownItem';
 
 interface CategoryDropdownProps {
   categories: Category[];
-  currentCategory: string;
-  onChange: (subcategoryName: string) => void;
+  currentSubcategory: { id: number, name: string };
+  onChange: (subcategory: { id: number, name: string }) => void;
 };
 
 export default function CategoryDropdown({
   categories,
-  currentCategory,
+  currentSubcategory,
   onChange
 }: CategoryDropdownProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -61,8 +61,8 @@ export default function CategoryDropdown({
     }
   };
 
-  const handleSelection = async (subcategoryName: string) => {
-    onChange(subcategoryName);
+  const handleSelection = async (subcategory: { id: number, name: string }) => {
+    onChange(subcategory);
     toggleDropdown();
   }
 
@@ -76,9 +76,10 @@ export default function CategoryDropdown({
         onClick={toggleDropdown}
         title="Select a category"
       >
-        {currentCategory}
+        {currentSubcategory.name}
         {!isOpen && <ChevronDoubleDownIcon className="w-4 h-4 ml-2 text-gray-500" />}
       </div>
+
       {/* The expanded dropdown */}
       {isOpen && (
         <div className="w-full bg-slate-300 z-3 border-3">

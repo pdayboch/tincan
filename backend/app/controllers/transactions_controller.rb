@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class TransactionsController < ApplicationController
-  before_action :set_transaction, only: %i[update destroy]
-  before_action :set_subcategory, only: %i[create update]
-
   # GET /transactions
   def index
     data = TransactionDataEntity.new(transaction_read_params).data
@@ -13,14 +10,8 @@ class TransactionsController < ApplicationController
 
   # POST /transactions
   def create
-    if transaction_write_params.key?('subcategory_name') && @subcategory.nil?
-      raise UnprocessableEntityError.new(subcategory_name: ['is invalid'])
-    end
-
-    params_without_subcategory = transaction_write_params.except(:subcategory_name)
-    transaction = Transaction.new(params_without_subcategory)
-
-    transaction.subcategory = @subcategory
+    check_valid_subcategory(transaction_write_params)
+    transaction = Transaction.new(transaction_write_params)
 
     raise UnprocessableEntityError, transaction.errors unless transaction.errors.empty? && transaction.save
 
@@ -29,36 +20,28 @@ class TransactionsController < ApplicationController
 
   # PUT /transactions/1
   def update
-    if transaction_write_params.key?('subcategory_name') && @subcategory.nil?
-      raise UnprocessableEntityError.new(subcategory_name: ['is invalid'])
-    end
+    check_valid_subcategory(transaction_write_params)
+    transaction = Transaction.find(params[:id])
+    transaction.update(transaction_write_params)
 
-    params_without_subcategory = transaction_write_params.except(:subcategory_name)
-    @transaction.update(params_without_subcategory)
+    raise UnprocessableEntityError, transaction.errors unless transaction.errors.empty? && transaction.save
 
-    @transaction.subcategory = @subcategory if @subcategory
-
-    raise UnprocessableEntityError, @transaction.errors unless @transaction.errors.empty? && @transaction.save
-
-    render json: @transaction
+    render json: transaction
   end
 
   # DELETE /transactions/1
   def destroy
-    @transaction.destroy!
+    transaction = Transaction.find(params[:id])
+    transaction.destroy!
   end
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_transaction
-    @transaction = Transaction.find(params[:id])
-  end
+  def check_valid_subcategory(transaction_params)
+    return unless transaction_params[:subcategory_id]
 
-  def set_subcategory
-    @subcategory = Subcategory.find_by(
-      name: transaction_write_params[:subcategory_name]
-    )
+    error_msg = { subcategory_id: ['is invalid'] }
+    raise UnprocessableEntityError, error_msg unless Subcategory.find_by(id: transaction_params[:subcategory_id])
   end
 
   def transaction_read_params
@@ -82,7 +65,7 @@ class TransactionsController < ApplicationController
       :account_id,
       :statement_id,
       :notes,
-      :subcategory_name
+      :subcategory_id
     )
   end
 end

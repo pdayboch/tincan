@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ThreeDots } from 'react-loader-spinner';
-import { parseISO, format } from 'date-fns';
+import { parseISO } from 'date-fns';
 import { ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
 import { Category, Transaction, TransactionUpdate } from "../../../lib/definitions";
 import { formatCurrency } from '@/lib/helpers';
@@ -122,11 +122,14 @@ export default function TransactionTableRowExpanded({
       <td className="absolute w-48 p-2 align-top whitespace-nowrap">
         <CategoryDropdown
           categories={categories}
-          currentCategory={transaction.subcategory.name}
+          currentSubcategory={{
+            id: transaction.subcategory.id,
+            name: transaction.subcategory.name
+          }}
           onChange={
-            (subcategoryName) => onUpdateTransaction(
+            (subcategory) => onUpdateTransaction(
               transaction.id,
-              { subcategoryName: subcategoryName }
+              { subcategoryId: subcategory.id }
             )
           }
         />

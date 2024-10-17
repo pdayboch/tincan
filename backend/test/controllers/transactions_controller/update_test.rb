@@ -8,7 +8,7 @@ class TransactionsControllerUpdateTest < ActionDispatch::IntegrationTest
     new_subcategory = subcategories(:unused_subcategory)
 
     patch transaction_url(transaction), params: {
-      subcategory_name: new_subcategory.name
+      subcategoryId: new_subcategory.id
     }
 
     assert_response :success
@@ -21,15 +21,15 @@ class TransactionsControllerUpdateTest < ActionDispatch::IntegrationTest
   test 'should error update with invalid subcategory' do
     transaction = transactions(:one)
     patch transaction_url(transaction), params: {
-      subcategory_name: 'invalid subcategory'
+      subcategoryId: 0
     }
 
     assert_response :unprocessable_entity
 
     json_response = response.parsed_body
     expected_error = {
-      'field' => 'subcategoryName',
-      'message' => 'subcategoryName is invalid'
+      'field' => 'subcategoryId',
+      'message' => 'subcategoryId is invalid'
     }
 
     assert_includes json_response['errors'], expected_error

@@ -104,7 +104,7 @@ export type TransactionUpdate = Partial<{
   accountId: number,
   statementId: number,
   notes: string;
-  subcategoryName: string;
+  subcategoryId: number;
 }>;
 
 export type User = {
