@@ -15,7 +15,7 @@ class CategoriesControllerCreateTest < ActionDispatch::IntegrationTest
   end
 
   test 'should raise error on create with duplicate name' do
-    existing_category = categories(:one)
+    existing_category = categories(:income)
 
     assert_no_difference('Category.count') do
       post categories_url, params: {

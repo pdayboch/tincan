@@ -4,7 +4,7 @@ require 'test_helper'
 
 class SubcategoriesControllerTest < ActionDispatch::IntegrationTest
   test 'should create subcategory' do
-    category = categories(:one)
+    category = categories(:spend)
     assert_difference('Subcategory.count') do
       post subcategories_url, params: {
         category_id: category.id,
@@ -22,8 +22,8 @@ class SubcategoriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should raise error on create with duplicate name' do
-    category = categories(:two)
-    existing_subcategory = subcategories(:one)
+    category = categories(:spend)
+    existing_subcategory = subcategories(:restaurant)
 
     assert_no_difference('Subcategory.count') do
       post subcategories_url, params: {
@@ -42,7 +42,7 @@ class SubcategoriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should update subcategory' do
-    subcategory = subcategories(:one)
+    subcategory = subcategories(:paycheck)
     patch subcategory_url(subcategory), params: {
       category_id: subcategory.category_id,
       name: subcategory.name
@@ -51,8 +51,8 @@ class SubcategoriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should raise error on update with duplicate name' do
-    subcategory = subcategories(:one)
-    other_subcategory = subcategories(:two)
+    subcategory = subcategories(:paycheck)
+    other_subcategory = subcategories(:restaurant)
 
     put subcategory_url(subcategory), params: {
       name: other_subcategory.name
@@ -77,7 +77,7 @@ class SubcategoriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should raise bad_request error on destroy with transactions' do
-    subcategory = subcategories(:one)
+    subcategory = subcategories(:paycheck)
 
     assert_not subcategory.transactions.empty?, 'Subcategory should have transactions for this test'
 

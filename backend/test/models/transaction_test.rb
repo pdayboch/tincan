@@ -23,7 +23,7 @@ require 'test_helper'
 class TransactionTest < ActiveSupport::TestCase
   test 'create transaction applies categorization rule' do
     account = accounts(:one)
-    subcategory = subcategories(:two)
+    subcategory = subcategories(:restaurant)
     category = subcategory.category
 
     rule = CategorizationRule.create!(
@@ -67,7 +67,7 @@ class TransactionTest < ActiveSupport::TestCase
 
   test 'update transaction syncs the category with subcategory' do
     transaction = transactions(:uncategorized)
-    new_subcategory = subcategories(:two)
+    new_subcategory = subcategories(:restaurant)
     new_category = new_subcategory.category
     transaction.update(subcategory_id: new_subcategory.id)
 

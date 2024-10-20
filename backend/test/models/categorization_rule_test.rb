@@ -14,7 +14,7 @@ require 'test_helper'
 
 class CategorizationRuleTest < ActiveSupport::TestCase
   test 'create syncs the category with the subcategory' do
-    subcategory = subcategories(:one)
+    subcategory = subcategories(:paycheck)
     category = subcategory.category
 
     rule = CategorizationRule.create(subcategory_id: subcategory.id)
@@ -23,8 +23,8 @@ class CategorizationRuleTest < ActiveSupport::TestCase
   end
 
   test 'update syncs the category with the subcategory' do
-    old_subcategory = subcategories(:one)
-    new_subcategory = subcategories(:two)
+    old_subcategory = subcategories(:paycheck)
+    new_subcategory = subcategories(:restaurant)
     new_category = new_subcategory.category
     rule = CategorizationRule.create(subcategory_id: old_subcategory.id)
 

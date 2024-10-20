@@ -13,7 +13,7 @@ class CategoriesControllerDestroyTest < ActionDispatch::IntegrationTest
   end
 
   test 'should raise bad_request error on destroy with transactions' do
-    category = categories(:one)
+    category = categories(:income)
 
     assert_not category.transactions.empty?, 'Category should have transactions for this test'
 

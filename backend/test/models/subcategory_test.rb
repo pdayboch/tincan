@@ -14,7 +14,7 @@ require 'test_helper'
 
 class SubcategoryTest < ActiveSupport::TestCase
   test 'should not save duplicate subcategory names' do
-    category = categories(:one)
+    category = categories(:spend)
     Subcategory.create(name: 'UniqueName', category_id: category.id)
     duplicate_subcategory = Subcategory.new(name: 'UniqueName', category_id: category.id)
 
@@ -23,7 +23,7 @@ class SubcategoryTest < ActiveSupport::TestCase
   end
 
   test 'should not delete subcategory with transactions' do
-    subcategory = subcategories(:one)
+    subcategory = subcategories(:paycheck)
     assert_not subcategory.transactions.empty?, 'Subcategory should have transactions for this test'
 
     assert_raises ActiveRecord::DeleteRestrictionError do

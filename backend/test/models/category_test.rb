@@ -22,7 +22,7 @@ class CategoryTest < ActiveSupport::TestCase
   end
 
   test 'should not delete category with transactions' do
-    category = categories(:one)
+    category = categories(:income)
     assert_not category.transactions.empty?, 'Category should have transactions for this test'
 
     assert_raises ActiveRecord::DeleteRestrictionError do

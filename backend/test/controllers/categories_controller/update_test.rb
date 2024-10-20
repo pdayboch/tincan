@@ -4,7 +4,7 @@ require 'test_helper'
 
 class CategoriesControllerUpdateTest < ActionDispatch::IntegrationTest
   test 'should update category name' do
-    category = categories(:one)
+    category = categories(:income)
     old_type = category.category_type
 
     patch category_url(category), params: {
@@ -36,8 +36,8 @@ class CategoriesControllerUpdateTest < ActionDispatch::IntegrationTest
   end
 
   test 'should raise error on update with duplicate name' do
-    category = categories(:one)
-    other_category = categories(:two)
+    category = categories(:income)
+    other_category = categories(:spend)
 
     put category_url(category), params: {
       name: other_category.name
@@ -53,7 +53,7 @@ class CategoriesControllerUpdateTest < ActionDispatch::IntegrationTest
   end
 
   test 'should raise error on update with invalid category_type' do
-    category = categories(:one)
+    category = categories(:income)
 
     put category_url(category), params: {
       categoryType: 'nonsense'

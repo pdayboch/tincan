@@ -8,13 +8,13 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
-one:
+paycheck:
   name: Paycheck
-  category: one
+  category: income
 
-two:
+restaurant:
   name: Restaurants
-  category: two
+  category: spend
 
 cash_and_atm:
   name: "Cash and Atm"

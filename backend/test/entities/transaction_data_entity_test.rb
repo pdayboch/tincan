@@ -106,9 +106,9 @@ class TransactionDataEntityTest < ActiveSupport::TestCase
 
   test 'data paginates with a starting_after cursor with sort_direction desc with next and prev page' do
     # ex: page1: 1/2/24 -> page2: 1/1/24
-    # 0 1 2|> 3 4 (5) 6
+    # 0 |> 1 2 3 | 4
     transactions = Transaction.order(transaction_date: :desc, id: :desc)
-    last_transaction = transactions.offset(2).first
+    last_transaction = transactions.first
     starting_after = "#{last_transaction.transaction_date}.#{last_transaction.id}"
     entity = TransactionDataEntity.new(page_size: 3, starting_after: starting_after)
     data = entity.data
@@ -148,9 +148,9 @@ class TransactionDataEntityTest < ActiveSupport::TestCase
 
   test 'data paginates with a starting_after cursor with sort_direction asc with next and prev page' do
     # ex: page1: 1/1/24 -> page2: 1/2/24
-    # 0 1 2|> 3 (4) 5 6
+    # 0 |> 1 2 3 | 4
     transactions = Transaction.order(transaction_date: :asc, id: :asc)
-    last_transaction = transactions.offset(2).first
+    last_transaction = transactions.first
     starting_after = "#{last_transaction.transaction_date}.#{last_transaction.id}"
     entity = TransactionDataEntity.new(page_size: 3, starting_after: starting_after, sort_direction: 'asc')
     data = entity.data
@@ -169,9 +169,9 @@ class TransactionDataEntityTest < ActiveSupport::TestCase
 
   test 'data paginates with a ending_before cursor with sort_direction asc' do
     # ex: page2: 1/2/24 -> page1: 1/1/24
-    # 0 (1) 2 3 <|4 5 6
+    # 0 | 1 2 3 <| 4
     transactions = Transaction.order(transaction_date: :asc, id: :asc)
-    first_transaction = transactions.offset(4).first
+    first_transaction = transactions.last
     ending_before = "#{first_transaction.transaction_date}.#{first_transaction.id}"
     entity = TransactionDataEntity.new(page_size: 3, ending_before: ending_before, sort_direction: 'asc')
     data = entity.data

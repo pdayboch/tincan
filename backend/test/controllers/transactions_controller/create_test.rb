@@ -4,7 +4,7 @@ require 'test_helper'
 
 class TransactionsControllerCreateTest < ActionDispatch::IntegrationTest
   test 'should create transaction' do
-    subcategory = subcategories(:one)
+    subcategory = subcategories(:paycheck)
     account = accounts(:one)
     statement = statements(:one)
 
@@ -53,7 +53,7 @@ class TransactionsControllerCreateTest < ActionDispatch::IntegrationTest
   end
 
   test 'should error create when transaction model has validation errors' do
-    subcategory = subcategories(:one)
+    subcategory = subcategories(:paycheck)
     # Mock the transaction to return errors when saved
     transaction = Transaction.new(
       subcategory: subcategory,

@@ -8,11 +8,11 @@
 #  updated_at    :datetime         not null
 #  category_type :enum
 #
-one:
+income:
   name: Income
   category_type: income
 
-two:
+spend:
   name: "Food & Dining"
   category_type: spend
 

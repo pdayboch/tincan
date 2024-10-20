@@ -5,7 +5,7 @@ require 'test_helper'
 module Categorization
   class RulesControllerCreateTest < ActionDispatch::IntegrationTest
     test 'should create rule without conditions' do
-      subcategory = subcategories(:one)
+      subcategory = subcategories(:paycheck)
       category = subcategory.category
 
       assert_difference('CategorizationRule.count') do
@@ -22,7 +22,7 @@ module Categorization
     end
 
     test 'should create rule with conditions' do
-      subcategory = subcategories(:one)
+      subcategory = subcategories(:paycheck)
 
       condition_params = [{
         transactionField: 'description',
@@ -47,7 +47,7 @@ module Categorization
     end
 
     test 'should create rule with empty conditions' do
-      subcategory = subcategories(:one)
+      subcategory = subcategories(:paycheck)
 
       assert_difference(['CategorizationRule.count']) do
         post categorization_rules_url, params: {
@@ -103,7 +103,7 @@ module Categorization
     end
 
     test 'should render create errors for invalid condition keys' do
-      subcategory = subcategories(:one)
+      subcategory = subcategories(:paycheck)
       invalid_conditions = [{
         something: 'description',
         matchType: 'exactly',
@@ -127,7 +127,7 @@ module Categorization
     end
 
     test 'should render create errors for invalid condition values' do
-      subcategory = subcategories(:one)
+      subcategory = subcategories(:paycheck)
       invalid_conditions = [{
         transactionField: 'bad_field',
         matchType: 'exactly',
