@@ -8,7 +8,6 @@
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #
-
 one:
-  category: misc
+  category: transfer
   subcategory: cash_and_atm

@@ -8,7 +8,6 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
-
 one:
   name: Paycheck
   category: one
@@ -19,7 +18,7 @@ two:
 
 cash_and_atm:
   name: "Cash and Atm"
-  category: misc
+  category: transfer
 
 unused_subcategory:
   name: Unused

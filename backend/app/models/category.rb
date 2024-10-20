@@ -4,15 +4,23 @@
 #
 # Table name: categories
 #
-#  id         :bigint           not null, primary key
-#  name       :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id            :bigint           not null, primary key
+#  name          :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  category_type :enum
 #
 class Category < ApplicationRecord
+  enum :category_type,
+       {
+         income: 'income',
+         spend: 'spend',
+         transfer: 'transfer',
+       }
+
   has_many :transactions, dependent: :restrict_with_exception
   has_many :subcategories, dependent: :destroy
 
-  # Validates that the name is unique
   validates :name, uniqueness: { message: 'already exists' }
+  validates :category_type, presence: true
 end

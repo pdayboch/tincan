@@ -2,23 +2,28 @@
 #
 # Table name: categories
 #
-#  id         :bigint           not null, primary key
-#  name       :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id            :bigint           not null, primary key
+#  name          :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  category_type :enum
 #
-
 one:
   name: Income
+  category_type: income
 
 two:
   name: "Food & Dining"
+  category_type: spend
 
-misc:
-  name: Miscellaneous
+transfer:
+  name: Transfer
+  category_type: transfer
 
 unused_category:
   name: Unused
+  category_type: spend
 
 uncategorized:
   name: Uncategorized
+  category_type: transfer

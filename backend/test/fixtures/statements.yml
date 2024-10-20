@@ -10,7 +10,6 @@
 #  updated_at        :datetime         not null
 #  pdf_file_path     :text
 #
-
 one:
   statement_date: 2024-06-03
   account: one

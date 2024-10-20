@@ -14,11 +14,12 @@ require 'test_helper'
 
 class SubcategoryTest < ActiveSupport::TestCase
   test 'should not save duplicate subcategory names' do
-    Category.create(name: 'UniqueName')
-    duplicate_category = Category.new(name: 'UniqueName')
+    category = categories(:one)
+    Subcategory.create(name: 'UniqueName', category_id: category.id)
+    duplicate_subcategory = Subcategory.new(name: 'UniqueName', category_id: category.id)
 
-    assert_not duplicate_category.valid?, 'Duplicate category should not be valid'
-    assert_includes duplicate_category.errors[:name], 'already exists'
+    assert_not duplicate_subcategory.valid?, 'Duplicate category should not be valid'
+    assert_includes duplicate_subcategory.errors[:name], 'already exists'
   end
 
   test 'should not delete subcategory with transactions' do

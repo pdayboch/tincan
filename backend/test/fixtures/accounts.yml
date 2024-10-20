@@ -14,7 +14,6 @@
 #  statement_directory :text
 #  parser_class        :string
 #
-
 one:
   bank_name: Chase
   name: Freedom

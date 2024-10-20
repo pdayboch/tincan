@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class CategoriesController < ApplicationController
-  before_action :set_category, only: %i[update destroy]
-
   # GET /categories
   def index
     data = CategoryDataEntity.new.data
@@ -17,18 +15,24 @@ class CategoriesController < ApplicationController
     raise UnprocessableEntityError, category.errors unless category.save
 
     render json: category, status: :created, location: category
+  rescue ArgumentError
+    raise UnprocessableEntityError, { category_type: ["'#{params[:category_type]}' is invalid"] }
   end
 
   # PUT /categories/1
   def update
-    raise UnprocessableEntityError, @category.errors unless @category.update(category_params)
+    category = Category.find(params[:id])
+    raise UnprocessableEntityError, category.errors unless category.update(category_params)
 
-    render json: @category
+    render json: category
+  rescue ArgumentError
+    raise UnprocessableEntityError, { category_type: ["'#{params[:category_type]}' is invalid"] }
   end
 
   # DELETE /categories/1
   def destroy
-    @category.destroy!
+    category = Category.find(params[:id])
+    category.destroy!
   rescue ActiveRecord::DeleteRestrictionError
     message = 'Cannot delete a category that has transactions associated with it'
     raise BadRequestError.new({ category: [message] })
@@ -36,11 +40,7 @@ class CategoriesController < ApplicationController
 
   private
 
-  def set_category
-    @category = Category.find(params[:id])
-  end
-
   def category_params
-    params.permit(:name)
+    params.permit(:name, :category_type)
   end
 end
