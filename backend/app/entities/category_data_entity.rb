@@ -20,6 +20,7 @@ class CategoryDataEntity
     {
       id: category.id,
       name: category.name,
+      categoryType: category.category_type,
       hasTransactions: category_has_transactions_associated?(category),
       subcategories: subcategory_data(category)
     }

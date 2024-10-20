@@ -46,6 +46,7 @@ export type CategorizationConditionUpdate = Partial<{
 export type Category = {
   id: number,
   name: string,
+  categoryType: string,
   hasTransactions: boolean,
   subcategories: Subcategory[]
 }

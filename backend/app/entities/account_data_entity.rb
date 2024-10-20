@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AccountDataEntity
   # user_ids: array of User IDs to filter for.
   # account_types: array of account types to filter for.
