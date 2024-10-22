@@ -4,6 +4,7 @@ ruby '3.3.5'
 
 gem 'active_model_serializers'
 gem 'bcrypt'
+gem 'groupdate'
 gem 'ostruct'
 gem 'pdf-reader'
 gem 'pg', '~> 1.5', '>= 1.5.6'
