@@ -12,7 +12,7 @@ class SupportedAccountsControllerTest < ActionDispatch::IntegrationTest
       .expects(:new)
       .returns(original_new.call)
 
-    get accounts_supported_url
+    get supported_accounts_url
 
     assert_response :success
 
