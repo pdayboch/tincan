@@ -108,6 +108,10 @@ export type TransactionUpdate = Partial<{
   subcategoryId: number;
 }>;
 
+export type TransactionTrendOverTime = {
+  [key: string]: string;
+};
+
 export type User = {
   id: number,
   name: string,
