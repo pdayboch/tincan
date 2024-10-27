@@ -27,8 +27,11 @@ class AccountSerializer < ActiveModel::Serializer
     object.account_type
   end
 
-  attribute :userId do
-    object.user_id
+  attribute :user do
+    {
+      id: object.user_id,
+      name: object.user.name
+    }
   end
 
   attribute :statementDirectory do

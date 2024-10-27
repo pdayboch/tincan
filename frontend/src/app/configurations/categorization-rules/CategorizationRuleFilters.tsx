@@ -9,7 +9,7 @@ type CategorizationRuleFiltersProps = {
   users: User[];
 };
 
-export default function AccountFilters({
+export default function CategorizationRuleFilters({
   categories, accounts, users
 }: CategorizationRuleFiltersProps) {
   const subcategories: Subcategory[] = categories.flatMap((category) => {
@@ -94,7 +94,7 @@ export default function AccountFilters({
     return {
       id: account.id.toString(),
       label: account.name,
-      sublabel: getUser(account.userId)?.name || ''
+      sublabel: getUser(account.user.id)?.name || ''
     }
   });
 

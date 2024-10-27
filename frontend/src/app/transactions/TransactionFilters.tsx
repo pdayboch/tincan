@@ -82,7 +82,7 @@ export default function TransactionFilters({
 
   const accountItems: FilterItemType[] = accounts.map((account) => {
     const label = account.bankName ? `${account.bankName} ${account.name}` : account.name;
-    const user = users.find(user => account.userId === user.id);
+    const user = users.find(user => account.user.id === user.id);
 
     return {
       id: account.id.toString(),

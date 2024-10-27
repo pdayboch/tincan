@@ -15,7 +15,7 @@ class AccountDataEntityTest < ActiveSupport::TestCase
 
   test 'returns all accounts when no filters are applied' do
     entity = AccountDataEntity.new
-    result = entity.get_data
+    result = entity.data
 
     assert_equal 5, result.size
     assert_includes result.pluck(:id), @account1.id
@@ -27,7 +27,7 @@ class AccountDataEntityTest < ActiveSupport::TestCase
 
   test 'returns accounts for the specified users' do
     entity = AccountDataEntity.new(user_ids: [@user1.id])
-    result = entity.get_data
+    result = entity.data
 
     assert_equal 4, result.size
     assert_includes result.pluck(:id), @account1.id
@@ -37,7 +37,7 @@ class AccountDataEntityTest < ActiveSupport::TestCase
 
   test 'returns accounts of the specified types' do
     entity = AccountDataEntity.new(account_types: ['credit card'])
-    result = entity.get_data
+    result = entity.data
 
     assert_equal 4, result.size
     assert_includes result.pluck(:id), @account1.id
@@ -48,7 +48,7 @@ class AccountDataEntityTest < ActiveSupport::TestCase
 
   test 'returns accounts that match both filters' do
     entity = AccountDataEntity.new(user_ids: [@user1.id], account_types: ['credit card'])
-    result = entity.get_data
+    result = entity.data
 
     assert_equal 3, result.size
     assert_includes result.pluck(:id), @account1.id

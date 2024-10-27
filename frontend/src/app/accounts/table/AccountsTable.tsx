@@ -107,10 +107,10 @@ export default function AccountsTable({
         grouped[account.bankName] = {};
       }
 
-      if (!grouped[account.bankName][account.userId]) {
-        grouped[account.bankName][account.userId] = [];
+      if (!grouped[account.bankName][account.user.id]) {
+        grouped[account.bankName][account.user.id] = [];
       }
-      grouped[account.bankName][account.userId].push(account);
+      grouped[account.bankName][account.user.id].push(account);
     });
 
     return grouped;

@@ -11,14 +11,14 @@ class AccountDataEntity
     @account_types = account_types
   end
 
-  def get_data
+  def data
     filtered_account_query.map { |a| AccountSerializer.new(a).as_json }
   end
 
   private
 
   def base_account_query
-    Account.all
+    Account.includes(:user)
   end
 
   # Apply filters to the base query

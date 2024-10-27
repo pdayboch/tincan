@@ -8,9 +8,10 @@ class AccountsController < ApplicationController
     user_ids = params[:userIds]
     account_types = params[:accountTypes]
 
-    data = AccountDataEntity
-           .new(user_ids: user_ids, account_types: account_types)
-           .get_data
+    data = AccountDataEntity.new(
+      user_ids: user_ids,
+      account_types: account_types
+    ).data
 
     render json: data
   end

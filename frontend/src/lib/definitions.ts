@@ -5,7 +5,7 @@ export type Account = {
   accountType: string,
   active: boolean,
   deletable: boolean,
-  userId: number,
+  user: { id: number, name: string },
   statementDirectory: string,
   nickname: string
 }
