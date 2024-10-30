@@ -4,6 +4,8 @@ ENV['RAILS_ENV'] ||= 'test'
 require 'simplecov'
 
 SimpleCov.start 'rails' do
+  enable_coverage :branch
+
   add_filter '/test/' # Exclude the test directory from coverage
   add_filter '/config/'
   add_filter '/app/channels/'

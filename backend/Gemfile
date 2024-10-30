@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 ruby '3.3.5'
 
+gem 'activejob-status'
 gem 'active_model_serializers'
 gem 'bcrypt'
 gem 'groupdate'
@@ -10,6 +11,7 @@ gem 'pdf-reader'
 gem 'pg', '~> 1.5', '>= 1.5.6'
 gem 'puma', '~> 6.0'
 gem 'rails', '~> 7.2.1'
+gem 'redis'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', require: false
