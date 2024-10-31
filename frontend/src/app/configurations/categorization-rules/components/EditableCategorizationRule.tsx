@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { TrashIcon, ArrowUturnLeftIcon, CheckIcon } from '@heroicons/react/24/solid';
 import EditableCategorizationCondition from './EditableCategorizationCondition';
 import CategoryDropdown from '@/components/category/CategoryDropdown';
-import { AddConditionButton } from './components/AddConditionButton';
+import { AddConditionButton } from './AddConditionButton';
 import ErrorNotification from '@/components/errors/ErrorNotification';
 import {
   CategorizationRule,
@@ -16,7 +16,7 @@ import {
   convertConditionToConditionUpdateObject,
   emptyConditionWithId,
   validateCondition
-} from './utils/rule-helpers';
+} from '../utils/rule-helpers';
 import {
   createCategorizationRule,
   deleteCategorizationRule,

@@ -9,10 +9,8 @@ import {
   Category,
   User
 } from '@/lib/definitions';
-import Filters from './CategorizationRuleFilters';
-import NoRulesComponent from './NoRulesComponent';
-import CategorizationRuleRow from './CategorizationRuleRow';
-import About from './About';
+import CategorizationRuleRow from './components/CategorizationRuleRow';
+import About from './components/About';
 import Search from '@/components/Search';
 import { fetchCategories } from '@/lib/api/category-api';
 import { fetchUsers } from '@/lib/api/user-api';
@@ -23,10 +21,11 @@ import {
   filterBySearchString,
   filterBySubcategories
 } from './utils/filter-helpers';
-import EditableCategorizationRule from './EditableCategorizationRule';
+import EditableCategorizationRule from './components/EditableCategorizationRule';
 import AddRuleButton from './components/AddRuleButton';
 import ApplyRulesButton from './components/ApplyRulesButton';
 import { EMPTY_CONDITION, NEW_RULE } from './utils/rule-helpers';
+import NoRulesComponent from './components/NoRulesComponent';
 
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
@@ -173,15 +172,6 @@ function CategorizationRulesContent() {
   // Categorization rules exist
   return (
     <div className={clsx("flex", font.className)}>
-      {/* Left panel */}
-      <div className="block flex-none w-40 mr-3">
-        <Filters
-          categories={categories}
-          accounts={accounts}
-          users={users}
-        />
-      </div>
-
       {/* Content */}
       <div className="flex-grow flex flex-col items-center \
                       w-full mx-auto max-w-4xl"

@@ -1,7 +1,7 @@
 import { Account, CategorizationCondition } from "@/lib/definitions";
-import { MATCH_TYPES_FOR_FIELDS } from "./utils/formatting-helpers";
-import ConditionMatchValueInput from "./components/ConditionMatchValueInput";
 import clsx from "clsx";
+import { MATCH_TYPES_FOR_FIELDS } from "../utils/formatting-helpers";
+import ConditionMatchValueInput from "./ConditionMatchValueInput";
 
 interface EditableCategorizationConditionProps {
   condition: CategorizationCondition;

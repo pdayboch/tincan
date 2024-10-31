@@ -1,5 +1,4 @@
-import { PlusIcon } from "@heroicons/react/16/solid";
-import AddRuleButton from "./components/AddRuleButton";
+import AddRuleButton from "./AddRuleButton";
 
 interface NoRulesComponentProps {
   onAddNewRule: () => void;
@@ -19,6 +18,7 @@ export default function NoRulesComponent({
       <AddRuleButton
         label={"Add one now"}
         onClick={onAddNewRule}
+        disabled={false}
       />
     </div>
   );

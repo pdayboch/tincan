@@ -1,5 +1,5 @@
 import { Account, CategorizationCondition } from "@/lib/definitions";
-import { MATCH_TYPES_FOR_FIELDS, getFormattedMatchValue } from "./utils/formatting-helpers";
+import { getFormattedMatchValue, MATCH_TYPES_FOR_FIELDS } from "../utils/formatting-helpers";
 
 interface CategorizationConditionRowProps {
   condition: CategorizationCondition;

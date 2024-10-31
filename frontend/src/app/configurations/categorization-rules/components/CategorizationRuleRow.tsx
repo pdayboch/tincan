@@ -1,6 +1,6 @@
 import { Account, CategorizationRule } from "@/lib/definitions";
 import CategorizationConditionRow from "./CategorizationConditionRow";
-import { AddConditionButton } from "./components/AddConditionButton";
+import { AddConditionButton } from "./AddConditionButton";
 import { ExclamationTriangleIcon } from "@heroicons/react/16/solid";
 
 interface CategorizationRuleRowProps {
