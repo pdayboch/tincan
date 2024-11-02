@@ -214,7 +214,7 @@ function CategorizationRulesContent() {
         </div>
 
         {/* Scrollabe Rules List */}
-        <div className="flex-grow space-y-4 pr-2 overflow-y-scroll max-h-screen-300 mt-2">
+        <div className="flex-grow space-y-6 pr-2 overflow-y-scroll max-h-screen-300 mt-2">
           {isAddingNewRule && (
             <EditableCategorizationRule
               rule={NEW_RULE}

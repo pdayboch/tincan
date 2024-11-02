@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { TrashIcon, ArrowUturnLeftIcon, CheckIcon } from '@heroicons/react/24/solid';
 import EditableCategorizationCondition from './EditableCategorizationCondition';
-import CategoryDropdown from '@/components/category/CategoryDropdown';
 import { AddConditionButton } from './AddConditionButton';
 import ErrorNotification from '@/components/errors/ErrorNotification';
 import {
@@ -27,6 +26,7 @@ import {
   deleteCategorizationCondition
 } from '@/lib/api/categorization-condition-api';
 import clsx from 'clsx';
+import SubcategorySelector from '@/components/category/SubcategorySelector';
 
 interface EditableCategorizationRuleProps {
   rule: CategorizationRule;
@@ -301,7 +301,7 @@ export default function EditableCategorizationRule({
   return (
     <div
       className={clsx(
-        'border rounded-3xl w-full p-6 mb-6 shadow-lg bg-white',
+        'border rounded-3xl w-full p-5 mb-6 shadow-lg bg-white',
         isNewRule ? 'border-green-500' : 'border-gray-300'
       )}
     >
@@ -315,6 +315,28 @@ export default function EditableCategorizationRule({
             </span>
           </div>
         )}
+
+        {/* Subcategory Section */}
+        <div className="flex flex-col items-start p-3 mb-6 bg-blue-50 text-blue-900 rounded-lg">
+          <div className="flex items-center w-full">
+            <span className="font-medium">Assign subcategory: </span>
+            <div
+              className={clsx(
+                "ml-3 flex-grow",
+                !isSubcategoryValid && "border border-red-500 rounded-md"
+              )}
+            >
+              <SubcategorySelector
+                categories={categories}
+                currentSubcategory={localSubcategory}
+                onChange={(subcategory) => setLocalSubcategory({
+                  id: subcategory.id,
+                  name: subcategory.name
+                })}
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Render existing conditions */}
         {rule.conditions.map((condition, index) => {
@@ -357,49 +379,15 @@ export default function EditableCategorizationRule({
           </div>
         ))}
 
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center mb-5">
           <AddConditionButton
             onClick={handleAddNewCondition}
           />
         </div>
-
-        {/* Subcategory selector */}
-        <div
-          className={clsx(
-            "flex flex-col items-start mt-6 p-4 bg-blue-50 text-blue-900 rounded-lg",
-            !isSubcategoryValid && "border border-red-500"
-          )}
-        >
-          {/* "Required" badge */}
-          {!isSubcategoryValid && (
-            <span
-              className="bg-red-500 text-white text-xs font-semibold px-2 py-1 \
-              mt-2 rounded"
-            >
-              Required
-            </span>
-          )}
-          <div className="flex items-center">
-            <span className="font-medium">Then assign subcategory: </span>
-            <div className="ml-2 flex-grow">
-              <CategoryDropdown
-                categories={categories}
-                currentSubcategory={{
-                  id: localSubcategory.id,
-                  name: localSubcategory.name
-                }}
-                onChange={(subcategory) => setLocalSubcategory({
-                  id: subcategory.id,
-                  name: subcategory.name
-                })}
-              />
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Action buttons (Delete, Cancel, Save) */}
-      < div className="mt-6 flex justify-between" >
+      <div className="mt-7 flex justify-between" >
         {/* Delete Button: Separated on the left */}
         {isNewRule ? (<div></div>) : (
           <button
@@ -415,18 +403,18 @@ export default function EditableCategorizationRule({
         )}
 
         {/* Cancel and Save Buttons: Grouped on the right */}
-        <div className="flex space-x-4">
+        <div className="flex space-x-6">
           <button
-            onClick={onCancel}
             className="flex items-center text-gray-500 hover:text-gray-700"
+            onClick={onCancel}
           >
             <ArrowUturnLeftIcon className="w-5 h-5 mr-1" />
             Cancel
           </button>
 
           <button
-            onClick={handleRuleSave}
             className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+            onClick={handleRuleSave}
           >
             <CheckIcon className="w-5 h-5 mr-1" />
             Save Rule

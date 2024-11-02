@@ -69,7 +69,7 @@ export default function EditableCategorizationCondition({
       </button>
 
       <div className="flex flex-wrap justify-start items-center gap-2">
-        <span className="text-gray-700">When transaction's</span>
+        <span className="text-gray-700">when transaction's</span>
 
         {/* Transaction Field dropdown */}
         <select
