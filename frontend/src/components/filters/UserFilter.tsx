@@ -1,10 +1,10 @@
-import { Category } from "@/lib/definitions";
+import { User } from "@/lib/definitions";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Select, { MultiValue } from 'react-select';
 
-interface SubcategoryFilterProps {
-  categories: Category[]
+interface UserFilterProps {
+  users: User[];
 }
 
 type OptionType = {
@@ -13,30 +13,17 @@ type OptionType = {
   label: string
 };
 
-type GroupedOptionType = {
-  id: number,
-  label: string,
-  options: OptionType[]
-};
+const PARAM_NAME = 'users[]';
 
-const PARAM_NAME = 'subcategories[]';
-
-export default function SubcategoryFilter({
-  categories
-}: SubcategoryFilterProps) {
-  const [selectedSubcategories, setSelectedSubcategories] = useState<OptionType[]>([]);
-
-  const categoryOptions: GroupedOptionType[] = categories.map(
-    category => ({
-      id: category.id,
-      label: category.name,
-      options: category.subcategories.map(subcategory => ({
-        id: subcategory.id,
-        value: subcategory.id,
-        label: subcategory.name,
-      })),
-    })
-  );
+export default function UserFilter({
+  users
+}: UserFilterProps) {
+  const [selectedUsers, setSelectedUsers] = useState<OptionType[]>([]);
+  const userOptions = users.map((user) => ({
+    id: user.id,
+    value: user.id,
+    label: user.name,
+  }));
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -44,15 +31,13 @@ export default function SubcategoryFilter({
 
   useEffect(() => {
     const param = searchParams.getAll(PARAM_NAME);
-    const newSelectedSubcategories = categoryOptions.flatMap(
-      group =>
-        group.options.filter(
-          option => param.includes(String(option.value))
-        )
+    const newSelectedUsers = userOptions.filter(options =>
+      param.includes(String(options.value))
     );
 
-    setSelectedSubcategories(newSelectedSubcategories);
+    setSelectedUsers(newSelectedUsers);
   }, [searchParams]);
+
 
   const handleSelectionChange = (
     selectedOptions: MultiValue<OptionType>
@@ -78,13 +63,13 @@ export default function SubcategoryFilter({
 
   return (
     <Select
-      instanceId="subcategory-filter-select"
-      options={categoryOptions}
+      instanceId="user-filter-select"
+      options={userOptions}
       isMulti
       isSearchable
-      placeholder="All subcategories"
+      placeholder="All Users"
       onChange={handleSelectionChange}
-      value={selectedSubcategories}
+      value={selectedUsers}
     />
   );
 }

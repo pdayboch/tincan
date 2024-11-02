@@ -7,17 +7,19 @@ interface AccountFilterProps {
   accounts: Account[];
 }
 
-type AccountOptionType = {
+type OptionType = {
   id: number;
   value: number,
   label: string,
   userName: string;
 };
 
+const PARAM_NAME = 'accounts[]';
+
 export default function AccountFilter({
   accounts
 }: AccountFilterProps) {
-  const [selectedAccounts, setSelectedAccounts] = useState<AccountOptionType[]>([]);
+  const [selectedAccounts, setSelectedAccounts] = useState<OptionType[]>([]);
   const accountOptions = accounts.map((account) => ({
     id: account.id,
     value: account.id,
@@ -30,9 +32,9 @@ export default function AccountFilter({
   const { replace } = useRouter();
 
   useEffect(() => {
-    const accountsParam = searchParams.getAll('accounts[]');
+    const param = searchParams.getAll(PARAM_NAME);
     const newSelectedAccounts = accountOptions.filter(options =>
-      accountsParam.includes(String(options.value))
+      param.includes(String(options.value))
     );
 
     setSelectedAccounts(newSelectedAccounts);
@@ -40,22 +42,22 @@ export default function AccountFilter({
 
 
   const handleSelectionChange = (
-    selectedOptions: MultiValue<AccountOptionType>
+    selectedOptions: MultiValue<OptionType>
   ) => {
     const params = new URLSearchParams(searchParams);
-    // Reset pagination to page 1 since accounts are changing.
+    // Reset pagination to page 1
     params.delete('startingAfter');
     params.delete('endingBefore');
 
-    // Update accounts[] param
+    // Update url param
     if (selectedOptions.length > 0) {
       const selectedIds = selectedOptions.map(option =>
         String(option.value)
       );
-      params.delete('accounts[]');
-      selectedIds.forEach(id => params.append('accounts[]', id))
+      params.delete(PARAM_NAME);
+      selectedIds.forEach(id => params.append(PARAM_NAME, id))
     } else {
-      params.delete('accounts[]');
+      params.delete(PARAM_NAME);
     }
 
     replace(`${pathname}?${params.toString()}`)
@@ -63,7 +65,7 @@ export default function AccountFilter({
 
   // Custom dropdown option formatting
   const formatOptionLabel = (
-    option: AccountOptionType,
+    option: OptionType,
     { context }: { context: "menu" | "value" }
   ) => {
     if (context === "menu") {
