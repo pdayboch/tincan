@@ -1,29 +1,17 @@
-import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
+import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
-export function CreateTransaction() {
+export function AddTransactionButton() {
   return (
     <div
-      className="flex items-center justify-center \
-        h-full w-12 \
-        rounded-lg cursor-pointer \
-        bg-theme-lgt-green hover:bg-theme-drk-green \
-        active:bg-theme-pressed-green active:scale-95 active:shadow-inner"
-      onClick={()=>console.log("should add a transaction.")}
+      className="flex items-center justify-center gap-2 px-4 py-2 h-full
+        rounded-lg cursor-pointer bg-theme-lgt-green hover:bg-theme-drk-green
+        active:bg-theme-pressed-green active:scale-95 active:shadow-inner
+        transition-color duration-150"
+      onClick={() => console.log("should add a transaction.")}
     >
       <PlusIcon className="h-5 w-5" />
+      <span className="hidden md:inline">Add Transaction</span>
     </div>
-  );
-}
-
-export function UpdateTransaction({ id }: { id: string }) {
-  return (
-    <Link
-      href="/dashboard/invoices"
-      className="rounded-md border p-2 hover:bg-gray-100"
-    >
-      <PencilIcon className="w-5" />
-    </Link>
   );
 }
 

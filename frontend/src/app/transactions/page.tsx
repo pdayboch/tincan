@@ -2,9 +2,8 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import Search from '../../components/Search';
-import { CreateTransaction } from './buttons';
+import { AddTransactionButton } from './buttons';
 import TransactionsTable from './table/TransactionsTable';
-import Filters from './TransactionFilters';
 import { Account, Category, Transaction, TransactionMetaData, User } from '../../lib/definitions';
 import { Inter } from "next/font/google";
 import clsx from 'clsx';
@@ -12,13 +11,13 @@ import { fetchUsers } from '@/lib/api/user-api';
 import { fetchAccounts } from '@/lib/api/account-api';
 import { fetchCategories } from '@/lib/api/category-api';
 import { fetchTransactions } from '@/lib/api/transaction-api';
+import SubcategoryFilter from '@/components/filters/SubcategoryFilter';
+import AccountFilter from '@/components/filters/AccountFilter';
+import UserFilter from '@/components/filters/UserFilter';
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
 function TransactionsContent() {
-  const [isLoadingTransactions, setLoadingTransactions] = useState<boolean>(true)
-
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-
   const [transactionMetaData, setTransactionMetaData] =
     useState<TransactionMetaData>({
       totalCount: 0,
@@ -27,16 +26,8 @@ function TransactionsContent() {
       nextPage: null
     })
 
-  const [isLoadingCategories, setLoadingCategories] = useState<boolean>(true)
-
   const [categories, setCategories] = useState<Category[]>([]);
-
-  const [isLoadingAccounts, setLoadingAccounts] = useState<boolean>(true);
-
   const [accounts, setAccounts] = useState<Account[]>([]);
-
-  const [isLoadingUsers, setLoadingUsers] = useState<boolean>(true);
-
   const [users, setUsers] = useState<User[]>([]);
 
   const searchParams = useSearchParams();
@@ -58,52 +49,42 @@ function TransactionsContent() {
 
   // fetch and store all users
   useEffect(() => {
-    setLoadingUsers(true);
     fetchUsers()
       .then(data => {
         setUsers(data);
-        setLoadingUsers(false);
       })
       .catch(error => {
         console.error(error);
         setUsers([]);
-        setLoadingUsers(false);
       });
   }, []);
 
   // fetch and store all accounts
   useEffect(() => {
-    setLoadingAccounts(true);
     fetchAccounts()
       .then(data => {
         setAccounts(data);
-        setLoadingAccounts(false);
       })
       .catch(error => {
         console.error(error);
         setAccounts([]);
-        setLoadingAccounts(false);
       });
   }, []);
 
   // fetch and store all categories
   useEffect(() => {
-    setLoadingCategories(true);
     fetchCategories()
       .then(data => {
         setCategories(data.categories);
-        setLoadingCategories(false);
       })
       .catch(error => {
         console.error(error);
         setCategories([]);
-        setLoadingCategories(false);
       });
   }, []);
 
   // fetch and store filtered transactions
   useEffect(() => {
-    setLoadingTransactions(true);
     fetchTransactions(searchParams)
       .then(data => {
         setTransactions(data.transactions);
@@ -113,39 +94,63 @@ function TransactionsContent() {
           prevPage: data.meta.prevPage,
           nextPage: data.meta.nextPage
         });
-        setLoadingTransactions(false);
       })
       .catch(error => {
         console.error(error);
         setTransactions([]);
-        setLoadingTransactions(false);
       });
   }, [searchParams]);
 
-  if (isLoadingCategories ||
-    isLoadingUsers ||
-    isLoadingAccounts
-  ) {
-    return <div className={font.className}>Loading...</div>;
-  }
-
   return (
-    <div className={clsx("flex", font.className)}>
-      {/* Left panel */}
-      <div className="block flex-none w-40 mr-3">
-        <Filters accounts={accounts} users={users} />
-      </div>
+    <div className={clsx("flex flex-col p-6 max-w-6xl mx-auto", font.className)}>
+      <div className="flex-grow flex flex-col space-y-6">
 
-      {/* Content */}
-      <div className="flex-grow flex flex-col w-full mx-auto">
-        <div className="flex items-center justify-between gap-2 my-3 h-10">
+        {/* Top Controls Bar */}
+        <div className="flex items-center gap-10">
           <Search
             placeholder="Search transactions..."
             value={searchParams.get('searchString')?.toString()}
             onSearch={handleSearch}
           />
-          <CreateTransaction />
+          <AddTransactionButton />
         </div>
+
+        {/* Filter Dropdowns */}
+        <div className="flex gap-4 p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex flex-col w-1/3">
+            <label className="text-sm font-medium text-gray-700 mb-1">
+              Subcategory Filter
+            </label>
+            <SubcategoryFilter
+              categories={categories}
+            />
+          </div>
+          <div className="flex flex-col w-1/3">
+            <label className="text-sm font-medium text-gray-700 mb-1">
+              Account Filter
+            </label>
+            <AccountFilter
+              accounts={accounts}
+            />
+          </div>
+          <div className="flex flex-col w-1/3">
+            <label className="text-sm font-medium text-gray-700 mb-1">
+              User Filter
+            </label>
+            <UserFilter
+              users={users}
+            />
+          </div>
+        </div>
+
+        {/* Transaction Count Display */}
+        <div className="text-sm text-gray-600 px-4">
+          {transactionMetaData.filteredCount < transactionMetaData.totalCount
+            ? `Showing ${transactionMetaData.filteredCount} of ${transactionMetaData.totalCount} transactions`
+            : `Total transactions: ${transactionMetaData.totalCount}`}
+        </div>
+
+        {/* Transactions Table */}
         <TransactionsTable
           transactions={transactions}
           transactionMetaData={transactionMetaData}
