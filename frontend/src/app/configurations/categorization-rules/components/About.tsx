@@ -14,7 +14,7 @@ export default function About() {
     <div className="w-3/4 max-w-xl mx-auto">
       <button
         className="flex items-center justify-between \
-                    h-12 w-full p-4 bg-gray-100 \
+                    h-10 w-full p-4 bg-gray-100 \
                     rounded-lg shadow hover:bg-gray-50 \
                     focus:outline-none focus:ring-2 focus:ring-blue-500"
         onClick={toggleDropdown}

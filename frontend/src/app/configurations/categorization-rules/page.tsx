@@ -26,6 +26,9 @@ import AddRuleButton from './components/AddRuleButton';
 import ApplyRulesButton from './components/ApplyRulesButton';
 import { EMPTY_CONDITION, NEW_RULE } from './utils/rule-helpers';
 import NoRulesComponent from './components/NoRulesComponent';
+import AccountSelector from '@/components/filters/AccountFilter';
+import AccountFilter from '@/components/filters/AccountFilter';
+import SubcategoryFilter from '@/components/filters/SubcategoryFilter';
 
 const font = Inter({ weight: ["400"], subsets: ['latin'] });
 
@@ -171,33 +174,47 @@ function CategorizationRulesContent() {
 
   // Categorization rules exist
   return (
-    <div className={clsx("flex", font.className)}>
-      {/* Content */}
-      <div className="flex-grow flex flex-col items-center \
-                      w-full mx-auto max-w-4xl"
-      >
+    <div className={clsx("flex flex-row h-full", font.className)}>
+      {/* Main content area */}
+      <div className="flex-grow p-4 flex flex-col">
         <About />
-        <div className="flex items-center justify-between \
-                        w-full gap-2 mt-2 mb-5 h-10"
-        >
+
+        {/* Top controls bar */}
+        <div className="flex items-center gap-4 mb-4">
           <Search
             placeholder='Search rules...'
             value={searchParams.get('searchString')?.toString()}
             onSearch={handleSearch}
           />
+          <AddRuleButton
+            label={"Add new rule"}
+            onClick={handleAddNewRule}
+            disabled={isAddingNewRule}
+          />
+        </div>
 
-          <div className="flex gap-2">
-            <AddRuleButton
-              label={"Add new rule"}
-              onClick={handleAddNewRule}
-              disabled={isAddingNewRule}
+        {/* Filter Dropdowns */}
+        <div className="flex gap-4 mb-6 p-4 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex flex-col w-1/2">
+            <label className="text-sm font-medium text-gray-700 mb-1">
+              Account Filter
+            </label>
+            <AccountFilter
+              accounts={accounts}
             />
-            <ApplyRulesButton
-              onClick={handleApplyRules}
+          </div>
+          <div className="flex flex-col w-1/2">
+            <label className="text-sm font-medium text-gray-700 mb-1">
+              Subcategory Filter
+            </label>
+            <SubcategoryFilter
+              categories={categories}
             />
           </div>
         </div>
-        <div className="w-full">
+
+        {/* Scrollabe Rules List */}
+        <div className="flex-grow space-y-4 pr-2 overflow-y-scroll max-h-screen-300 mt-2">
           {isAddingNewRule && (
             <EditableCategorizationRule
               rule={NEW_RULE}
@@ -223,7 +240,7 @@ function CategorizationRulesContent() {
                 isNewRule={false}
               />
             ) : (
-              < CategorizationRuleRow
+              <CategorizationRuleRow
                 key={rule.id}
                 rule={rule}
                 accounts={accounts}
@@ -233,6 +250,16 @@ function CategorizationRulesContent() {
             )
           ))}
         </div>
+      </div>
+
+      {/* Right sidebar for Job */}
+      <div className="flex flex-col w-1/5 p-4 border-l border-gray-300 space-y-4">
+        <ApplyRulesButton
+          onClick={handleApplyRules}
+        />
+
+        {/* Job status display */}
+        {/* TODO */}
       </div>
     </div>
   );

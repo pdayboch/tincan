@@ -15,6 +15,9 @@ const config: Config = {
         'theme-drk-green': '#93e1d8',
         'theme-pressed-green': '#7ac7b8',
       },
+      maxHeight: {
+        'screen-300': 'calc(100vh - 300px)',
+      },
     },
   },
   plugins: [],
