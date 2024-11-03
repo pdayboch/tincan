@@ -1,4 +1,5 @@
 import { Account, CategorizationCondition } from "@/lib/definitions";
+import { formatAccountLabel } from "@/lib/helpers";
 
 export const MATCH_TYPES_FOR_FIELDS: { [key: string]: { [key: string]: string } } = {
   description: {
@@ -19,12 +20,6 @@ export const MATCH_TYPES_FOR_FIELDS: { [key: string]: { [key: string]: string } 
   account: {
     exactly: "is",
   },
-};
-
-export const formatAccountLabel = (account: Account): string => {
-  return account.nickname ?
-    account.nickname :
-    `${account.bankName} ${account.name}`;
 };
 
 export const getFormattedMatchValue = (

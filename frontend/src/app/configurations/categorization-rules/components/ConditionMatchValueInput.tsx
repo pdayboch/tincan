@@ -1,5 +1,5 @@
 import { Account } from "@/lib/definitions";
-import { formatAccountLabel } from "../utils/formatting-helpers";
+import { formatAccountLabel } from "@/lib/helpers";
 import clsx from "clsx";
 
 interface ConditionMatchValueInputProps {

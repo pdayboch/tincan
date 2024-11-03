@@ -26,7 +26,6 @@ import AddRuleButton from './components/AddRuleButton';
 import ApplyRulesButton from './components/ApplyRulesButton';
 import { EMPTY_CONDITION, NEW_RULE } from './utils/rule-helpers';
 import NoRulesComponent from './components/NoRulesComponent';
-import AccountSelector from '@/components/filters/AccountFilter';
 import AccountFilter from '@/components/filters/AccountFilter';
 import SubcategoryFilter from '@/components/filters/SubcategoryFilter';
 
@@ -36,7 +35,6 @@ function CategorizationRulesContent() {
   const [rules, setRules] = useState<CategorizationRule[]>([]);
   const [filteredRules, setFilteredRules] = useState<CategorizationRule[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isAddingNewRule, setIsAddingNewRule] = useState(false);
   const [editingRule, setEditingRule] = useState<CategorizationRule | null>(null);
@@ -82,18 +80,6 @@ function CategorizationRulesContent() {
       .catch(error => {
         console.error(error);
         setCategories([]);
-      });
-  }, []);
-
-  // fetch and store all users
-  useEffect(() => {
-    fetchUsers()
-      .then(data => {
-        setUsers(data);
-      })
-      .catch(error => {
-        console.error(error);
-        setUsers([]);
       });
   }, []);
 

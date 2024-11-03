@@ -4,22 +4,20 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ThreeDots } from 'react-loader-spinner';
 import { parseISO } from 'date-fns';
-import { ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
 import { Category, Transaction, TransactionUpdate } from "@/lib/definitions";
 import { formatCurrency } from '@/lib/helpers';
 import SubcategorySelector from '@/components/category/SubcategorySelector';
+import { amountClass } from '../../helpers';
 
 interface EditableTransactionRowProps {
   transaction: Transaction;
   categories: Category[];
-  setExpandedRowTransactionId: React.Dispatch<React.SetStateAction<number | null>>;
   onUpdateTransaction: (transactionId: number, data: TransactionUpdate) => void;
 };
 
 export default function EditableTransactionRow({
   transaction,
   categories,
-  setExpandedRowTransactionId,
   onUpdateTransaction
 }: EditableTransactionRowProps) {
   const [description, setDescription] = useState(transaction.description);
@@ -53,15 +51,9 @@ export default function EditableTransactionRow({
     }
   }
 
-  const amountClass = clsx({
-    'text-green-600': transaction.amount >= 0,
-    'text-red-600': transaction.amount < 0,
-  });
-
   const transactionDate = parseISO(transaction.transactionDate);
 
-  return (<>
-    {/* original row */}
+  return (
     <tr
       key={transaction.id}
       className="expanded-row bg-neutral-50 mb-2 text-sm last-of-type:border-none"
@@ -135,42 +127,17 @@ export default function EditableTransactionRow({
       </td>
 
       {/* Amount */}
-      <td className={clsx("w-24 px-2 align-center whitespace-nowrap font-mono", amountClass)}>
+      <td
+        className={clsx("w-24 px-2 align-center whitespace-nowrap font-mono",
+          amountClass(transaction.amount)
+        )}
+      >
         {formatCurrency(transaction.amount)}
       </td>
+
       <td>
         <div className="w-4" />
       </td>
     </tr>
-
-    {/* expanded row */}
-    <tr className="expanded-row bg-neutral-50">
-      <td colSpan={5}>
-        <div className="flex justify-between w-full h-40">
-          {/* Additional transaction content */}
-          <div
-            className="flex-none content-start mt-2 pl-2 flex flex-col text-sm">
-            <p>
-              <b>Account: </b>
-              {transaction.account.bank} {transaction.account.name}
-            </p>
-            <p>
-              <b>Appears on statement as </b>
-              {transaction.statementDescription}
-            </p>
-            <span>Split transaction</span>
-          </div>
-          <div
-            className="w-7 h-full whitespace-nowrap order-last flex-none flex
-              justify-self-end justify-center items-center cursor-pointer
-              hover:bg-slate-100 hover:rounded-lg hover:border hover:border-bg-slate-100"
-            onClick={() => setExpandedRowTransactionId(null)}
-          >
-            <ChevronDoubleUpIcon className="w-4 h-4" />
-          </div>
-        </div>
-        <hr />
-      </td>
-    </tr>
-  </>);
+  );
 }

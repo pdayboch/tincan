@@ -1,3 +1,5 @@
+import { Account } from "./definitions";
+
 // Helper function to format amount as dollar value
 export const formatCurrency = (amount: number) => {
   const formattedAmount = new Intl.NumberFormat('en-US', {
@@ -22,3 +24,10 @@ export function dateToString(date: Date): string {
 
   return `${year}-${month}-${day}`;
 }
+
+export const formatAccountLabel = (account: Account): string => {
+  const custodian = account.user.name;
+  if (account.nickname) return `${custodian} ${account.nickname}`;
+  if (account.bankName) return `${custodian} ${account.bankName} ${account.name}`;
+  return `${custodian} ${account.name}`;
+};

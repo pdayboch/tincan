@@ -5,6 +5,7 @@ import TransactionRow from "./TransactionRow";
 import EditableTransactionRow from "./EditableTransactionRow";
 import PaginationBar from '@/components/pagination-bar/PaginationBar';
 import { updateTransaction } from '@/lib/api/transaction-api';
+import ExpandedTransactionRow from './ExpandedTransactionRow';
 
 interface TransactionsTableProps {
   transactions: Transaction[];
@@ -95,13 +96,20 @@ export default function TransactionsTable({
           {transactions.map((transaction) => {
             if (transaction.id === expandedRowTransactionId) {
               return (
-                <EditableTransactionRow
-                  key={transaction.id}
-                  transaction={transaction}
-                  categories={categories}
-                  setExpandedRowTransactionId={setExpandedRowTransactionId}
-                  onUpdateTransaction={handleUpdateTransaction}
-                />
+                <React.Fragment key={`fragment-${transaction.id}`}>
+                  <EditableTransactionRow
+                    key={`editable-${transaction.id}`}
+                    transaction={transaction}
+                    categories={categories}
+                    onUpdateTransaction={handleUpdateTransaction}
+                  />
+                  <ExpandedTransactionRow
+                    key={`expanded-${transaction.id}`}
+                    transaction={transaction}
+                    setExpandedRowTransactionId={setExpandedRowTransactionId}
+                    onUpdateTransaction={handleUpdateTransaction}
+                  />
+                </React.Fragment>
               );
             } else {
               return (
