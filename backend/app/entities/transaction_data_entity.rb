@@ -7,6 +7,7 @@ class TransactionDataEntity
   # search_string: Filter for transactions that contain this string in the description, amount, bank, name
   # accounts: array of Account IDs to filter for.
   # users: array of User IDs to filter for.
+  # subcategories: array of subcategory IDs to filter for.
   # sort_by: the transaction attribute to sort the data by. Valid options are:
   #           transaction_date
   #           amount
@@ -26,6 +27,7 @@ class TransactionDataEntity
     @search_string = params[:search_string]
     @accounts = params[:accounts]
     @users = params[:users]
+    @subcategories = params[:subcategories]
   end
 
   def data
@@ -68,19 +70,25 @@ class TransactionDataEntity
     query = base_transaction_query
     query = query.where(account_id: @accounts) if @accounts.present?
     query = query.where(accounts: { user_id: @users }) if @users.present?
+    query = query.where(subcategory_id: @subcategories) if @subcategories.present?
     query = apply_search_filter(query) if @search_string.present?
 
     query
   end
 
   def apply_search_filter(query)
-    query.where("
-      transactions.description ILIKE :search_string OR \
-      transactions.amount::text ILIKE :search_string OR \
-      accounts.bank_name ILIKE :search_string OR \
-      accounts.name ILIKE :search_string OR \
-      users.name ILIKE :search_string",
-                search_string: "%#{@search_string}%")
+    query.where(search_conditions.join(' OR '), search_string: "%#{@search_string}%")
+  end
+
+  def search_conditions
+    [
+      'transactions.description ILIKE :search_string',
+      'transactions.amount::text ILIKE :search_string',
+      'accounts.bank_name ILIKE :search_string',
+      'accounts.name ILIKE :search_string',
+      'users.name ILIKE :search_string',
+      'subcategories.name ILIKE :search_string'
+    ]
   end
 
   def serialized_transactions

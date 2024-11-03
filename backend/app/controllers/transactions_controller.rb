@@ -53,7 +53,8 @@ class TransactionsController < ApplicationController
       :ending_before,
       :search_string,
       accounts: [],
-      users: []
+      users: [],
+      subcategories: []
     )
   end
 
