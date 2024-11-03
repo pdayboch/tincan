@@ -5,23 +5,23 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ThreeDots } from 'react-loader-spinner';
 import { parseISO } from 'date-fns';
 import { ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
-import { Category, Transaction, TransactionUpdate } from "../../../lib/definitions";
+import { Category, Transaction, TransactionUpdate } from "@/lib/definitions";
 import { formatCurrency } from '@/lib/helpers';
 import SubcategorySelector from '@/components/category/SubcategorySelector';
 
-interface TransactionTableRowExpandedProps {
+interface EditableTransactionRowProps {
   transaction: Transaction;
   categories: Category[];
   setExpandedRowTransactionId: React.Dispatch<React.SetStateAction<number | null>>;
   onUpdateTransaction: (transactionId: number, data: TransactionUpdate) => void;
 };
 
-export default function TransactionTableRowExpanded({
+export default function EditableTransactionRow({
   transaction,
   categories,
   setExpandedRowTransactionId,
   onUpdateTransaction
-}: TransactionTableRowExpandedProps) {
+}: EditableTransactionRowProps) {
   const [description, setDescription] = useState(transaction.description);
   const [isDescriptionLoading, setIsDescriptionLoading] = useState(false);
   const [isDescriptionSaved, setIsDescriptionSaved] = useState(true);

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Category, Transaction, TransactionMetaData, TransactionUpdate } from "../../../lib/definitions";
-import TransactionsTableHeader from "./TransactionsTableHeader";
-import TransactionsTableRow from "./TransactionsTableRow";
-import TransactionsTableRowExpanded from "./TransactionsTableRowExpanded";
-import PaginationBar from '../../../components/pagination-bar/PaginationBar';
+import { Category, Transaction, TransactionMetaData, TransactionUpdate } from "@/lib/definitions";
+import TransactionsHeader from "./TransactionsHeader";
+import TransactionRow from "./TransactionRow";
+import EditableTransactionRow from "./EditableTransactionRow";
+import PaginationBar from '@/components/pagination-bar/PaginationBar';
 import { updateTransaction } from '@/lib/api/transaction-api';
 
 interface TransactionsTableProps {
@@ -90,12 +90,12 @@ export default function TransactionsTable({
   return (
     <div className="mt-6 inline-block min-w-full align-middle rounded-lg bg-gray-50 p-2">
       <table className="min-w-full text-gray-900 table-fixed">
-        <TransactionsTableHeader />
+        <TransactionsHeader />
         <tbody className="transactions-table bg-white">
           {transactions.map((transaction) => {
             if (transaction.id === expandedRowTransactionId) {
               return (
-                <TransactionsTableRowExpanded
+                <EditableTransactionRow
                   key={transaction.id}
                   transaction={transaction}
                   categories={categories}
@@ -105,7 +105,7 @@ export default function TransactionsTable({
               );
             } else {
               return (
-                <TransactionsTableRow
+                <TransactionRow
                   key={transaction.id}
                   transaction={transaction}
                   onClick={() => handleRowClick(transaction.id)}

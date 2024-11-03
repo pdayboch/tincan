@@ -1,17 +1,17 @@
 import { BarsArrowDownIcon } from "@heroicons/react/24/outline";
-import { Transaction } from "../../../lib/definitions";
+import { Transaction } from "@/lib/definitions";
 import { formatCurrency, formatDate } from '@/lib/helpers';
 import clsx from "clsx";
 
-interface TransactionTableRowProps {
+interface TransactionRowProps {
   transaction: Transaction;
   onClick: (event: React.MouseEvent<HTMLTableRowElement>) => void;
 };
 
-export default function TransactionTableRow({
+export default function TransactionRow({
   transaction,
   onClick
-}: TransactionTableRowProps) {
+}: TransactionRowProps) {
   const amountClass = clsx({
     'text-green-600': transaction.amount >= 0,
     'text-red-600': transaction.amount < 0,

@@ -1,10 +1,10 @@
 "use client"
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import Search from '../../components/Search';
-import { AddTransactionButton } from './buttons';
-import TransactionsTable from './table/TransactionsTable';
-import { Account, Category, Transaction, TransactionMetaData, User } from '../../lib/definitions';
+import Search from '@/components/Search';
+import { AddTransactionButton } from './components/buttons';
+import TransactionsTable from './components/table/TransactionsTable';
+import { Account, Category, Transaction, TransactionMetaData, User } from '@/lib/definitions';
 import { Inter } from "next/font/google";
 import clsx from 'clsx';
 import { fetchUsers } from '@/lib/api/user-api';

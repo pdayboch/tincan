@@ -1,4 +1,4 @@
-export default function TransactionsTableHeader() {
+export default function TransactionsHeader() {
   return (
     <thead className="rounded-lg text-left text-md font-normal">
       <tr>
