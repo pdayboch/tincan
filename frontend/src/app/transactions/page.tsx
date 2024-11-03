@@ -155,6 +155,7 @@ function TransactionsContent() {
           transactions={transactions}
           transactionMetaData={transactionMetaData}
           categories={categories}
+          accounts={accounts}
           setTransactions={setTransactions}
         />
       </div>

@@ -25,9 +25,15 @@ export function dateToString(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-export const formatAccountLabel = (account: Account): string => {
-  const custodian = account.user.name;
-  if (account.nickname) return `${custodian} ${account.nickname}`;
-  if (account.bankName) return `${custodian} ${account.bankName} ${account.name}`;
-  return `${custodian} ${account.name}`;
+export const formatAccountLabel = (
+  account: Account | undefined,
+  withCustodian: boolean = true
+): string => {
+  if (!account) return '';
+
+  const custodian = withCustodian ? `${account.user.name} ` : '';
+
+  if (account.nickname) return `${custodian}${account.nickname}`;
+  if (account.bankName) return `${custodian}${account.bankName} ${account.name}`;
+  return `${custodian}${account.name}`;
 };

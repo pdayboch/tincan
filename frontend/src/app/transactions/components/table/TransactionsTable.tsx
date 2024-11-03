@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Category, Transaction, TransactionMetaData, TransactionUpdate } from "@/lib/definitions";
+import { Account, Category, Transaction, TransactionMetaData, TransactionUpdate } from "@/lib/definitions";
 import TransactionsHeader from "./TransactionsHeader";
 import TransactionRow from "./TransactionRow";
 import EditableTransactionRow from "./EditableTransactionRow";
@@ -11,6 +11,7 @@ interface TransactionsTableProps {
   transactions: Transaction[];
   transactionMetaData: TransactionMetaData;
   categories: Category[];
+  accounts: Account[];
   setTransactions: React.Dispatch<React.SetStateAction<Transaction[]>>;
 }
 
@@ -18,6 +19,7 @@ export default function TransactionsTable({
   transactions,
   transactionMetaData,
   categories,
+  accounts,
   setTransactions
 }: TransactionsTableProps) {
   const [expandedRowTransactionId, setExpandedRowTransactionId] = useState<number | null>(null);
@@ -106,6 +108,7 @@ export default function TransactionsTable({
                   <ExpandedTransactionRow
                     key={`expanded-${transaction.id}`}
                     transaction={transaction}
+                    accounts={accounts}
                     setExpandedRowTransactionId={setExpandedRowTransactionId}
                     onUpdateTransaction={handleUpdateTransaction}
                   />
