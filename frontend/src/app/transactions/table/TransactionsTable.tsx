@@ -19,10 +19,7 @@ export default function TransactionsTable({
   categories,
   setTransactions
 }: TransactionsTableProps) {
-  const [
-    expandedRowTransactionId,
-    setExpandedRowTransactionId
-  ] = useState<number | null>(null);
+  const [expandedRowTransactionId, setExpandedRowTransactionId] = useState<number | null>(null);
 
   // Handler to expand the row when clicked
   const handleRowClick = (transactionId: number) => {
@@ -118,6 +115,7 @@ export default function TransactionsTable({
           })}
         </tbody>
       </table>
+
       <PaginationBar
         prevPage={transactionMetaData.prevPage}
         nextPage={transactionMetaData.nextPage}

@@ -7,7 +7,7 @@ import { parseISO } from 'date-fns';
 import { ChevronDoubleUpIcon } from "@heroicons/react/24/outline";
 import { Category, Transaction, TransactionUpdate } from "../../../lib/definitions";
 import { formatCurrency } from '@/lib/helpers';
-import CategoryDropdown from "@/components/category/CategoryDropdown";
+import SubcategorySelector from '@/components/category/SubcategorySelector';
 
 interface TransactionTableRowExpandedProps {
   transaction: Transaction;
@@ -31,10 +31,6 @@ export default function TransactionTableRowExpanded({
     setIsDescriptionSaved(isSaved);
   }, [description, transaction.description]);
 
-  const handleDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDescription(event.target.value);
-  }
-
   const handleDescriptionKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && !isDescriptionSaved) {
       handleSaveDescription();
@@ -44,7 +40,7 @@ export default function TransactionTableRowExpanded({
   // Event handler for when description is saved:
   const handleSaveDescription = async () => {
     setIsDescriptionLoading(true);
-    await onUpdateTransaction(transaction.id, { description: description });
+    onUpdateTransaction(transaction.id, { description: description });
     setIsDescriptionLoading(false);
     setIsDescriptionSaved(true)
   }
@@ -68,12 +64,12 @@ export default function TransactionTableRowExpanded({
     {/* original row */}
     <tr
       key={transaction.id}
-      className="expanded-row bg-neutral-50 mb-2 \
-        text-sm last-of-type:border-none"
+      className="expanded-row bg-neutral-50 mb-2 text-sm last-of-type:border-none"
     >
-      <td className="w-24 px-1 py-2 align-top whitespace-nowrap">
+      {/* Date */}
+      <td className="w-24 px-1 align-top whitespace-nowrap">
         <DatePicker
-          className="w-full border border-gray-300 p-1 rounded-md"
+          className="w-full h-9 border border-gray-300 p-1 rounded-md"
           selected={transactionDate}
           isClearable={false}
           onChange={(date) => handleDateSelect(date)}
@@ -82,22 +78,24 @@ export default function TransactionTableRowExpanded({
           dateFormat="MM-dd-yyyy"
         />
       </td>
-      <td className="w-64 px-1 py-2 align-top whitespace-nowrap">
-        <div className="flex items-center">
+
+      {/* Description */}
+      <td className="w-64 px-1 align-top whitespace-nowrap">
+        <div className="flex items-center h-9">
           <input
             type="text"
             value={description}
-            onChange={handleDescriptionChange}
+            onChange={(e) => setDescription(e.target.value)}
             onKeyDown={handleDescriptionKeyDown}
-            className={clsx("border p-1 flex-grow rounded-md",
+            className={clsx("border p-1 flex-grow rounded-md h-full",
               isDescriptionSaved ? "border-gray-300" : "border-red-500"
             )}
             style={{ outline: 'none' }}
           />
           <button
             onClick={handleSaveDescription}
-            className={clsx("ml-2 p-1 w-[40px] h-[30px] text-white text-sm rounded \
-              flex items-center justify-center",
+            className={clsx("ml-2 p-1 w-[40px] h-full text-white text-sm rounded",
+              "flex items-center justify-center",
               isDescriptionSaved || isDescriptionLoading ? "bg-gray-400" : "bg-blue-500"
             )}
             disabled={isDescriptionSaved || isDescriptionLoading}
@@ -119,38 +117,39 @@ export default function TransactionTableRowExpanded({
           </button>
         </div>
       </td>
-      <td className="absolute w-48 p-2 align-top whitespace-nowrap">
-        <CategoryDropdown
-          categories={categories}
-          currentSubcategory={{
-            id: transaction.subcategory.id,
-            name: transaction.subcategory.name
-          }}
-          onChange={
-            (subcategory) => onUpdateTransaction(
-              transaction.id,
-              { subcategoryId: subcategory.id }
-            )
-          }
-        />
+
+      {/* Subcategory */}
+      <td className="w-48 px-2 align-top whitespace-nowrap">
+        <div className="w-full h-9 rounded-md">
+          <SubcategorySelector
+            categories={categories}
+            currentSubcategory={{
+              id: transaction.subcategory.id,
+              name: transaction.subcategory.name
+            }}
+            onChange={(subcategory) =>
+              onUpdateTransaction(transaction.id, { subcategoryId: subcategory.id })
+            }
+          />
+        </div>
       </td>
-      <td className={clsx("w-24 p-2 align-top whitespace-nowrap font-mono", amountClass)}>
+
+      {/* Amount */}
+      <td className={clsx("w-24 px-2 align-center whitespace-nowrap font-mono", amountClass)}>
         {formatCurrency(transaction.amount)}
       </td>
       <td>
         <div className="w-4" />
       </td>
     </tr>
+
     {/* expanded row */}
     <tr className="expanded-row bg-neutral-50">
       <td colSpan={5}>
-        <hr />
         <div className="flex justify-between w-full h-40">
-          {/* Additional transaction content here */}
+          {/* Additional transaction content */}
           <div
-            className="flex-none content-start pl-2 \
-              flex flex-col text-sm"
-          >
+            className="flex-none content-start mt-2 pl-2 flex flex-col text-sm">
             <p>
               <b>Account: </b>
               {transaction.account.bank} {transaction.account.name}
@@ -162,12 +161,9 @@ export default function TransactionTableRowExpanded({
             <span>Split transaction</span>
           </div>
           <div
-            className="w-7 h-full whitespace-nowrap \
-              order-last flex-none justify-self-end\
-              flex justify-center items-center  \
-              cursor-pointer \
-              hover:bg-slate-100 hover:rounded-lg \
-              hover:border hover:border-bg-slate-100"
+            className="w-7 h-full whitespace-nowrap order-last flex-none flex
+              justify-self-end justify-center items-center cursor-pointer
+              hover:bg-slate-100 hover:rounded-lg hover:border hover:border-bg-slate-100"
             onClick={() => setExpandedRowTransactionId(null)}
           >
             <ChevronDoubleUpIcon className="w-4 h-4" />
