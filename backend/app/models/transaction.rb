@@ -40,29 +40,36 @@ class Transaction < ApplicationRecord
            dependent: :nullify,
            inverse_of: :parent_transaction
 
-  before_validation :apply_categorization_rule, on: :create
+  before_validation :set_default_category_and_subcategory, on: :create
   before_validation :sync_category_with_subcategory,
-                    if: -> { will_save_change_to_subcategory_id? }
+                    if: -> { subcategory_id.present? }
 
+  validates :description, length: {
+    minimum: 3,
+    message: 'is required and must have a minimum of three characters'
+  }
+  validates :transaction_date, presence: true
+
+  after_create :apply_categorization_rule
   after_create :update_parent_has_splits
   after_destroy :update_parent_has_splits
 
   private
 
-  # This searches through all categorization rules and applies the first matching rule
   def apply_categorization_rule
-    matched_rule = CategorizationRule.all.find { |rule| rule.match?(self) }
+    # Only apply the categorization rule if the subcategory is "Uncategorized"
+    return unless subcategory_id == uncategorized_subcategory_id
 
-    # If no rule matches, set to uncategorized
-    return set_default_category_and_subcategory unless matched_rule
+    matched_rule = CategorizationRule.all.find { |rule| rule.match?(self) }
+    return unless matched_rule
 
     self.category = matched_rule.category
     self.subcategory = matched_rule.subcategory
   end
 
   def set_default_category_and_subcategory
-    self.subcategory ||= Subcategory.find_by(name: 'Uncategorized')
-    self.category = self.subcategory.category
+    self.subcategory_id ||= uncategorized_subcategory_id
+    self.category = subcategory.category
   end
 
   # Ensure that the category is in sync with the subcategory
@@ -76,5 +83,9 @@ class Transaction < ApplicationRecord
     return unless split_from_id
 
     parent_transaction.update!(has_splits: parent_transaction.splits.exists?)
+  end
+
+  def uncategorized_subcategory_id
+    @uncategorized_subcategory_id ||= Subcategory.find_by!(name: 'Uncategorized').id
   end
 end

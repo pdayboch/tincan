@@ -70,6 +70,20 @@ module TransactionServices
       assert_equal original_date, created_split.transaction_date
     end
 
+    test 'raises error if split param missing required field' do
+      original = transactions(:four)
+
+      split_params = [
+        { amount: original.amount - 1 }
+      ]
+
+      service = CreateSplit.new(original, split_params)
+
+      assert_raises ActiveRecord::RecordInvalid do
+        service.call
+      end
+    end
+
     test 'raises error if split amounts do not match original transaction sign' do
       original = transactions(:four)
       split_amount = (original.amount.to_d / 2) - 1
