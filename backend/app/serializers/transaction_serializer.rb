@@ -17,6 +17,8 @@
 #  notes                      :text
 #  statement_description      :text
 #  statement_transaction_date :date
+#  split_from_id              :bigint
+#  has_splits                 :boolean          default(FALSE), not null
 #
 class TransactionSerializer < ActiveModel::Serializer
   attributes :id, :amount, :description, :notes
@@ -31,6 +33,14 @@ class TransactionSerializer < ActiveModel::Serializer
 
   attribute :statementDescription do
     object.statement_description
+  end
+
+  attribute :splitFromId do
+    object.split_from_id
+  end
+
+  attribute :hasSplits do
+    object.has_splits
   end
 
   attribute :account do

@@ -17,6 +17,8 @@
 #  notes                      :text
 #  statement_description      :text
 #  statement_transaction_date :date
+#  split_from_id              :bigint
+#  has_splits                 :boolean          default(FALSE), not null
 #
 class Transaction < ApplicationRecord
   belongs_to :account
@@ -24,9 +26,26 @@ class Transaction < ApplicationRecord
   belongs_to :category
   belongs_to :subcategory
 
+  # If this transaction is a split, it will reference a parent transaction
+  belongs_to :parent_transaction,
+             class_name: 'Transaction',
+             foreign_key: 'split_from_id',
+             optional: true,
+             inverse_of: :splits
+
+  # A transaction can have many splits if it's a parent
+  has_many :splits,
+           class_name: 'Transaction',
+           foreign_key: 'split_from_id',
+           dependent: :nullify,
+           inverse_of: :parent_transaction
+
   before_validation :apply_categorization_rule, on: :create
   before_validation :sync_category_with_subcategory,
                     if: -> { will_save_change_to_subcategory_id? }
+
+  after_create :update_parent_has_splits
+  after_destroy :update_parent_has_splits
 
   private
 
@@ -48,6 +67,14 @@ class Transaction < ApplicationRecord
 
   # Ensure that the category is in sync with the subcategory
   def sync_category_with_subcategory
-    self.category = subcategory.category if subcategory
+    self.category = subcategory.category
+  end
+
+  # Ensures the parent transaction's has_splits flag reflects the presence of splits
+  def update_parent_has_splits
+    # Only run for split transactions.
+    return unless split_from_id
+
+    parent_transaction.update!(has_splits: parent_transaction.splits.exists?)
   end
 end

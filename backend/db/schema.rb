@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_19_170117) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_04_004043) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -92,10 +92,14 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_19_170117) do
     t.text "notes"
     t.text "statement_description"
     t.date "statement_transaction_date"
+    t.bigint "split_from_id", comment: "References the parent transaction if this transaction is a split"
+    t.boolean "has_splits", default: false, null: false, comment: "Indicates if this transaction has associated split transactions"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["category_id"], name: "index_transactions_on_category_id"
+    t.index ["split_from_id"], name: "index_transactions_on_split_from_id_not_null", where: "(split_from_id IS NOT NULL)"
     t.index ["statement_id"], name: "index_transactions_on_statement_id"
     t.index ["subcategory_id"], name: "index_transactions_on_subcategory_id"
+    t.index ["transaction_date", "id"], name: "index_transactions_on_transaction_date_and_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -117,4 +121,5 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_19_170117) do
   add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "statements"
   add_foreign_key "transactions", "subcategories"
+  add_foreign_key "transactions", "transactions", column: "split_from_id", on_delete: :nullify
 end
