@@ -82,7 +82,12 @@ class Transaction < ApplicationRecord
     # Only run for split transactions.
     return unless split_from_id
 
-    parent_transaction.update!(has_splits: parent_transaction.splits.exists?)
+    # When bulk destroying transactions, it's possible for the
+    # split_from_id to be set, but the parent_transaction to be nil.
+    parent = parent_transaction
+    return unless parent
+
+    parent.update!(has_splits: parent.splits.exists?)
   end
 
   def uncategorized_subcategory_id

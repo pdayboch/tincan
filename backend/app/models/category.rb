@@ -15,7 +15,7 @@ class Category < ApplicationRecord
        {
          income: 'income',
          spend: 'spend',
-         transfer: 'transfer',
+         transfer: 'transfer'
        }
 
   has_many :transactions, dependent: :restrict_with_exception

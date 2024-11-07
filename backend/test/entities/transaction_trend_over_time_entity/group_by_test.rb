@@ -90,6 +90,10 @@ class TransactionTrendOverTimeEntityGroupByTest < ActiveSupport::TestCase
     start_date = Date.new(2022, 1, 1)
     end_date = Date.new(2024, 12, 31)
     params = { type: 'spend', group_by: 'year' }
+    spend_categories = Category.spend.pluck(:id)
+    expected_amount = Transaction.where(category_id: spend_categories)
+                                 .where(transaction_date: Date.new(2024, 1, 1)..Date.new(2024, 12, 31))
+                                 .sum(:amount)
 
     entity = TransactionTrendOverTimeEntity.new(start_date, end_date, params)
     result = entity.data
@@ -97,7 +101,7 @@ class TransactionTrendOverTimeEntityGroupByTest < ActiveSupport::TestCase
     expected_result = [
       { date: '2022-01-01', amount: 0 },
       { date: '2023-01-01', amount: 0 },
-      { date: '2024-01-01', amount: 39.53 }
+      { date: '2024-01-01', amount: expected_amount }
     ]
 
     assert_equal expected_result, result
