@@ -1,12 +1,18 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  resources :transactions, only: %i[index create update destroy]
+  resources :transactions, only: %i[index create update destroy] do
+    member do
+      patch 'sync-splits', to: 'transactions/splits#sync'
+    end
+  end
+
   resources :accounts, only: %i[index create update destroy] do
     collection do
       get :supported, to: 'supported_accounts#index'
     end
   end
+
   resources :users, only: %i[index create update destroy]
   resources :subcategories, only: %i[create update destroy]
   resources :categories, only: %i[index create update destroy]
