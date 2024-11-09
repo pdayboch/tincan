@@ -141,23 +141,6 @@ class TransactionCreateTest < ActiveSupport::TestCase
     assert_equal transaction.category_id, subcategory.category_id
   end
 
-  test 'has_splits is set to true after creating a split' do
-    parent = transactions(:one)
-    assert_not parent.has_splits
-
-    Transaction.create!(
-      transaction_date: parent.transaction_date - 1.day,
-      amount: 5.00,
-      description: 'split transaction',
-      account_id: parent.account_id,
-      category_id: parent.subcategory_id,
-      split_from_id: parent.id
-    )
-
-    parent.reload
-    assert parent.has_splits, 'Expected has_splits to be true after creating a split'
-  end
-
   test 'creating transaction with nil description is invalid' do
     account = accounts(:one)
 

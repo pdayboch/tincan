@@ -51,8 +51,6 @@ class Transaction < ApplicationRecord
   validates :transaction_date, presence: true
 
   after_create :apply_categorization_rule
-  after_create :update_parent_has_splits
-  after_destroy :update_parent_has_splits
 
   private
 
@@ -75,19 +73,6 @@ class Transaction < ApplicationRecord
   # Ensure that the category is in sync with the subcategory
   def sync_category_with_subcategory
     self.category = subcategory.category
-  end
-
-  # Ensures the parent transaction's has_splits flag reflects the presence of splits
-  def update_parent_has_splits
-    # Only run for split transactions.
-    return unless split_from_id
-
-    # When bulk destroying transactions, it's possible for the
-    # split_from_id to be set, but the parent_transaction to be nil.
-    parent = parent_transaction
-    return unless parent
-
-    parent.update!(has_splits: parent.splits.exists?)
   end
 
   def uncategorized_subcategory_id
