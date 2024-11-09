@@ -3,6 +3,7 @@
 Rails.application.routes.draw do
   resources :transactions, only: %i[index create update destroy] do
     member do
+      get :splits, to: 'transactions/splits#show'
       patch 'sync-splits', to: 'transactions/splits#sync'
     end
   end
