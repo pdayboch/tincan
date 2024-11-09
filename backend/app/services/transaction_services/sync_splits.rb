@@ -27,10 +27,7 @@ module TransactionServices
         @original_transaction.save!
       end
 
-      {
-        original: TransactionSerializer.new(@original_transaction).as_json,
-        splits: serialized_splits
-      }
+      TransactionSplitDataEntity.new(@original_transaction).data
     end
 
     private
@@ -117,10 +114,6 @@ module TransactionServices
 
     def update_original_has_splits_flag
       @original_transaction.has_splits = @split_params.any?
-    end
-
-    def serialized_splits
-      @original_transaction.splits.map { |split| TransactionSerializer.new(split).as_json }
     end
   end
 end
