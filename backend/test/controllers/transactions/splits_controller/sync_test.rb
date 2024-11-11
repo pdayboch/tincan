@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module Transactions
-  class SplitsControllerCreateTest < ActionDispatch::IntegrationTest
+  class SplitsControllerSyncTest < ActionDispatch::IntegrationTest
     test 'sync calls SyncSplits service with the correct arguments' do
       original_transaction = transactions(:with_split)
       split = transactions(:split)

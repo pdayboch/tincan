@@ -2,6 +2,14 @@
 
 module Transactions
   class SplitsController < ApplicationController
+    # GET /transactions/:id/splits
+    def show
+      original_transaction = Transaction.find(params[:id])
+      data = TransactionSplitDataEntity.new(original_transaction).data
+
+      render json: data
+    end
+
     # PATCH /transactions/:id/sync_splits
     def sync
       original_transaction = Transaction.find(params[:id])
