@@ -1,5 +1,3 @@
-# GLOBAL FILES
-
 # Ignore all environment files (except templates).
 .env*
 !.env*.erb
