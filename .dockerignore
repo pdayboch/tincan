@@ -1,7 +1,9 @@
-# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
+/build_and_push.sh
 
 # Ignore git directory.
 /.git/
+/.gitattributes
+/.gitignore
 
 # Ignore bundler config.
 /.bundle
@@ -29,3 +31,15 @@
 !/storage/.keep
 /tmp/storage/*
 !/tmp/storage/.keep
+
+# Ignore test and coverage directories
+/test
+/coverage
+
+# Ignore local development configurations
+/.rubocop.yml
+/.ruby-lsp
+/.ruby-version
+
+# Vendor cache files
+/vendor/bundle
