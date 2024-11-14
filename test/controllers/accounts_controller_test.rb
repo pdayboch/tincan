@@ -82,6 +82,24 @@ class AccountsControllerTest < ActionDispatch::IntegrationTest
     assert_includes json_response['errors'], expected_error
   end
 
+  test 'should return unprocessable entity when update fails due to invalid user_id' do
+    account = accounts(:one)
+
+    patch account_url(account), params: {
+      user_id: -1
+    }
+
+    assert_response :unprocessable_entity
+    json_response = response.parsed_body
+
+    expected_error = {
+      'field' => 'user',
+      'message' => 'user must exist'
+    }
+
+    assert_includes json_response['errors'], expected_error
+  end
+
   test 'should destroy account' do
     account = accounts(:one)
 

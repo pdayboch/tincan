@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class AccountsController < ApplicationController
-  before_action :set_account, only: %i[update destroy]
-
   # GET /accounts
   def index
     user_ids = params[:userIds]
@@ -24,22 +22,19 @@ class AccountsController < ApplicationController
 
   # PATCH/PUT /accounts/1
   def update
-    raise UnprocessableEntityError, @account.errors unless @account.update(account_update_params)
+    account = Account.find(params[:id])
+    raise UnprocessableEntityError, account.errors unless account.update(account_update_params)
 
     render json: @account
   end
 
   # DELETE /accounts/1
   def destroy
-    @account.destroy!
+    account = Account.find(params[:id])
+    account.destroy!
   end
 
   private
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_account
-    @account = Account.find(params[:id])
-  end
 
   # Only allow a list of trusted parameters through for create action.
   def account_create_params

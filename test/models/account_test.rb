@@ -17,6 +17,7 @@
 #  parser_class        :string
 #
 require 'test_helper'
+require 'support/mock_statement_parser'
 
 class AccountTest < ActiveSupport::TestCase
   test 'should not allow deletion of non-deletable accounts' do
@@ -44,5 +45,37 @@ class AccountTest < ActiveSupport::TestCase
                     'Non-deletable active account is not included in the active scope'
     assert_not_includes active_accounts, accounts(:inactive_account),
                         'Inactive account is included in the active scope'
+  end
+
+  test 'statement_parser returns correct statement parser object' do
+    user = users(:one)
+    account = Account.create(
+      user_id: user.id,
+      bank_name: StatementParser::MockStatementParser::BANK_NAME,
+      name: StatementParser::MockStatementParser::ACCOUNT_NAME,
+      account_type: StatementParser::MockStatementParser::ACCOUNT_TYPE,
+      parser_class: 'MockStatementParser'
+    )
+
+    StatementParser::MockStatementParser
+      .expects(:new)
+      .with { |arg| arg == 'dummy/path' }
+      .returns('statement parser')
+
+    parser = account.statement_parser('dummy/path')
+    assert_equal 'statement parser', parser
+  end
+
+  test 'statement_parser returns nil if parser_class nil' do
+    user = users(:one)
+    account = Account.create(
+      user_id: user.id,
+      bank_name: StatementParser::MockStatementParser::BANK_NAME,
+      name: StatementParser::MockStatementParser::ACCOUNT_NAME,
+      account_type: StatementParser::MockStatementParser::ACCOUNT_TYPE
+    )
+
+    parser = account.statement_parser('dummy/path')
+    assert_nil parser
   end
 end
