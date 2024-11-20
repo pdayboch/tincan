@@ -10,13 +10,13 @@ module Transactions
       render json: data
     end
 
-    # PATCH /transactions/:id/sync_splits
+    # PATCH /transactions/:id/sync-splits
     def sync
       original_transaction = Transaction.find(params[:id])
 
       result = TransactionServices::SyncSplits.new(original_transaction, split_params).call
 
-      render json: result, status: :created
+      render json: result, status: :ok
     rescue TransactionServices::SyncSplits::SplitNotFoundError => e
       error_msg = [{ field: 'splits', message: e.message }]
       render json: { errors: error_msg }, status: :not_found
@@ -31,9 +31,13 @@ module Transactions
     private
 
     def split_params
-      params.require(:splits).map do |split|
+      splits = params[:splits] || []
+      splits.map do |split|
         split.permit(:id, :amount, :description, :notes, :subcategory_id, :transaction_date)
       end
+    rescue NoMethodError
+      message = 'Invalid format for splits parameter; Must be an array of objects.'
+      raise BadRequestError, { splits: [message] }
     end
   end
 end

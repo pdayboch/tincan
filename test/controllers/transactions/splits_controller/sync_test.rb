@@ -41,7 +41,7 @@ module Transactions
       patch sync_splits_transaction_url(original_transaction.id),
             params: { splits: split_params }
 
-      assert_response :created
+      assert_response :ok
     end
 
     test 'successful sync_splits returns the correct response' do
@@ -56,7 +56,7 @@ module Transactions
       patch sync_splits_transaction_url(original_transaction.id),
             params: { splits: split_params }
 
-      assert_response :created
+      assert_response :ok
       result = response.parsed_body
       splits = original_transaction.reload.splits.sort_by(&:id)
 
@@ -67,6 +67,18 @@ module Transactions
 
       serialized_splits = splits.map { |s| JSON.parse(TransactionSerializer.new(s).to_json) }
       assert_equal(serialized_splits, result[:splits].sort_by { |s| s[:id] })
+    end
+
+    test 'successfully removes all splits when splits param is an empty array' do
+      original_transaction = transactions(:with_split)
+      split_params = []
+
+      patch sync_splits_transaction_url(original_transaction.id),
+            params: { splits: split_params }, as: :json
+
+      assert_response :ok
+
+      assert_equal [], original_transaction.splits
     end
 
     test 'should return 404 when original transaction not found' do
@@ -116,6 +128,23 @@ module Transactions
       expected_error = {
         'field' => 'splits',
         'message' => 'splits total amount cannot exceed the original transaction amount'
+      }
+
+      assert_includes response.parsed_body['errors'], expected_error
+    end
+
+    test 'should error when splits param is not an array' do
+      original_transaction = transactions(:with_split)
+      split_params = 'I should be an array'
+
+      patch sync_splits_transaction_url(original_transaction.id),
+            params: { splits: split_params }
+
+      assert_response :bad_request
+
+      expected_error = {
+        'field' => 'splits',
+        'message' => 'Invalid format for splits parameter; Must be an array of objects.'
       }
 
       assert_includes response.parsed_body['errors'], expected_error
