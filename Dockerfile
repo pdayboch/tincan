@@ -44,12 +44,13 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Final stage for app image
 FROM base AS deploy
 
-# Create a non-root rails user.
-RUN groupadd rails && \
-  useradd rails \
-  --create-home \
-  --shell /bin/bash \
-  -g rails
+# Create a non-root webuser that matches the host's user id and group.
+ARG UID=2000
+ARG GID=1011
+
+RUN groupadd -g $GID webgroup && \
+  useradd -u $UID -g webgroup \
+  -m --shell /bin/bash webuser
 
 
 # Install packages needed for deployment
@@ -62,13 +63,13 @@ RUN apt-get update -qq && \
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
-# Own certs and the runtime files as a non-root user for security
-RUN chown -R rails:rails \
+# Own the runtime files as the webuser for security
+RUN chown -R webuser:webgroup \
   db log storage tmp
 
-USER rails:rails
+USER webuser:webgroup
 
-# Entrypoint prepares the database.
+# Entrypoint prepares the database and seeds.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
