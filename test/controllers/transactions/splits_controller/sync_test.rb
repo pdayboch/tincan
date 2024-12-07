@@ -193,7 +193,7 @@ module Transactions
     test 'should error when split param missing amount field' do
       original_transaction = transactions(:four)
       split_params = [
-        { description: 'missing amount', amount: -0.0 }
+        { description: 'missing amount' }
       ]
 
       patch sync_splits_transaction_url(original_transaction.id), params: {
@@ -203,7 +203,26 @@ module Transactions
       assert_response :unprocessable_entity
       expected_error = {
         'field' => 'splits',
-        'message' => 'splits amounts must match the sign of the original transaction amount'
+        'message' => 'splits cannot have a zero amount'
+      }
+
+      assert_includes response.parsed_body['errors'], expected_error
+    end
+
+    test 'should error when split param amount is zero' do
+      original_transaction = transactions(:four)
+      split_params = [
+        { description: 'zero amount', amount: 0.0 }
+      ]
+
+      patch sync_splits_transaction_url(original_transaction.id), params: {
+        splits: split_params
+      }
+
+      assert_response :unprocessable_entity
+      expected_error = {
+        'field' => 'splits',
+        'message' => 'splits cannot have a zero amount'
       }
 
       assert_includes response.parsed_body['errors'], expected_error

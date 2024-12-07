@@ -207,6 +207,22 @@ module TransactionServices
       end
     end
 
+    test 'raises error if any splits have a zero amount' do
+      original = transactions(:four)
+
+      split_params = [
+        { amount: 1.00, description: 'Valid split 1', subcategory_id: original.subcategory_id },
+        { amount: 0.00, description: 'invalid split with zero', subcategory_id: original.subcategory_id },
+        { amount: 1.00, description: 'Valid split 2', subcategory_id: original.subcategory_id }
+      ]
+
+      service = SyncSplits.new(original, split_params)
+
+      assert_raises SyncSplits::ZeroAmountSplitError do
+        service.call
+      end
+    end
+
     test 'raises error if original transaction is nil' do
       split_params = [{ amount: 50.0, description: 'Split', subcategory_id: 1 }]
 

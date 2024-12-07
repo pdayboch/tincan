@@ -5,6 +5,7 @@ module TransactionServices
     class SplitAmountExceedsOriginalError < StandardError; end
     class SplitAmountSignMismatchError < StandardError; end
     class SplitNotFoundError < StandardError; end
+    class ZeroAmountSplitError < StandardError; end
 
     def initialize(original_transaction, split_params)
       @original_transaction = original_transaction
@@ -48,6 +49,7 @@ module TransactionServices
       validate_split_ids!
       validate_split_amount_signs!
       validate_split_data_amounts!
+      validate_no_zero_amounts!
     end
 
     def validate_split_ids!
@@ -61,7 +63,10 @@ module TransactionServices
 
     def validate_split_amount_signs!
       original_sign = @original_transaction.amount <=> 0
-      return if @split_params.all? { |split| (split[:amount].to_d <=> 0) == original_sign }
+      return if @split_params
+                # ignore zero amounts so validate_no_zero_amounts! correctly detects them
+                .reject { |split| split[:amount].to_d.zero? }
+                .all? { |split| (split[:amount].to_d <=> 0) == original_sign }
 
       raise SplitAmountSignMismatchError, 'amounts must match the sign of the original transaction amount'
     end
@@ -70,6 +75,12 @@ module TransactionServices
       return if @total_split_amount.abs <= @original_transaction.amount.abs
 
       raise SplitAmountExceedsOriginalError, 'total amount cannot exceed the original transaction amount'
+    end
+
+    def validate_no_zero_amounts!
+      return unless @split_params.any? { |split| split[:amount].to_d.zero? }
+
+      raise ZeroAmountSplitError, 'cannot have a zero amount'
     end
 
     def calculate_split_amount

@@ -21,7 +21,8 @@ module Transactions
       error_msg = [{ field: 'splits', message: e.message }]
       render json: { errors: error_msg }, status: :not_found
     rescue TransactionServices::SyncSplits::SplitAmountExceedsOriginalError,
-           TransactionServices::SyncSplits::SplitAmountSignMismatchError => e
+           TransactionServices::SyncSplits::SplitAmountSignMismatchError,
+           TransactionServices::SyncSplits::ZeroAmountSplitError => e
 
       raise UnprocessableEntityError, { splits: [e.message] }
     rescue ActiveRecord::RecordInvalid => e
